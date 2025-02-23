@@ -1,11 +1,27 @@
 <ion-header [translucent]="true">
-  <app-header-bar title="PRODUCTOS"></app-header-bar>
+  <app-header-bar [loading]="loading" title="PRODUCTOS"></app-header-bar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">products</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="content">
+    <ion-searchbar
+      animated="true"
+      placeholder="Buscar producto"
+    ></ion-searchbar>
+    <div class="category-part">
+      <div class="title">
+        <ion-label>Categorías</ion-label>
+        <ion-label><a href="">Mostrar todas</a></ion-label>
+      </div>
+      <div class="categories">
+        @for(category of this.categories; track category.id){
+        <app-category-card [category]="category"></app-category-card>
+        }
+      </div>
+    </div>
+
+    <div class="products">
+      <app-product-card></app-product-card>
+    </div>
+  </div>
 </ion-content>

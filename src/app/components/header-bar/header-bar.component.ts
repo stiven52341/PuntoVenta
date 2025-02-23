@@ -1,6 +1,6 @@
-import { IonToolbar, IonButtons, IonTitle, MenuController, IonButton, IonIcon } from '@ionic/angular/standalone';
+import { IonToolbar, IonButtons, IonTitle, MenuController, IonButton, IonIcon, IonProgressBar } from '@ionic/angular/standalone';
 import { Component, Input, OnInit } from '@angular/core';
-import { UpperCasePipe } from '@angular/common';
+import { NgIf, UpperCasePipe } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { menu } from 'ionicons/icons';
 
@@ -9,13 +9,14 @@ import { menu } from 'ionicons/icons';
   templateUrl: './header-bar.component.html',
   styleUrls: ['./header-bar.component.scss'],
   standalone: true,
-  imports: [IonIcon, IonButton, IonTitle, IonButtons, IonToolbar, UpperCasePipe]
+  imports: [NgIf,IonProgressBar, IonIcon, IonButton, IonTitle, IonButtons, IonToolbar, UpperCasePipe]
 })
 export class HeaderBarComponent  implements OnInit {
   @Input({required: true}) title!: string;
+  @Input() loading: boolean = false;
 
   constructor(private _menuCtrl: MenuController) {
-    addIcons({menu})
+    addIcons({menu});
   }
 
   ngOnInit() {}

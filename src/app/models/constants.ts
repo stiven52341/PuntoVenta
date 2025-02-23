@@ -11,3 +11,19 @@ export enum ApiKeys {
   UNITS = PATH + 'units',
   UNIT_PRODUCTS = PATH + 'unit-products'
 }
+
+export enum StorageKeys{
+  PRODUCTS = 'products',
+  CATEGORIES = 'categories',
+  CURRENCIES = 'currencies',
+  INVENTORY_CHECKS = 'inventory-checks',
+  INVENTORY_CHECK_DETAILS = 'inventory-check-details',
+  INVENTORY_INCOMES = 'inventory-incomes',
+  INVENTORY_INCOME_DETAILS = 'inventory-income-details',
+  UNITS = 'units',
+  UNIT_PRODUCTS = 'unit-products'
+}
+
+export enum PhotoKeys{
+  PRODUCTS_ALBUMN = 'products'
+}
