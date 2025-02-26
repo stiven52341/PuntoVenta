@@ -11,4 +11,8 @@ export class UnitProductService extends ApiCoreService<IUnitProduct>{
   constructor() {
     super(ApiKeys.UNIT_PRODUCTS);
   }
+
+  public async getByProduct(idProduct: number){
+    return await this.getByParam('product', idProduct);
+  }
 }

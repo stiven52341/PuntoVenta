@@ -7,7 +7,21 @@ const config: CapacitorConfig = {
   plugins: {
     Media: {
       androidGalleryMode: true
+    },
+    SplashScreen: {
+      launchShowDuration: 0,
+    },
+    StatusBar: {
+      overlaysWebView: false,
+      style: "DARK",
+      backgroundColor: "#ffffffff"
     }
+  },
+  android: {
+    allowMixedContent: true
+  },
+  server: {
+    cleartext: true  // This enables HTTP support for local dev
   }
 };
 

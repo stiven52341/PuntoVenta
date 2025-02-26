@@ -21,7 +21,8 @@ export enum StorageKeys{
   INVENTORY_INCOMES = 'inventory-incomes',
   INVENTORY_INCOME_DETAILS = 'inventory-income-details',
   UNITS = 'units',
-  UNIT_PRODUCTS = 'unit-products'
+  UNIT_PRODUCTS = 'unit-products',
+  GENERAL_INFO = 'general-info'
 }
 
 export enum PhotoKeys{

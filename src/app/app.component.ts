@@ -1,6 +1,6 @@
-import { NgFor, NgIf, UpperCasePipe } from '@angular/common';
-import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { NgFor, NgIf } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   IonLabel,
   IonItem,
@@ -15,9 +15,14 @@ import {
   IonButton,
   IonIcon,
   MenuController,
+  Platform,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { GeneralInfoService } from './services/local/general-info/general-info.service';
+import { IGeneralInfo } from './models/general-info.model';
+import { ModalsService } from './services/modals/modals.service';
+import { InternalStorageCoreService } from './services/local/internal-storage-core/internal-storage-core.service';
 
 @Component({
   selector: 'app-root',
@@ -40,7 +45,7 @@ import { StatusBar, Style } from '@capacitor/status-bar';
     IonContent,
   ],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   protected menuOptions: Array<{
     title: string;
     icon?: string;
@@ -48,8 +53,16 @@ export class AppComponent {
     do: () => Promise<void> | void;
   }>;
 
-  constructor(private _router: Router, private _menuCtrl: MenuController) {
-    this.setBar();
+  constructor(
+    private _router: Router,
+    private _menuCtrl: MenuController,
+    private _platform: Platform,
+    private _generalInfo: GeneralInfoService,
+    private _modal: ModalsService
+  ) {
+    this._platform.ready().then(() => {
+      StatusBar.setOverlaysWebView({ overlay: true });
+    });
 
     this.menuOptions = [
       {
@@ -78,9 +91,31 @@ export class AppComponent {
     addIcons({});
   }
 
-  private async setBar() {
-    await StatusBar.setOverlaysWebView({ overlay: true });
-    await StatusBar.setStyle({ style: Style.Light });
+  async ngOnInit() {
+    await this.onInit();
+  }
+
+  private async onInit() {
+    await this._generalInfo.initStorage();
+
+    let info: IGeneralInfo | undefined =
+      await this._generalInfo.getGeneralInfo();
+    if (info) {
+      if (info.isFirstTime) {
+        info!.isFirstTime = false;
+        await this._generalInfo.update(info);
+      }
+      return;
+    }
+
+    info = {
+      id: 1,
+      isFirstTime: true,
+    };
+
+    await this._generalInfo.insert(info);
+
+    await this._modal.showFirstOpenedModal();
   }
 
   private async goTo(path: string) {

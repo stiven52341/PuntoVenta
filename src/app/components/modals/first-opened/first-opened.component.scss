@@ -1,0 +1,34 @@
+ion-title{
+  color: white;
+}
+
+ion-content{
+  .content{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    ion-card{
+      height: 50%;
+
+      ion-card-content{
+        height: 85%;
+        .card-content{
+          width: 100%;
+          height: 100% !important;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          ion-spinner{
+            width: 50vw;
+            height: 50vw;
+            max-height: 10em;
+          }
+        }
+      }
+    }
+  }
+}

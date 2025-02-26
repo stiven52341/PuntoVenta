@@ -11,4 +11,8 @@ export class InventoryCheckDetailService extends ApiCoreService<IInventoryCheckD
   constructor() {
     super(ApiKeys.INVENTORY_CHECK_DETAILS);
   }
+
+  public async getByCheck(idCheck: number){
+    return await this.getByParam('check', idCheck);
+  }
 }

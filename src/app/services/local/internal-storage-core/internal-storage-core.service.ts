@@ -7,21 +7,24 @@ import { Entity } from '../../api/api-core/api-core.service';
   providedIn: 'root'
 })
 export class InternalStorageCoreService<T extends Entity> {
-  private storage: Storage | undefined;
   private _storage = inject(Storage);
 
   constructor(private key: StorageKeys) {
-    this._storage.create().then((v => this.storage = v));
+    this.initStorage();
+  }
+
+  public async initStorage(){
+    await this._storage.create();
   }
 
   public async getAll(): Promise<Array<T>>{
-    return await this.storage?.get(this.key) as Array<T> || [];
+    return await this._storage.get(this.key) as Array<T> || [];
   }
 
   public async insert(obj: T){
     const valores = await this.getAll();
     valores.push(obj);
-    await this.storage?.set(this.key, valores);
+    await this._storage.set(this.key, valores);
   }
 
   public async get(id: string | number){
@@ -47,5 +50,9 @@ export class InternalStorageCoreService<T extends Entity> {
     if(index == -1) throw new Error("Not found");
     valores.splice(index,1);
     await this._storage.set(this.key, valores);
+  }
+
+  public async set(objs: Array<T>){
+    await this._storage.set(this.key, JSON.parse(JSON.stringify(objs)));
   }
 }

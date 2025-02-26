@@ -45,7 +45,7 @@ export class ApiCoreService<T extends Entity>{
     }
 
     const result = await firstValueFrom(
-      this._http.get(`${this.path}/get?${param}=${value}`)
+      this._http.get(`${this.path}/get-by-${param}=${value}`)
     ).catch(err => console.log(`Error while getting by param: ${JSON.stringify(err)}`));
 
     if(!result) return null;

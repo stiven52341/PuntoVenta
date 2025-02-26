@@ -11,4 +11,8 @@ export class InventoryIncomeDetailService extends ApiCoreService<IInventoryIncom
   constructor() {
     super(ApiKeys.INVENTORY_INCOME_DETAILS);
   }
+
+  public async getByIncome(idIncome: number){
+    return await this.getByParam('income', idIncome);
+  }
 }
