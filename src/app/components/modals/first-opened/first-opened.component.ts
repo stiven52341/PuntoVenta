@@ -16,6 +16,7 @@ import { PhotoKeys } from 'src/app/models/constants';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { CategoryService } from 'src/app/services/api/category/category.service';
 import { CurrencyService } from 'src/app/services/api/currency/currency.service';
+import { ImageCategoryService } from 'src/app/services/api/image-category/image-category.service';
 import { ImageProductService } from 'src/app/services/api/image-product/image-product.service';
 import { InventoryCheckDetailService } from 'src/app/services/api/inventory-check-detail/inventory-check-detail.service';
 import { InventoryIncomeDetailService } from 'src/app/services/api/inventory-income-detail/inventory-income-detail.service';
@@ -71,6 +72,7 @@ export class FirstOpenedComponent implements OnInit {
   private _unitProductApi = inject(UnitProductService);
   private _inventoryIncomeApi = inject(InventoryIncomeService);
   private _inventoryIncomeDetailApi = inject(InventoryIncomeDetailService);
+  private _imageCategoriesApi = inject(ImageCategoryService);
 
   //Local
   private _categorySto = inject(LocalCategoriesService);
@@ -103,7 +105,8 @@ export class FirstOpenedComponent implements OnInit {
       this._unitApi.getAll(),
       this._unitProductApi.getAll(),
       this._inventoryIncomeApi.getAll(),
-      this._inventoryIncomeDetailApi.getAll()
+      this._inventoryIncomeDetailApi.getAll(),
+      this._imageCategoriesApi.getAll()
     ])).catch(async err => {
       this._alert.showError('Error descargando los datos');
       this._info.setNotSuccessful();
@@ -114,7 +117,7 @@ export class FirstOpenedComponent implements OnInit {
 
     const categories = result[0] || [];
     const currencies = result[1] || [];
-    let images = result[2] || [];
+    const imagesPros = result[2] || [];
     const inventoryChecks = result[3] || [];
     const inventoryCheckDetails = result[4] || [];
     const products = result[5] || [];
@@ -122,8 +125,10 @@ export class FirstOpenedComponent implements OnInit {
     const unitProducts = result[7] || [];
     const incomes = result[8] || [];
     const incomeDetails = result[9] || [];
+    const imagesCategories =result[10] || [];
 
-    images.map(image => image.image = `data:image/png;base64,${image.image}`);
+    imagesPros.map(image => image.image = `data:image/png;base64,${image.image}`);
+    imagesCategories.map(image => image.image = `data:image/png;base64,${image.image}`);
 
     const result2 = await firstValueFrom(forkJoin([
       this._categorySto.set(categories),
@@ -135,7 +140,8 @@ export class FirstOpenedComponent implements OnInit {
       this._unitProductsSto.set(unitProducts),
       this._inventoryIncomeSto.set(incomes),
       this._inventoryIncomeDetailSto.set(incomeDetails),
-      this._photoSto.savePhotos(images, PhotoKeys.PRODUCTS_ALBUMN)
+      this._photoSto.savePhotos(imagesPros, PhotoKeys.PRODUCTS_ALBUMN),
+      this._photoSto.savePhotos(imagesCategories,PhotoKeys.CATEGORIES_ALBUM)
     ])).catch(err => {
       this._alert.showError('Error guardando los datos');
       this._info.setNotSuccessful();

@@ -48,4 +48,8 @@ export class PhotosService {
       }
     );
   }
+
+  // public async getPhoto(name: string, album: PhotoKeys): Promise<string>{
+
+  // }
 }

@@ -1,5 +1,5 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonLabel,
@@ -22,7 +22,6 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 import { GeneralInfoService } from './services/local/general-info/general-info.service';
 import { IGeneralInfo } from './models/general-info.model';
 import { ModalsService } from './services/modals/modals.service';
-import { InternalStorageCoreService } from './services/local/internal-storage-core/internal-storage-core.service';
 
 @Component({
   selector: 'app-root',
@@ -58,10 +57,26 @@ export class AppComponent implements OnInit {
     private _menuCtrl: MenuController,
     private _platform: Platform,
     private _generalInfo: GeneralInfoService,
-    private _modal: ModalsService
+    private _modal: ModalsService,
+    private renderer: Renderer2
   ) {
     this._platform.ready().then(() => {
-      StatusBar.setOverlaysWebView({ overlay: true });
+      const safeAreaTop = window
+        .getComputedStyle(document.documentElement)
+        .getPropertyValue('env(safe-area-inset-top)');
+
+      if (!safeAreaTop || safeAreaTop.trim().length == 0) {
+        document.documentElement.style.setProperty(
+          '--ion-safe-area-top',
+          '30px'
+        );
+      }
+
+      // this.renderer.setStyle(
+      //   document.documentElement,
+      //   '--ion-safe-area-top',
+      //   safeAreaTop
+      // );
     });
 
     this.menuOptions = [
@@ -96,6 +111,8 @@ export class AppComponent implements OnInit {
   }
 
   private async onInit() {
+    await StatusBar.setOverlaysWebView({ overlay: true });
+
     await this._generalInfo.initStorage();
 
     let info: IGeneralInfo | undefined =

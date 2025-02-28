@@ -4,7 +4,7 @@ ion-content {
   --ion-background-color: rgb(250, 250, 250);
 }
 .content {
-  padding: 1.5em;
+  padding: 1em;
   display: flex;
   flex-direction: column;
   gap: 1em;
@@ -59,9 +59,11 @@ ion-content {
     flex-direction: row;
     gap: 1em;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     flex-wrap: wrap;
-    height: 65%;
+    height: 50%;
     overflow: auto;
+
+    padding: .3em;
   }
 }

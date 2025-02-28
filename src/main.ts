@@ -7,7 +7,6 @@ import { AppComponent } from './app/app.component';
 import {provideHttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 
-
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

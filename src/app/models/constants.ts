@@ -9,7 +9,8 @@ export enum ApiKeys {
   INVENTORY_INCOMES = PATH + 'inventory-incomes',
   INVENTORY_INCOME_DETAILS = PATH + 'inventory-income-details',
   UNITS = PATH + 'units',
-  UNIT_PRODUCTS = PATH + 'unit-products'
+  UNIT_PRODUCTS = PATH + 'unit-products',
+  IMAGE_CATEGORIES = PATH + 'image-categories'
 }
 
 export enum StorageKeys{
@@ -26,5 +27,6 @@ export enum StorageKeys{
 }
 
 export enum PhotoKeys{
-  PRODUCTS_ALBUMN = 'products'
+  PRODUCTS_ALBUMN = 'products',
+  CATEGORIES_ALBUM = 'categories'
 }

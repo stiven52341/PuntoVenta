@@ -5,6 +5,9 @@ import { ProductCardComponent } from 'src/app/components/product-card/product-ca
 import { ICategory } from 'src/app/models/category.model';
 import { CategoryService } from 'src/app/services/api/category/category.service';
 import { CategoryCardComponent } from 'src/app/components/category-card/category-card.component';
+import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
+import { firstValueFrom, forkJoin } from 'rxjs';
+import { PhotosService } from 'src/app/services/photos/photos.service';
 
 @Component({
   selector: 'app-products',
@@ -14,10 +17,10 @@ import { CategoryCardComponent } from 'src/app/components/category-card/category
   imports: [IonLabel, CategoryCardComponent,IonSearchbar, ProductCardComponent,IonContent,HeaderBarComponent, IonHeader]
 })
 export class ProductsPage implements OnInit {
-  protected categories: Array<ICategory> = [];
+  protected categories: Array<{category: ICategory, image?: string}> = [];
   protected loading: boolean = false;
 
-  constructor(private _categories: CategoryService) { }
+  constructor(private _categories: LocalCategoriesService, private _photo: PhotosService) { }
 
   async ngOnInit() {
     this.loading = true;
@@ -26,5 +29,12 @@ export class ProductsPage implements OnInit {
   }
 
   private async onInit(){
+    const data = await firstValueFrom(forkJoin([
+      this._categories.getAll()
+    ]));
+
+    data[0].forEach(category => {
+      this.categories.push({category: category})
+    });
   }
 }

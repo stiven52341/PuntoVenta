@@ -14,20 +14,13 @@
         <ion-label><a href="">Mostrar todas</a></ion-label>
       </div>
       <div class="categories">
-        @for(category of this.categories; track category.id){
-        <app-category-card image="../../../assets/apple.jpeg" [category]="category"></app-category-card>
+        @for(category of this.categories; track category.category.id){
+        <app-category-card [image]="category.image" [category]="category.category"></app-category-card>
         }
       </div>
     </div>
 
     <div class="products">
-      <app-product-card></app-product-card>
-      <app-product-card></app-product-card>
-      <app-product-card></app-product-card>
-      <app-product-card></app-product-card>
-      <app-product-card></app-product-card>
-      <app-product-card></app-product-card>
-      <app-product-card></app-product-card>
       <app-product-card></app-product-card>
     </div>
   </div>
