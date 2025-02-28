@@ -12,6 +12,7 @@ import {
   IonSpinner,
 } from '@ionic/angular/standalone';
 import { firstValueFrom, forkJoin } from 'rxjs';
+import { PhotoKeys } from 'src/app/models/constants';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { CategoryService } from 'src/app/services/api/category/category.service';
 import { CurrencyService } from 'src/app/services/api/currency/currency.service';
@@ -33,6 +34,7 @@ import { LocalProductsService } from 'src/app/services/local/local-products/loca
 import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
+import { PhotosService } from 'src/app/services/photos/photos.service';
 
 @Component({
   selector: 'app-first-opened',
@@ -80,6 +82,7 @@ export class FirstOpenedComponent implements OnInit {
   private _productsSto = inject(LocalProductsService);
   private _unitProductsSto = inject(LocalUnitProductsService);
   private _unitSto = inject(LocalUnitsService);
+  private _photoSto = inject(PhotosService);
 
   constructor() {}
 
@@ -111,7 +114,7 @@ export class FirstOpenedComponent implements OnInit {
 
     const categories = result[0] || [];
     const currencies = result[1] || [];
-    const images = result[2] || [];
+    let images = result[2] || [];
     const inventoryChecks = result[3] || [];
     const inventoryCheckDetails = result[4] || [];
     const products = result[5] || [];
@@ -119,6 +122,8 @@ export class FirstOpenedComponent implements OnInit {
     const unitProducts = result[7] || [];
     const incomes = result[8] || [];
     const incomeDetails = result[9] || [];
+
+    images.map(image => image.image = `data:image/png;base64,${image.image}`);
 
     const result2 = await firstValueFrom(forkJoin([
       this._categorySto.set(categories),
@@ -129,7 +134,8 @@ export class FirstOpenedComponent implements OnInit {
       this._unitSto.set(units),
       this._unitProductsSto.set(unitProducts),
       this._inventoryIncomeSto.set(incomes),
-      this._inventoryIncomeDetailSto.set(incomeDetails)
+      this._inventoryIncomeDetailSto.set(incomeDetails),
+      this._photoSto.savePhotos(images, PhotoKeys.PRODUCTS_ALBUMN)
     ])).catch(err => {
       this._alert.showError('Error guardando los datos');
       this._info.setNotSuccessful();

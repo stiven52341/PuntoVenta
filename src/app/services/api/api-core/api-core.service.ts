@@ -17,12 +17,12 @@ export class ApiCoreService<T extends Entity>{
 
   public async getAll(): Promise<Array<T> | null>{
     const result = await firstValueFrom(
-      this._http.get(this.path)
+      this._http.get(this.path, {responseType: 'text'})
     ).catch(err => console.log(`Error while getting all: ${JSON.stringify(err)}`));
 
     if(!result) return null;
 
-    return result as Array<T>;
+    return JSON.parse(result) as Array<T>;
   }
 
   public async get(id: string | number | Object): Promise<T | null>{

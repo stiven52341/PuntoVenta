@@ -26,6 +26,5 @@ export class ProductsPage implements OnInit {
   }
 
   private async onInit(){
-    this.categories = await this._categories.getAll() || [];
   }
 }
