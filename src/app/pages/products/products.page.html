@@ -20,8 +20,13 @@
       </div>
     </div>
 
-    <div class="products">
-      <app-product-card></app-product-card>
+    <div class="products" (scroll)="onScroll($event)">
+      @for(product of productsFiltered; track product.product.id){
+        <app-product-card (loadingEvent)="this.loading = $event" [product]="product.product" [image]="product.image"></app-product-card>
+      }
+      @if(loadingScroll){
+        <ion-spinner color="primary" size="large" name="crescent"></ion-spinner>
+      }
     </div>
   </div>
 </ion-content>

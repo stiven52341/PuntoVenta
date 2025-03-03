@@ -4,12 +4,16 @@ import { firstValueFrom, forkJoin } from 'rxjs';
 import { PhotoKeys } from 'src/app/models/constants';
 import { IImageProduct } from 'src/app/models/image-product.model';
 import { AlertsService } from '../alerts/alerts.service';
+import { FilesService } from '../files/files.service';
+import { Directory, Encoding } from '@capacitor/filesystem';
+import { App } from '@capacitor/app';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PhotosService {
-  constructor(private _alert: AlertsService ) { }
+  constructor(private _alert: AlertsService, private _file: FilesService) { }
 
   public async createAlbumn(albumn: PhotoKeys){
     const alb = await this.getAlbumn(albumn);
@@ -49,7 +53,10 @@ export class PhotosService {
     );
   }
 
-  // public async getPhoto(name: string, album: PhotoKeys): Promise<string>{
-
-  // }
+  public async getPhoto(name: string, album: PhotoKeys): Promise<string | undefined>{
+    const path = `/Android/media/${(await App.getInfo()).id}/${album}/${name}.png`;
+    const image = await this._file.read(path, Directory.ExternalStorage);
+    if(!image) return undefined;
+    return 'data:image/png;base64,' + image.toString()
+  }
 }

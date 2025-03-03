@@ -7,7 +7,7 @@ ion-content {
   padding: 1em;
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: .5em;
   justify-content: top;
   align-items: center;
   width: 100%;
@@ -23,11 +23,11 @@ ion-content {
     margin-top: 1em;
     display: flex;
     flex-direction: column;
-    gap: .5em;
+    gap: 0.5em;
     justify-content: center;
     align-items: center;
 
-    .title{
+    .title {
       width: 100%;
       display: flex;
       flex-direction: row;
@@ -43,13 +43,13 @@ ion-content {
       gap: 1em;
       // flex-wrap: wrap;
       overflow-x: scroll;
-      padding: .5em .1em;
+      padding: 0.5em 0.1em;
       justify-content: center;
       align-items: center;
 
-      @media(max-width: 415px){
+      @media (max-width: 415px) {
         justify-content: space-around;
-        gap: .5em;
+        gap: 0.5em;
       }
     }
   }
@@ -61,9 +61,30 @@ ion-content {
     justify-content: center;
     align-items: flex-start;
     flex-wrap: wrap;
-    height: 50%;
+    height: 55%;
     overflow: auto;
 
-    padding: .3em;
+    padding: 0.3em;
+    scrollbar-width: thin; /* Para Firefox */
+    scrollbar-color: #888 #f1f1f1; /* Color del scrollbar */
   }
+
+  .products::-webkit-scrollbar {
+    width: 8px; /* Ancho del scrollbar */
+  }
+
+  .products::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color del fondo del scrollbar */
+    border-radius: 30px;
+  }
+
+  .products::-webkit-scrollbar-thumb {
+    background: #888; /* Color del "thumb" */
+    border-radius: 4px;
+  }
+
+  .products::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color cuando el usuario pasa el mouse */
+  }
+
 }

@@ -2,9 +2,14 @@
 <ion-toolbar color="primary">
   <ion-buttons slot="start">
     <ion-button (click)="openMenu()" slot="icon-only">
-      <ion-icon id="menu-icon"size="large" name="menu"></ion-icon>
+      <ion-icon class="menu-icon"size="large" name="menu"></ion-icon>
     </ion-button>
   </ion-buttons>
   <ion-title>{{ title | uppercase }}</ion-title>
+  <ion-buttons slot="end">
+    <ion-button slot="icon-only">
+      <ion-icon class="menu-icon" name="cart" size="large"></ion-icon>
+    </ion-button>
+  </ion-buttons>
 </ion-toolbar>
 <ion-progress-bar *ngIf="loading" type="indeterminate"></ion-progress-bar>

@@ -6,6 +6,7 @@ export interface IUnitProduct{
   },
   isDefault: boolean,
   amount: number,
+  price: number,
   cost: number,
   unit?: string,
   currency?: string,

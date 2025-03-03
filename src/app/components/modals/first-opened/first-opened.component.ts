@@ -149,6 +149,7 @@ export class FirstOpenedComponent implements OnInit {
     });
 
     if(!result2){
+      this._modal.closeModal('first-time-modal');
       return;
     }
 

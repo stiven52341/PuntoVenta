@@ -27,7 +27,7 @@ export class InternalStorageCoreService<T extends Entity> {
     await this._storage.set(this.key, valores);
   }
 
-  public async get(id: string | number){
+  public async get(id: string | number | Object){
     return (await this.getAll()).find(
       (valor: T) => {
         return valor.id == id;
