@@ -3,8 +3,23 @@
 </ion-header>
 <ion-content>
   <div class="content">
-    @if(image){
-      <img src="{{ image }}" alt="">
-    }
+    <div class="image">
+      @if(image){
+        <img src="{{ image }}" alt="">
+      }@else {
+        <img src="../../../../assets/no-image.png" alt="">
+      }
+      <div class="meta">
+        <ion-button shape="round">
+          <ion-icon slot="icon-only" name="heart"></ion-icon>
+        </ion-button>
+        <ion-button shape="round">
+          <ion-icon slot="icon-only" name="share-social"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+    <div class="details">
+      <p>Text</p>
+    </div>
   </div>
 </ion-content>
