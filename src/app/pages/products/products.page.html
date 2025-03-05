@@ -22,7 +22,7 @@
 
     <div class="products" (scroll)="onScroll($event)">
       @for(product of productsFiltered; track product.product.id){
-        <app-product-card (loadingEvent)="this.loading = $event" [product]="product.product" [image]="product.image"></app-product-card>
+        <app-product-card (click)="onProductClick(product.product, product.image)" (loadingEvent)="this.loading = $event" [product]="product.product" [image]="product.image"></app-product-card>
       }
       @if(loadingScroll){
         <ion-spinner color="primary" size="large" name="crescent"></ion-spinner>
@@ -32,6 +32,7 @@
 </ion-content>
 <ion-footer>
   <ion-toolbar color="primary">
-    <ion-title>TOTAL: ${{ total | number:'1.2-2' }}</ion-title>
+    <ion-title slot="start">TOTAL: ${{ total | number:'1.2-2' }}</ion-title>
+    <ion-title slot="end">CANTIDAD: {{ cart?.products?.length || 0 }}</ion-title>
   </ion-toolbar>
 </ion-footer>

@@ -1,9 +1,14 @@
-
 <ion-toolbar color="primary">
   <ion-buttons slot="start">
+    @if(arrowBack){
+      <ion-button (click)="closeModal()">
+        <ion-icon class="menu-icon" size="large" name="arrow-back"></ion-icon>
+      </ion-button>
+    }@else {
     <ion-button (click)="openMenu()" slot="icon-only">
-      <ion-icon class="menu-icon"size="large" name="menu"></ion-icon>
+      <ion-icon class="menu-icon" size="large" name="menu"></ion-icon>
     </ion-button>
+    }
   </ion-buttons>
   <ion-title>{{ title | uppercase }}</ion-title>
   <ion-buttons slot="end">
