@@ -16,7 +16,7 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
   }
 
   private async setCart() {
-    let cart = await this.get(0);
+    let cart = await this.get(1);
     if (!cart) {
       cart = {
         id: 1,

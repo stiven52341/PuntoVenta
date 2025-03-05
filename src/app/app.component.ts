@@ -61,16 +61,16 @@ export class AppComponent implements OnInit {
     private renderer: Renderer2
   ) {
     this._platform.ready().then(() => {
-      const safeAreaTop = window
-        .getComputedStyle(document.documentElement)
-        .getPropertyValue('env(safe-area-inset-top)');
+      // const safeAreaTop = window
+      //   .getComputedStyle(document.documentElement)
+      //   .getPropertyValue('env(safe-area-inset-top)');
 
-      if (!safeAreaTop || safeAreaTop.trim().length == 0) {
-        document.documentElement.style.setProperty(
-          '--ion-safe-area-top',
-          '30px'
-        );
-      }
+      // if (!safeAreaTop || safeAreaTop.trim().length == 0) {
+      //   document.documentElement.style.setProperty(
+      //     '--ion-safe-area-top',
+      //     '30px'
+      //   );
+      // }
 
       // this.renderer.setStyle(
       //   document.documentElement,
@@ -111,7 +111,11 @@ export class AppComponent implements OnInit {
   }
 
   private async onInit() {
-    await StatusBar.setOverlaysWebView({ overlay: true });
+    await StatusBar.setOverlaysWebView({
+      overlay: false,
+    });
+    await StatusBar.setBackgroundColor({ color: '#2dd55b' });
+    StatusBar.show();
 
     await this._generalInfo.initStorage();
 
