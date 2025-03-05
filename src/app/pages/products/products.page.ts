@@ -5,8 +5,7 @@ import {
   IonSearchbar,
   IonLabel,
   InfiniteScrollCustomEvent,
-  IonSpinner,
-} from '@ionic/angular/standalone';
+  IonSpinner, IonFooter, IonToolbar, IonTitle } from '@ionic/angular/standalone';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { ProductCardComponent } from 'src/app/components/product-card/product-card.component';
 import { ICategory } from 'src/app/models/category.model';
@@ -15,16 +14,17 @@ import { LocalCategoriesService } from 'src/app/services/local/local-categories/
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { PhotosService } from 'src/app/services/photos/photos.service';
 import { PhotoKeys } from 'src/app/models/constants';
-import { NgFor } from '@angular/common';
 import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
 import { IProduct } from 'src/app/models/product.model';
+import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.service';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.page.html',
   styleUrls: ['./products.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonTitle, IonToolbar, IonFooter,
     IonLabel,
     CategoryCardComponent,
     IonSearchbar,
@@ -32,7 +32,8 @@ import { IProduct } from 'src/app/models/product.model';
     IonContent,
     HeaderBarComponent,
     IonHeader,
-    IonSpinner
+    IonSpinner,
+    DecimalPipe
   ],
 })
 export class ProductsPage implements OnInit {
@@ -43,10 +44,13 @@ export class ProductsPage implements OnInit {
   protected loading: boolean = false;
   protected loadingScroll: boolean = false;
 
+  protected total: number = 0;
+
   constructor(
     private _categories: LocalCategoriesService,
     private _photo: PhotosService,
-    private _products: LocalProductsService
+    private _products: LocalProductsService,
+    private _cart: LocalCartService
   ) {}
 
   async ngOnInit() {
@@ -57,6 +61,9 @@ export class ProductsPage implements OnInit {
 
   private async onInit() {
     await this.loadProducts();
+    this._cart.getCart().subscribe(async cart => {
+      this.total = await this._cart.getTotal(cart);
+    });
     this.generateItems(this.products);
   }
 
