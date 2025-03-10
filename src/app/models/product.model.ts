@@ -1,7 +1,7 @@
 export interface IProduct{
   id: number,
   name: string,
-  idCategory: number,
   category?: string,
+  description?: string,
   state: boolean
 }

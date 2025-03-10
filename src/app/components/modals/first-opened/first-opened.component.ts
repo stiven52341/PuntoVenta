@@ -21,6 +21,7 @@ import { ImageProductService } from 'src/app/services/api/image-product/image-pr
 import { InventoryCheckDetailService } from 'src/app/services/api/inventory-check-detail/inventory-check-detail.service';
 import { InventoryIncomeDetailService } from 'src/app/services/api/inventory-income-detail/inventory-income-detail.service';
 import { InventoryIncomeService } from 'src/app/services/api/inventory-income/inventory-income.service';
+import { ProductCategoryService } from 'src/app/services/api/product-category/product-category.service';
 import { ProductService } from 'src/app/services/api/product/product.service';
 import { UnitProductService } from 'src/app/services/api/unit-product/unit-product.service';
 import { UnitService } from 'src/app/services/api/unit/unit.service';
@@ -31,6 +32,7 @@ import { LocalInventoryCheckDetailsService } from 'src/app/services/local/local-
 import { LocalInventoryCheckService } from 'src/app/services/local/local-inventory-check/local-inventory-check.service';
 import { LocalInventoryIncomeDetailService } from 'src/app/services/local/local-inventory-income-detail/local-inventory-income-detail.service';
 import { LocalInventoryIncomeService } from 'src/app/services/local/local-inventory-income/local-inventory-income.service';
+import { LocalProductCategoryService } from 'src/app/services/local/local-product-category/local-product-category.service';
 import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
 import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
@@ -73,6 +75,7 @@ export class FirstOpenedComponent implements OnInit {
   private _inventoryIncomeApi = inject(InventoryIncomeService);
   private _inventoryIncomeDetailApi = inject(InventoryIncomeDetailService);
   private _imageCategoriesApi = inject(ImageCategoryService);
+  private _productCategoryApi = inject(ProductCategoryService)
 
   //Local
   private _categorySto = inject(LocalCategoriesService);
@@ -85,6 +88,7 @@ export class FirstOpenedComponent implements OnInit {
   private _unitProductsSto = inject(LocalUnitProductsService);
   private _unitSto = inject(LocalUnitsService);
   private _photoSto = inject(PhotosService);
+  private _proCategoriesSto = inject(LocalProductCategoryService);
 
   constructor() {}
 
@@ -106,7 +110,8 @@ export class FirstOpenedComponent implements OnInit {
       this._unitProductApi.getAll(),
       this._inventoryIncomeApi.getAll(),
       this._inventoryIncomeDetailApi.getAll(),
-      this._imageCategoriesApi.getAll()
+      this._imageCategoriesApi.getAll(),
+      this._productCategoryApi.getAll()
     ])).catch(async err => {
       this._alert.showError('Error descargando los datos');
       this._info.setNotSuccessful();
@@ -126,6 +131,7 @@ export class FirstOpenedComponent implements OnInit {
     const incomes = result[8] || [];
     const incomeDetails = result[9] || [];
     const imagesCategories =result[10] || [];
+    const productCategories =result[11] || [];
 
     imagesPros.map(image => image.image = `data:image/png;base64,${image.image}`);
     imagesCategories.map(image => image.image = `data:image/png;base64,${image.image}`);
@@ -141,7 +147,8 @@ export class FirstOpenedComponent implements OnInit {
       this._inventoryIncomeSto.set(incomes),
       this._inventoryIncomeDetailSto.set(incomeDetails),
       this._photoSto.savePhotos(imagesPros, PhotoKeys.PRODUCTS_ALBUMN),
-      this._photoSto.savePhotos(imagesCategories,PhotoKeys.CATEGORIES_ALBUM)
+      this._photoSto.savePhotos(imagesCategories,PhotoKeys.CATEGORIES_ALBUM),
+      this._proCategoriesSto.set(productCategories)
     ])).catch(err => {
       this._alert.showError('Error guardando los datos');
       this._info.setNotSuccessful();

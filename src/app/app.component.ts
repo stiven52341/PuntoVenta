@@ -1,5 +1,5 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, EventEmitter, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonLabel,
@@ -15,10 +15,9 @@ import {
   IonButton,
   IonIcon,
   MenuController,
-  Platform,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { StatusBar, Style } from '@capacitor/status-bar';
+import { StatusBar } from '@capacitor/status-bar';
 import { GeneralInfoService } from './services/local/general-info/general-info.service';
 import { IGeneralInfo } from './models/general-info.model';
 import { ModalsService } from './services/modals/modals.service';
@@ -45,6 +44,8 @@ import { ModalsService } from './services/modals/modals.service';
   ],
 })
 export class AppComponent implements OnInit {
+  public static loadingData = new EventEmitter<boolean>();
+
   protected menuOptions: Array<{
     title: string;
     icon?: string;
@@ -55,29 +56,9 @@ export class AppComponent implements OnInit {
   constructor(
     private _router: Router,
     private _menuCtrl: MenuController,
-    private _platform: Platform,
     private _generalInfo: GeneralInfoService,
     private _modal: ModalsService,
-    private renderer: Renderer2
   ) {
-    this._platform.ready().then(() => {
-      // const safeAreaTop = window
-      //   .getComputedStyle(document.documentElement)
-      //   .getPropertyValue('env(safe-area-inset-top)');
-
-      // if (!safeAreaTop || safeAreaTop.trim().length == 0) {
-      //   document.documentElement.style.setProperty(
-      //     '--ion-safe-area-top',
-      //     '30px'
-      //   );
-      // }
-
-      // this.renderer.setStyle(
-      //   document.documentElement,
-      //   '--ion-safe-area-top',
-      //   safeAreaTop
-      // );
-    });
 
     this.menuOptions = [
       {
@@ -111,6 +92,7 @@ export class AppComponent implements OnInit {
   }
 
   private async onInit() {
+    AppComponent.loadingData.emit(true);
     await StatusBar.setOverlaysWebView({
       overlay: false,
     });
@@ -126,6 +108,7 @@ export class AppComponent implements OnInit {
         info!.isFirstTime = false;
         await this._generalInfo.update(info);
       }
+      AppComponent.loadingData.emit(false);
       return;
     }
 
@@ -137,6 +120,7 @@ export class AppComponent implements OnInit {
     await this._generalInfo.insert(info);
 
     await this._modal.showFirstOpenedModal();
+    AppComponent.loadingData.emit(false);
   }
 
   private async goTo(path: string) {

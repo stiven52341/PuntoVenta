@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular/standalone';
 import { FirstOpenedComponent } from 'src/app/components/modals/first-opened/first-opened.component';
 import { ProductComponent } from 'src/app/components/modals/product/product.component';
+import { IProductCategory } from 'src/app/models/product-category.model';
 import { IProduct } from 'src/app/models/product.model';
+import { IUnitProduct } from 'src/app/models/unit-product.model';
 
 @Injectable({
   providedIn: 'root',
@@ -35,8 +37,8 @@ export class ModalsService {
     return await this.showModal(FirstOpenedComponent, 'first-time-modal');
   }
 
-  public async showProductModal(product: IProduct, image?: string){
-    return await this.showModal(ProductComponent, 'product-modal',{product: product, image: image});
+  public async showProductModal(product: IProduct,unitProduct: IUnitProduct, image?: string, productCategories?: Array<IProductCategory>){
+    return await this.showModal(ProductComponent, 'product-modal',{product: product, image: image, unitProduct: unitProduct, productCategories: productCategories});
   }
 
   public async closeModal(id?: string, data?: any){

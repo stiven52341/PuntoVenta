@@ -5,7 +5,11 @@ import {
   IonSearchbar,
   IonLabel,
   InfiniteScrollCustomEvent,
-  IonSpinner, IonFooter, IonToolbar, IonTitle } from '@ionic/angular/standalone';
+  IonSpinner,
+  IonFooter,
+  IonToolbar,
+  IonTitle,
+} from '@ionic/angular/standalone';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { ProductCardComponent } from 'src/app/components/product-card/product-card.component';
 import { ICategory } from 'src/app/models/category.model';
@@ -20,13 +24,21 @@ import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.s
 import { DecimalPipe } from '@angular/common';
 import { ICart } from 'src/app/models/cart.model';
 import { ModalsService } from 'src/app/services/modals/modals.service';
+import { IUnitProduct } from 'src/app/models/unit-product.model';
+import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
+import { AppComponent } from 'src/app/app.component';
+import { LocalProductCategoryService } from 'src/app/services/local/local-product-category/local-product-category.service';
+import { IProductCategory } from 'src/app/models/product-category.model';
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.page.html',
   styleUrls: ['./products.page.scss'],
   standalone: true,
-  imports: [IonTitle, IonToolbar, IonFooter,
+  imports: [
+    IonTitle,
+    IonToolbar,
+    IonFooter,
     IonLabel,
     CategoryCardComponent,
     IonSearchbar,
@@ -35,47 +47,70 @@ import { ModalsService } from 'src/app/services/modals/modals.service';
     HeaderBarComponent,
     IonHeader,
     IonSpinner,
-    DecimalPipe
+    DecimalPipe,
   ],
 })
 export class ProductsPage implements OnInit {
   protected categories: Array<{ category: ICategory; image?: string }> = [];
-  private products: Array<{ product: IProduct; image?: string }> = [];
-  protected productsFiltered: Array<{ product: IProduct; image?: string }> = [];
+  private products: Array<{
+    product: IProduct;
+    unitProduct: IUnitProduct;
+    image?: string;
+    categories?: Array<IProductCategory>
+  }> = [];
+  protected productsFiltered: Array<{
+    product: IProduct;
+    unitProduct: IUnitProduct;
+    image?: string;
+    categories?: Array<IProductCategory>;
+  }> = [];
 
   protected loading: boolean = false;
   protected loadingScroll: boolean = false;
 
   protected total: number = 0;
   protected cart?: ICart;
-
   constructor(
     private _categories: LocalCategoriesService,
     private _photo: PhotosService,
     private _products: LocalProductsService,
     private _cart: LocalCartService,
-    private _modal: ModalsService
+    private _modal: ModalsService,
+    private _unitProduct: LocalUnitProductsService,
+    private _productCategory: LocalProductCategoryService
   ) {}
 
   async ngOnInit() {
-    this.loading = true;
-    await this.onInit();
-    this.loading = false;
+    AppComponent.loadingData.subscribe(async (loading) => {
+      if(!loading){
+        await this.onInit();
+      }
+    });
   }
 
   private async onInit() {
+    this.loading = true;
     await this.loadProducts();
-    this._cart.getCart().subscribe(async cart => {
+    this._cart.getCart().subscribe(async (cart) => {
       this.cart = cart;
       this.total = await this._cart.getTotal(cart);
     });
     this.generateItems(this.products);
+    this.loading = false;
   }
 
   private async loadProducts() {
     const data = await firstValueFrom(
-      forkJoin([this._categories.getAll(), this._products.getAll()])
+      forkJoin([
+        this._categories.getAll(),
+        this._products.getAll(),
+        this._unitProduct.getAll(),
+        this._productCategory.getAll()
+      ])
     );
+
+    const unitProducts = data[2];
+    const productCategories = data[3];
 
     const getPhotosCategories = async (category: ICategory) => {
       const image = await this._photo.getPhoto(
@@ -99,17 +134,25 @@ export class ProductsPage implements OnInit {
       );
       this.products.push({
         product: product,
+        unitProduct: unitProducts.find(
+          (u) => u.id.id_product == product.id && u.isDefault
+        )!,
         image: image,
+        categories: productCategories.filter(c => c.id.id_product == product.id)
       });
     };
 
-    for(const product of data[1]){
+    for (const product of data[1]) {
       await getPhotosProducts(product);
     }
   }
 
   private generateItems(
-    products: Array<{ product: IProduct; image?: string }>,
+    products: Array<{
+      product: IProduct;
+      unitProduct: IUnitProduct;
+      image?: string;
+    }>,
     offset: number = 10
   ) {
     const count = this.productsFiltered.length;
@@ -121,8 +164,8 @@ export class ProductsPage implements OnInit {
     }
   }
 
-  protected onScroll($event: Event){
-    if(this.productsFiltered.length >= this.products.length) return;
+  protected onScroll($event: Event) {
+    if (this.productsFiltered.length >= this.products.length) return;
 
     this.loadingScroll = true;
     const target = $event.target as HTMLElement;
@@ -131,13 +174,18 @@ export class ProductsPage implements OnInit {
     const scrollHeight = target.scrollHeight;
     const offsetHeight = target.offsetHeight;
 
-    if(scrollTop + offsetHeight >= scrollHeight - 5){
+    if (scrollTop + offsetHeight >= scrollHeight - 5) {
       this.generateItems(this.products);
-      setTimeout(() => this.loadingScroll = false, 500);
+      setTimeout(() => (this.loadingScroll = false), 1000);
     }
   }
 
-  protected async onProductClick(product: IProduct, image?: string){
-    await this._modal.showProductModal(product, image);
+  protected async onProductClick(
+    product: IProduct,
+    unitProduct: IUnitProduct,
+    image?: string,
+    productCategories?: Array<IProductCategory>
+  ) {
+    await this._modal.showProductModal(product, unitProduct, image, productCategories);
   }
 }

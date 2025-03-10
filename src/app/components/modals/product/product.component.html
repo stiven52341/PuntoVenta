@@ -19,7 +19,14 @@
       </div>
     </div>
     <div class="details">
-      <p>Text</p>
+      <div class="header">
+        <ion-label>${{ this.unitProduct.price }}</ion-label>
+        @for(category of categories; track category.id){
+          <ion-label class="marked" color="danger">{{ category.name }}</ion-label>
+        }
+      </div>
+      <ion-label id="title">{{ product.name | uppercase }}</ion-label>
+      <!-- <ion-label>{{ product. }}</ion-label> -->
     </div>
   </div>
 </ion-content>
