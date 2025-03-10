@@ -69,6 +69,13 @@ export class AppComponent implements OnInit {
         },
       },
       {
+        title: 'Carrito',
+        image: '../assets/icon/cart.png',
+        do: async () => {
+          await this.goTo('/cart');
+        },
+      },
+      {
         title: 'Inventario',
         image: '../assets/icon/inventory.png',
         do: async () => {
@@ -82,6 +89,7 @@ export class AppComponent implements OnInit {
           await this.goTo('/mants');
         },
       },
+
     ];
 
     addIcons({});

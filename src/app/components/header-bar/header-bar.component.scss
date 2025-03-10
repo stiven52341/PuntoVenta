@@ -1,3 +1,11 @@
 .menu-icon, ion-title{
   color: white;
 }
+
+.icon-content{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: end;
+  color: white;
+}

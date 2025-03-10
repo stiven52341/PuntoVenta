@@ -4,13 +4,11 @@ import {
   IonHeader,
   IonSearchbar,
   IonLabel,
-  InfiniteScrollCustomEvent,
   IonSpinner,
   IonFooter,
   IonToolbar,
   IonTitle,
 } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { ProductCardComponent } from 'src/app/components/product-card/product-card.component';
 import { ICategory } from 'src/app/models/category.model';
 import { CategoryCardComponent } from 'src/app/components/category-card/category-card.component';
@@ -22,13 +20,13 @@ import { LocalProductsService } from 'src/app/services/local/local-products/loca
 import { IProduct } from 'src/app/models/product.model';
 import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.service';
 import { DecimalPipe } from '@angular/common';
-import { ICart } from 'src/app/models/cart.model';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
 import { AppComponent } from 'src/app/app.component';
 import { LocalProductCategoryService } from 'src/app/services/local/local-product-category/local-product-category.service';
 import { IProductCategory } from 'src/app/models/product-category.model';
+import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 
 @Component({
   selector: 'app-products',
@@ -68,8 +66,6 @@ export class ProductsPage implements OnInit {
   protected loading: boolean = false;
   protected loadingScroll: boolean = false;
 
-  protected total: number = 0;
-  protected cart?: ICart;
   constructor(
     private _categories: LocalCategoriesService,
     private _photo: PhotosService,
@@ -91,10 +87,6 @@ export class ProductsPage implements OnInit {
   private async onInit() {
     this.loading = true;
     await this.loadProducts();
-    this._cart.getCart().subscribe(async (cart) => {
-      this.cart = cart;
-      this.total = await this._cart.getTotal(cart);
-    });
     this.generateItems(this.products);
     this.loading = false;
   }

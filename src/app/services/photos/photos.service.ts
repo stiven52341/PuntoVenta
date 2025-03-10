@@ -10,59 +10,68 @@ import { App } from '@capacitor/app';
 import { Camera } from '@capacitor/camera';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PhotosService {
-  constructor(private _alert: AlertsService, private _file: FilesService) { }
+  constructor(private _alert: AlertsService, private _file: FilesService) {}
 
-  public async createAlbumn(albumn: PhotoKeys){
+  public async createAlbumn(albumn: PhotoKeys) {
     const alb = await this.getAlbumn(albumn);
-    if(alb) return alb;
+    if (alb) return alb;
 
-    await Media.createAlbum({name: albumn});
+    await Media.createAlbum({ name: albumn });
     return await this.getAlbumn(albumn);
   }
 
-  public async getAlbumn(albumn: PhotoKeys){
+  public async getAlbumn(albumn: PhotoKeys) {
     return ((await Media.getAlbums()).albums || []).find(
-      a => a.name == albumn
+      (a) => a.name == albumn
     );
   }
 
-  public async savePhoto(name: string,data: string, albumnName: PhotoKeys){
+  public async savePhoto(name: string, data: string, albumnName: PhotoKeys) {
+
     const albumn = await this.createAlbumn(albumnName);
     await Media.savePhoto({
       path: data,
       fileName: name,
-      albumIdentifier: albumn!.identifier
+      albumIdentifier: albumn!.identifier,
     });
   }
 
-  public async savePhotos(photos: Array<IImageProduct>, album: PhotoKeys){
+  public async savePhotos(photos: Array<IImageProduct>, album: PhotoKeys) {
+    if (!(await this.requestGalleryAccess())) return;
     const pros: Array<Promise<void>> = [];
-    photos.forEach(photo => {
-      pros.push(
-        this.savePhoto(photo.id.toString(), photo.image, album)
-      );
+    photos.forEach((photo) => {
+      pros.push(this.savePhoto(photo.id.toString(), photo.image, album));
     });
 
-    await firstValueFrom(forkJoin(pros)).catch(
-      err => {
-        throw err;
-      }
-    );
+    await firstValueFrom(forkJoin(pros)).catch((err) => {
+      throw err;
+    });
   }
 
-  public async getPhoto(name: string, album: PhotoKeys): Promise<string | undefined>{
-    const path = `/Android/media/${(await App.getInfo()).id}/${album}/${name}.png`;
+  public async getPhoto(
+    name: string,
+    album: PhotoKeys
+  ): Promise<string | undefined> {
+    const path = `/Android/media/${
+      (await App.getInfo()).id
+    }/${album}/${name}.png`;
     const image = await this._file.read(path, Directory.ExternalStorage);
-    if(!image) return undefined;
-    return 'data:image/png;base64,' + image.toString()
+    if (!image) return undefined;
+    return 'data:image/png;base64,' + image.toString();
   }
 
   public async requestGalleryAccess(): Promise<boolean> {
-    // Request permission for photos (if available)
-    const permissionStatus = await Camera.requestPermissions({ permissions: ['photos'] });
-    return permissionStatus.photos === 'granted';
+    const status = await Camera.checkPermissions();
+    if (status.photos !== 'granted') {
+      const requestResult = await Camera.requestPermissions({
+        permissions: ['photos'],
+      });
+      return requestResult.photos == 'granted';
+    } else {
+      return true;
+    }
   }
 }

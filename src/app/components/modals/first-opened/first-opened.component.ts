@@ -136,8 +136,6 @@ export class FirstOpenedComponent implements OnInit {
     imagesPros.map(image => image.image = `data:image/png;base64,${image.image}`);
     imagesCategories.map(image => image.image = `data:image/png;base64,${image.image}`);
 
-    await this._photoSto.requestGalleryAccess();
-
     const result2 = await firstValueFrom(forkJoin([
       this._categorySto.set(categories),
       this._currenciesSto.set(currencies),

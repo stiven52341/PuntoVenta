@@ -1,5 +1,5 @@
 <ion-header [translucent]="true">
-  <app-header-bar [loading]="loading" title="PRODUCTOS"></app-header-bar>
+  <app-header-bar [loading]="loading" title="PRODUCTOS" [showCart]="true"></app-header-bar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -30,9 +30,3 @@
     </div>
   </div>
 </ion-content>
-<ion-footer>
-  <ion-toolbar color="primary">
-    <ion-title slot="start">TOTAL: ${{ total | number:'1.2-2' }}</ion-title>
-    <ion-title slot="end">CANTIDAD: {{ cart?.products?.length || 0 }}</ion-title>
-  </ion-toolbar>
-</ion-footer>
