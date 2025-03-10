@@ -5,9 +5,9 @@ import { PhotoKeys } from 'src/app/models/constants';
 import { IImageProduct } from 'src/app/models/image-product.model';
 import { AlertsService } from '../alerts/alerts.service';
 import { FilesService } from '../files/files.service';
-import { Directory, Encoding } from '@capacitor/filesystem';
+import { Directory } from '@capacitor/filesystem';
 import { App } from '@capacitor/app';
-import * as CryptoJS from 'crypto-js';
+import { Camera } from '@capacitor/camera';
 
 @Injectable({
   providedIn: 'root'
@@ -58,5 +58,11 @@ export class PhotosService {
     const image = await this._file.read(path, Directory.ExternalStorage);
     if(!image) return undefined;
     return 'data:image/png;base64,' + image.toString()
+  }
+
+  public async requestGalleryAccess(): Promise<boolean> {
+    // Request permission for photos (if available)
+    const permissionStatus = await Camera.requestPermissions({ permissions: ['photos'] });
+    return permissionStatus.photos === 'granted';
   }
 }
