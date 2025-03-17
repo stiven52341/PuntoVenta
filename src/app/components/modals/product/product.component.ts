@@ -10,6 +10,7 @@ import { IProductCategory } from 'src/app/models/product-category.model';
 import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
 import { ICategory } from 'src/app/models/category.model';
 
+
 @Component({
   selector: 'app-product',
   templateUrl: './product.component.html',
@@ -17,7 +18,7 @@ import { ICategory } from 'src/app/models/category.model';
   standalone: true,
   imports: [UpperCasePipe,IonLabel, IonIcon, IonButton, IonButton, IonHeader, HeaderBarComponent, IonContent]
 })
-export class ProductComponent  implements OnInit {
+export class ProductComponent implements OnInit {
   @Input({required:true}) product!: IProduct;
   @Input() unitProduct!: IUnitProduct;
   @Input() image?: string;
