@@ -1,32 +1,54 @@
 <ion-header>
-  <app-header-bar [arrowBack]="true" title="producto"></app-header-bar>
+  <app-header-bar [showCart]="true" [arrowBack]="true" title="producto"></app-header-bar>
 </ion-header>
 <ion-content>
   <div class="content">
     <div class="image">
       @if(image){
-        <img src="{{ image }}" alt="">
+      <img src="{{ image }}" alt="" />
       }@else {
-        <img src="../../../../assets/no-image.png" alt="">
+      <img src="../../../../assets/no-image.png" alt="" />
       }
       <div class="meta">
         <ion-button shape="round" size="large">
           <ion-icon slot="icon-only" name="heart" size="large"></ion-icon>
         </ion-button>
         <ion-button shape="round" size="large">
-          <ion-icon slot="icon-only" name="share-social" size="large"></ion-icon>
+          <ion-icon
+            slot="icon-only"
+            name="share-social"
+            size="large"
+          ></ion-icon>
         </ion-button>
       </div>
     </div>
     <div class="details">
       <div class="header">
-        <ion-label>${{ this.unitProduct.price }}</ion-label>
+        <ion-label>${{ this.unitProduct?.price || "0" }}</ion-label>
         @for(category of categories; track category.id){
-          <ion-label class="marked" color="danger">{{ category.name }}</ion-label>
+        <ion-label class="marked" color="danger">{{ category.name }}</ion-label>
         }
       </div>
-      <ion-label id="title">{{ product.name | uppercase }}</ion-label>
-      <!-- <ion-label>{{ product. }}</ion-label> -->
+      <ion-label id="title">{{
+        product?.name || "Sin nombre" | uppercase
+      }}</ion-label>
+      <ion-input
+        label="Cantidad"
+        name="cantidad"
+        id="cantidad"
+        [(ngModel)]="cantidad"
+        clearInput="true"
+        label-placement="stacked"
+        type="number"
+        fill="outline"
+        placeholder="Ingrese una cantidad"
+      ></ion-input>
+      <span>Total: ${{getTotal() | number:'1.2-2'}}</span>
+      <ion-button  color="primary">
+        <ion-label>
+          Añadir al carrito
+        </ion-label>
+      </ion-button>
     </div>
   </div>
 </ion-content>

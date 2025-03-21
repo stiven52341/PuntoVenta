@@ -22,6 +22,9 @@ import { GeneralInfoService } from './services/local/general-info/general-info.s
 import { IGeneralInfo } from './models/general-info.model';
 import { ModalsService } from './services/modals/modals.service';
 
+//DO NOT REMOVE
+import { ProductComponent } from './components/modals/product/product.component'
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -40,6 +43,8 @@ import { ModalsService } from './services/modals/modals.service';
     IonHeader,
     IonToolbar,
     IonTitle,
+    //DO NOT REMOVE
+    ProductComponent,
     IonContent,
   ],
 })

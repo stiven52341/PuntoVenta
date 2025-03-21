@@ -34,9 +34,6 @@ import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.com
   styleUrls: ['./products.page.scss'],
   standalone: true,
   imports: [
-    IonTitle,
-    IonToolbar,
-    IonFooter,
     IonLabel,
     CategoryCardComponent,
     IonSearchbar,
@@ -45,7 +42,6 @@ import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.com
     HeaderBarComponent,
     IonHeader,
     IonSpinner,
-    DecimalPipe,
   ],
 })
 export class ProductsPage implements OnInit {

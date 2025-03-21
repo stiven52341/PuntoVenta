@@ -2,6 +2,7 @@ import { forwardRef, Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular/standalone';
 import { FirstOpenedComponent } from 'src/app/components/modals/first-opened/first-opened.component';
 import { ProductComponent } from 'src/app/components/modals/product/product.component';
+// import { ProductComponent } from 'src/app/components/modals/product/product.component';
 import { IProductCategory } from 'src/app/models/product-category.model';
 import { IProduct } from 'src/app/models/product.model';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
@@ -28,9 +29,13 @@ export class ModalsService {
       id: id,
     });
 
+    ;
+    console.log(modal);
+
     await modal.present();
 
     return await modal.onWillDismiss();
+
   }
 
   public async showFirstOpenedModal() {
@@ -43,11 +48,11 @@ export class ModalsService {
     image?: string,
     productCategories?: Array<IProductCategory>
   ) {
-    return await this.showModal(ProductComponent, 'product-modal', {
+    return await this.showModal(ProductComponent, 'product-detail-modal', {
       product: product,
       image: image,
       unitProduct: unitProduct,
-      productCategories: productCategories,
+      productCategories: productCategories || [],
     });
   }
 
