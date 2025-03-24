@@ -26,13 +26,20 @@ export class ApiCoreService<T extends Entity>{
   }
 
   public async get(id: string | number | Object): Promise<T | null>{
+    let result: Object | void | undefined = undefined;
     if(id instanceof Object){
       id = JSON.stringify(id);
-    }
 
-    const result = await firstValueFrom(
-      this._http.get(`${this.path}/get?id=${id}`)
-    ).catch(err => console.log(`Error while getting: ${JSON.stringify(err)}`));
+      result = await firstValueFrom(
+        this._http.post(`${this.path}/get`, id)
+      ).catch(err => {
+        console.log(`Error while getting: ${JSON.stringify(err)}`);
+      });
+    }else{
+      result = await firstValueFrom(
+        this._http.get(`${this.path}/get?id=${id}`)
+      ).catch(err => console.log(`Error while getting: ${JSON.stringify(err)}`));
+    }
 
     if(!result) return null;
 

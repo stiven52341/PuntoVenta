@@ -15,7 +15,7 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
     super(StorageKeys.CART);
   }
 
-  private async setCart() {
+  public async setCart() {
     let cart = await this.get(1);
     if (!cart) {
       cart = {
@@ -26,12 +26,13 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
       this.cartEvent.emit(cart);
       return cart;
     } else {
+      this.cartEvent.emit(cart);
       return cart;
     }
   }
 
   public async addProduct(product: IProduct, amount: number, unit: IUnitProduct) {
-    if (amount <= 0) return;
+    if (!amount || amount <= 0) return;
 
     const cart = await this.setCart();
 
@@ -46,7 +47,7 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
   }
 
   public async updateProduct(product: IProduct, amount: number, unit: IUnitProduct){
-    if (amount <= 0) return;
+    if (!amount || amount <= 0) return;
     const cart = await this.setCart();
     const index = cart.products.findIndex(pro => pro.product.id == product.id);
     if(index == -1) return;

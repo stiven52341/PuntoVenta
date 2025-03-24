@@ -36,7 +36,7 @@ export class ProductCardComponent implements OnInit {
 
   private async onInit() {
     const units = (await this._unitProducts.getAll()).filter((unit) => {
-      return unit.id.id_product == this.product.id;
+      return unit.idProduct == this.product.id;
     });
 
     this.unitProduct = units.find((unit) => unit.isDefault == true);

@@ -62,6 +62,7 @@ export class HeaderBarComponent implements OnInit {
   }
 
   protected async goTo(path: string){
+    await this._modal.closeAllModals();
     await this._router.navigate([path]);
   }
 }

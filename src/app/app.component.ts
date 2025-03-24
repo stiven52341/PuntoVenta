@@ -24,6 +24,7 @@ import { ModalsService } from './services/modals/modals.service';
 
 //DO NOT REMOVE
 import { ProductComponent } from './components/modals/product/product.component'
+import { LocalCartService } from './services/local/local-cart/local-cart.service';
 
 @Component({
   selector: 'app-root',
@@ -63,6 +64,7 @@ export class AppComponent implements OnInit {
     private _menuCtrl: MenuController,
     private _generalInfo: GeneralInfoService,
     private _modal: ModalsService,
+    private _cart: LocalCartService
   ) {
 
     this.menuOptions = [

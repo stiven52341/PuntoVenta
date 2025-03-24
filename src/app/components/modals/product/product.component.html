@@ -1,7 +1,11 @@
 <ion-header>
-  <app-header-bar [showCart]="true" [arrowBack]="true" title="producto"></app-header-bar>
+  <app-header-bar
+    [showCart]="true"
+    [arrowBack]="true"
+    title="producto"
+  ></app-header-bar>
 </ion-header>
-<ion-content>
+<ion-content fullscreen="true">
   <div class="content">
     <div class="image">
       @if(image){
@@ -24,11 +28,16 @@
     </div>
     <div class="details">
       <div class="header">
-        <ion-label>${{ this.unitProduct?.price || "0" }}</ion-label>
+        <ion-select label="Precio" labelPlacement="stacked" placeholder="Seleccione un precio" [(ngModel)]="this.selectedPrice" name="price" id="price">
+          @for(price of this.prices; track price.unitPro.id){
+          <ion-select-option [value]="price.unitPro.id">{{ price.unit.name }} - {{ price.unitPro.price }}</ion-select-option>
+          }
+        </ion-select>
         @for(category of categories; track category.id){
         <ion-label class="marked" color="danger">{{ category.name }}</ion-label>
         }
       </div>
+
       <ion-label id="title">{{
         product?.name || "Sin nombre" | uppercase
       }}</ion-label>
@@ -36,6 +45,7 @@
         label="Cantidad"
         name="cantidad"
         id="cantidad"
+        min="1"
         [(ngModel)]="cantidad"
         clearInput="true"
         label-placement="stacked"
@@ -43,11 +53,9 @@
         fill="outline"
         placeholder="Ingrese una cantidad"
       ></ion-input>
-      <span>Total: ${{getTotal() | number:'1.2-2'}}</span>
-      <ion-button  color="primary">
-        <ion-label>
-          Añadir al carrito
-        </ion-label>
+      <span>Total: ${{ getTotal() | number : "1.2-2" }}</span>
+      <ion-button color="primary" (click)="this.onAddProduct()">
+        <ion-label> Añadir al carrito </ion-label>
       </ion-button>
     </div>
   </div>

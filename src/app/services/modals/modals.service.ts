@@ -11,6 +11,8 @@ import { IUnitProduct } from 'src/app/models/unit-product.model';
   providedIn: 'root',
 })
 export class ModalsService {
+  private modals: Array<HTMLIonModalElement> = [];
+
   constructor(private _modalCtrl: ModalController) {}
 
   public async showModal(
@@ -29,8 +31,7 @@ export class ModalsService {
       id: id,
     });
 
-    ;
-    console.log(modal);
+    this.modals.push(modal);
 
     await modal.present();
 
@@ -58,5 +59,9 @@ export class ModalsService {
 
   public async closeModal(id?: string, data?: any) {
     this._modalCtrl.dismiss(data, undefined, id);
+  }
+
+  public async closeAllModals(){
+    this.modals.map(modal => modal.dismiss());
   }
 }

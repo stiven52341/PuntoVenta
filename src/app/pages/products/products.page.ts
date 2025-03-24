@@ -123,7 +123,7 @@ export class ProductsPage implements OnInit {
       this.products.push({
         product: product,
         unitProduct: unitProducts.find(
-          (u) => u.id.id_product == product.id && u.isDefault
+          (u) => u.idProduct == product.id && u.isDefault
         )!,
         image: image,
         categories: productCategories.filter(c => c.id.id_product == product.id)
