@@ -65,9 +65,7 @@ export class AlertsService {
     return await this.showAlert(title, body, undefined, [
       {
         text: 'SÍ',
-        handler(ctrl: AlertController) {
-          console.log(ctrl)
-          ctrl.dismiss(true);
+        handler() {
         },
       },
       {
