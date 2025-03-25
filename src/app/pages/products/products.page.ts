@@ -45,7 +45,7 @@ import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.com
     IonSpinner,
   ],
 })
-export class ProductsPage implements OnInit, ViewWillEnter {
+export class ProductsPage implements OnInit {
   protected categories: Array<{ category: ICategory; image?: string }> = [];
   private products: Array<{
     product: IProduct;
@@ -72,12 +72,6 @@ export class ProductsPage implements OnInit, ViewWillEnter {
     private _unitProduct: LocalUnitProductsService,
     private _productCategory: LocalProductCategoryService
   ) {}
-
-  async ionViewWillEnter() {
-      if(this.products.length == 0 || this.productsFiltered.length == 0){
-        await this.onInit();
-      }
-  }
 
   async ngOnInit() {
     AppComponent.loadingData.subscribe(async (loading) => {
@@ -139,7 +133,7 @@ export class ProductsPage implements OnInit, ViewWillEnter {
           (u) => u.idProduct == product.id && u.isDefault
         )!,
         image: image,
-        categories: productCategories.filter(c => c.id.id_product == product.id)
+        categories: productCategories.filter(c => c.id.idProduct == product.id)
       });
     };
 

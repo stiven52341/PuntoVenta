@@ -83,7 +83,7 @@ export class ProductComponent implements OnInit {
     if (this.productCategories && this.productCategories.length > 0) {
       this.categories = data[0].filter((category) => {
         return this.productCategories?.some(
-          (pc) => pc.id.id_category == category.id
+          (pc) => pc.id.idCategory == category.id
         );
       });
     }

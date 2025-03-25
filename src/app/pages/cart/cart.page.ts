@@ -9,8 +9,6 @@ import {
   IonInput,
   IonFooter,
   IonToolbar,
-  IonItem,
-  IonTabButton,
   IonButton,
 } from '@ionic/angular/standalone';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
@@ -25,6 +23,7 @@ import { PhotoKeys } from 'src/app/models/constants';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
+import { FilesService } from 'src/app/services/files/files.service';
 
 interface IProductCart {
   product: IProduct;
@@ -40,8 +39,6 @@ interface IProductCart {
   standalone: true,
   imports: [
     IonButton,
-    IonTabButton,
-    IonItem,
     IonToolbar,
     IonFooter,
     IonIcon,
@@ -63,30 +60,30 @@ export class CartPage implements OnInit {
     private _cart: LocalCartService,
     private _photo: PhotosService,
     private _toast: ToastService,
-    private _alert: AlertsService
+    private _alert: AlertsService,
+    private _file: FilesService
   ) {
     addIcons({ trash, camera });
   }
 
   async ngOnInit() {
-    this.loading = true;
     await this.onInit();
-    this.loading = false;
   }
 
   private async onInit() {
-    return new Promise<void>(async (resolve) => {
-      // this.cart = await this._cart.setCart();
-      this._cart.getCart().subscribe(async (cart) => {
+    this._cart.getCart().subscribe({
+      next: async (cart) => {
+        this.loading = true;
         this.cart = cart;
         await this.setProducts();
-        resolve();
-      });
+        this.loading = false;
+      },
+      error: (err) => this._file.saveError(err)
     });
   }
 
   private async setProducts() {
-    if (!this.cart) return;
+    if (!this.cart || this.cart.products.length == 0) return;
     this.products = [];
 
     const setProduct = async (product: IProductCart) => {
@@ -124,5 +121,9 @@ export class CartPage implements OnInit {
     this.loading = true;
     await this._cart.removeProduct(product.product);
     this.loading = false;
+  }
+
+  protected async onSave(){
+    console.log(await this._alert.showConfirm('CONFIRME', '¿Está segudo de registrar la compra?'));
   }
 }

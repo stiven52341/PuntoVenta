@@ -44,6 +44,6 @@
 <ion-footer>
   <ion-toolbar color="primary">
     <ion-label slot="start" color="light">Total: ${{ getTotal() | number:'1.2-2' }}</ion-label>
-    <ion-button color="secondary" slot="end">Realizar Compra</ion-button>
+    <ion-button (click)="onSave()" color="secondary" slot="end">Realizar Compra</ion-button>
   </ion-toolbar>
 </ion-footer>
