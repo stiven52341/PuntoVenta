@@ -8,6 +8,7 @@ import {
   IonFooter,
   IonToolbar,
   IonTitle,
+  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { ProductCardComponent } from 'src/app/components/product-card/product-card.component';
 import { ICategory } from 'src/app/models/category.model';
@@ -44,7 +45,7 @@ import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.com
     IonSpinner,
   ],
 })
-export class ProductsPage implements OnInit {
+export class ProductsPage implements OnInit, ViewWillEnter {
   protected categories: Array<{ category: ICategory; image?: string }> = [];
   private products: Array<{
     product: IProduct;
@@ -72,6 +73,12 @@ export class ProductsPage implements OnInit {
     private _productCategory: LocalProductCategoryService
   ) {}
 
+  async ionViewWillEnter() {
+      if(this.products.length == 0 || this.productsFiltered.length == 0){
+        await this.onInit();
+      }
+  }
+
   async ngOnInit() {
     AppComponent.loadingData.subscribe(async (loading) => {
       if(!loading){
@@ -88,6 +95,10 @@ export class ProductsPage implements OnInit {
   }
 
   private async loadProducts() {
+    this.categories = [];
+    this.products = [];
+    this.productsFiltered = [];
+
     const data = await firstValueFrom(
       forkJoin([
         this._categories.getAll(),
@@ -99,6 +110,8 @@ export class ProductsPage implements OnInit {
 
     const unitProducts = data[2];
     const productCategories = data[3];
+
+
 
     const getPhotosCategories = async (category: ICategory) => {
       const image = await this._photo.getPhoto(

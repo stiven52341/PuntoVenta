@@ -29,6 +29,7 @@ export class AlertsService {
     });
 
     await alert.present();
+    return (await alert.onDidDismiss()).data;
   }
 
   public async showError(message: string){
@@ -45,5 +46,11 @@ export class AlertsService {
 
   public async showSuccess(message: string){
     await this.showAlert('ÉXITO', message,'../../../assets/icon/success.png');
+  }
+
+  public async showConfirm(title: string = 'CONFIRME', body: string): Promise<boolean>{
+    //Pending...
+    // await this.showAlert();
+    return true;
   }
 }

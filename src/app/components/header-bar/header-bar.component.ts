@@ -47,8 +47,10 @@ export class HeaderBarComponent implements OnInit {
     addIcons({arrowBack,menu,cart});
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.cart = await this._cart.setCart();
     this._cart.getCart().subscribe((cart) => {
+      console.log(cart);
       this.cart = cart;
     });
   }
