@@ -4,6 +4,7 @@ import { ICart } from 'src/app/models/cart.model';
 import { StorageKeys } from 'src/app/models/constants';
 import { IProduct } from 'src/app/models/product.model';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
+import { Observable, shareReplay } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +27,6 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
       this.cartEvent.emit(cart);
       return cart;
     } else {
-      this.cartEvent.emit(cart);
       return cart;
     }
   }
@@ -62,11 +62,15 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
   }
 
   public async removeProduct(product: IProduct){
+
     const cart = await this.setCart();
-    const index = cart.products.findIndex(pro => pro.product.id == product.id);
-    cart.products = cart.products.slice(index,1);
+    const index = cart.products.findIndex(pro => +pro.product.id == +product.id);
+    if(index == -1) return;
+
+    cart.products.splice(index,1);
     await this.update(cart);
     this.cartEvent.emit(cart);
+
   }
 
   public async resetCart(){
@@ -83,7 +87,7 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
     return total;
   }
 
-  public getCart(){
-    return this.cartEvent.asObservable();
+  public getCart(): Observable<ICart>{
+    return this.cartEvent.asObservable().pipe(shareReplay(1));
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -20,7 +20,11 @@ import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { IProduct } from 'src/app/models/product.model';
 import { PhotosService } from 'src/app/services/photos/photos.service';
 import { PhotoKeys } from 'src/app/models/constants';
-import { firstValueFrom, forkJoin } from 'rxjs';
+import {
+  distinctUntilChanged,
+  firstValueFrom,
+  forkJoin,
+} from 'rxjs';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { FilesService } from 'src/app/services/files/files.service';
@@ -61,7 +65,7 @@ export class CartPage implements OnInit {
     private _photo: PhotosService,
     private _toast: ToastService,
     private _alert: AlertsService,
-    private _file: FilesService
+    private _file: FilesService,
   ) {
     addIcons({ trash, camera });
   }
@@ -71,21 +75,32 @@ export class CartPage implements OnInit {
   }
 
   private async onInit() {
-    this._cart.getCart().subscribe({
-      next: async (cart) => {
-        this.loading = true;
-        this.cart = cart;
-        await this.setProducts();
-        this.loading = false;
-      },
-      error: (err) => this._file.saveError(err)
-    });
+    this.loading = true;
+    this.cart = await this._cart.setCart();
+    await this.setProducts();
+    this.loading = false;
+
+    this._cart
+      .getCart()
+      .pipe(distinctUntilChanged())
+      .subscribe({
+        next: async (cart) => {
+          this.cart = cart;
+          this.loading = true;
+          await this.setProducts();
+          this.loading = false;
+        },
+        error: (err) => this._file.saveError(err),
+      });
   }
 
   private async setProducts() {
-    if (!this.cart || this.cart.products.length == 0) return;
-    this.products = [];
+    if (!this.cart || this.cart.products.length == 0) {
+      this.products = [];
+      return;
+    }
 
+    this.products = [];
     const setProduct = async (product: IProductCart) => {
       product.photo = await this._photo.getPhoto(
         product.product.id.toString(),
@@ -123,7 +138,12 @@ export class CartPage implements OnInit {
     this.loading = false;
   }
 
-  protected async onSave(){
-    console.log(await this._alert.showConfirm('CONFIRME', '¿Está segudo de registrar la compra?'));
+  protected async onSave() {
+    console.log(
+      await this._alert.showConfirm(
+        'CONFIRME',
+        '¿Está segudo de registrar la compra?'
+      )
+    );
   }
 }

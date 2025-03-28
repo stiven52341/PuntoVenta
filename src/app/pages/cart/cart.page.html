@@ -4,7 +4,7 @@
 
 <ion-content [fullscreen]="true">
   <div class="content">
-    @for(product of this.products; track product.product.id){
+    @for(product of this.products; track $index){
     <div class="cart">
       <div class="icon">
         <img
