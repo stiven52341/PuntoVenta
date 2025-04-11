@@ -6,10 +6,10 @@ import { Entity } from '../../api/api-core/api-core.service';
 @Injectable({
   providedIn: 'root'
 })
-export class InternalStorageCoreService<T extends Entity> {
-  private _storage = inject(Storage);
+export abstract class InternalStorageCoreService<T extends Entity> {
+  protected _storage = inject(Storage);
 
-  constructor(private key: StorageKeys) {
+  constructor(protected key: StorageKeys) {
     this.initStorage();
   }
 
@@ -54,5 +54,9 @@ export class InternalStorageCoreService<T extends Entity> {
 
   public async set(objs: Array<T>){
     await this._storage.set(this.key, JSON.parse(JSON.stringify(objs)));
+  }
+
+  public async getNextID(): Promise<number>{
+    return (await this.getAll() || []).length + 1;
   }
 }

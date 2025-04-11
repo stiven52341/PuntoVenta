@@ -1,4 +1,5 @@
 export interface IImageCategory {
   id: number,
-  image: string
+  image: string,
+  uploaded?: boolean
 }

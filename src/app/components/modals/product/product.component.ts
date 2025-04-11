@@ -138,6 +138,6 @@ export class ProductComponent implements OnInit {
         .unitPro
     );
 
-    await this._toast.showToast('PRODUCTO AGREGADO');
+    await this._toast.showToast('PRODUCTO AGREGADO',1000);
   }
 }

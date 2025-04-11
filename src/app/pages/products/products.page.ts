@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  OnInit,
+} from '@angular/core';
 import {
   IonContent,
   IonHeader,
   IonSearchbar,
   IonLabel,
   IonSpinner,
-  IonFooter,
-  IonToolbar,
-  IonTitle,
-  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { ProductCardComponent } from 'src/app/components/product-card/product-card.component';
 import { ICategory } from 'src/app/models/category.model';
@@ -20,7 +21,6 @@ import { PhotoKeys } from 'src/app/models/constants';
 import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
 import { IProduct } from 'src/app/models/product.model';
 import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.service';
-import { DecimalPipe } from '@angular/common';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
@@ -47,11 +47,11 @@ import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.com
 })
 export class ProductsPage implements OnInit {
   protected categories: Array<{ category: ICategory; image?: string }> = [];
-  private products: Array<{
+  protected products: Array<{
     product: IProduct;
     unitProduct: IUnitProduct;
     image?: string;
-    categories?: Array<IProductCategory>
+    categories?: Array<IProductCategory>;
   }> = [];
   protected productsFiltered: Array<{
     product: IProduct;
@@ -63,6 +63,9 @@ export class ProductsPage implements OnInit {
   protected loading: boolean = false;
   protected loadingScroll: boolean = false;
 
+  protected onSelectCategory = new EventEmitter<ICategory>();
+  protected selectedCategory?: ICategory;
+
   constructor(
     private _categories: LocalCategoriesService,
     private _photo: PhotosService,
@@ -70,12 +73,13 @@ export class ProductsPage implements OnInit {
     private _cart: LocalCartService,
     private _modal: ModalsService,
     private _unitProduct: LocalUnitProductsService,
-    private _productCategory: LocalProductCategoryService
+    private _productCategory: LocalProductCategoryService,
+    private _cg: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
     AppComponent.loadingData.subscribe(async (loading) => {
-      if(!loading){
+      if (!loading) {
         await this.onInit();
       }
     });
@@ -98,14 +102,12 @@ export class ProductsPage implements OnInit {
         this._categories.getAll(),
         this._products.getAll(),
         this._unitProduct.getAll(),
-        this._productCategory.getAll()
+        this._productCategory.getAll(),
       ])
     );
 
     const unitProducts = data[2];
     const productCategories = data[3];
-
-
 
     const getPhotosCategories = async (category: ICategory) => {
       const image = await this._photo.getPhoto(
@@ -133,7 +135,9 @@ export class ProductsPage implements OnInit {
           (u) => u.idProduct == product.id && u.isDefault
         )!,
         image: image,
-        categories: productCategories.filter(c => c.id.idProduct == product.id)
+        categories: productCategories.filter(
+          (c) => c.id.idProduct == product.id
+        ),
       });
     };
 
@@ -142,7 +146,7 @@ export class ProductsPage implements OnInit {
     }
   }
 
-  private generateItems(
+  protected generateItems(
     products: Array<{
       product: IProduct;
       unitProduct: IUnitProduct;
@@ -153,7 +157,12 @@ export class ProductsPage implements OnInit {
     const count = this.productsFiltered.length;
 
     for (let i = 0; i < offset; i++) {
-      if (products[i + count]) {
+      if (
+        products[i + count] &&
+        !this.productsFiltered.some(
+          (pro) => +pro.product.id == +products[i + count].product.id
+        )
+      ) {
         this.productsFiltered.push(products[i + count]);
       }
     }
@@ -171,7 +180,7 @@ export class ProductsPage implements OnInit {
 
     if (scrollTop + offsetHeight >= scrollHeight - 5) {
       this.generateItems(this.products);
-      setTimeout(() => (this.loadingScroll = false), 1000);
+      setTimeout(() => (this.loadingScroll = false), 700);
     }
   }
 
@@ -181,6 +190,47 @@ export class ProductsPage implements OnInit {
     image?: string,
     productCategories?: Array<IProductCategory>
   ) {
-    await this._modal.showProductModal(product, unitProduct, image, productCategories);
+    await this._modal.showProductModal(
+      product,
+      unitProduct,
+      image,
+      productCategories
+    );
+  }
+
+  protected search($event: CustomEvent) {
+    const search = ($event.detail.value as string).trim().toLowerCase();
+
+    const newList = this.products.filter((product) => {
+      return product.product.name.toLowerCase().trim().includes(search);
+    });
+
+    this.productsFiltered = [];
+    this.generateItems(newList);
+  }
+
+  protected filterByCategory(category: ICategory) {
+    this.onSelectCategory.emit(category);
+    if (this.selectedCategory && +this.selectedCategory.id == +category.id) {
+      this.reset();
+    } else {
+      this.selectedCategory = category;
+      const newList = this.products.filter((product) => {
+        return (
+          product.categories?.some((cat) => {
+            return +cat.id.idCategory == +category.id;
+          }) || false
+        );
+      });
+
+      this.productsFiltered = [];
+      this.generateItems(newList);
+    }
+  }
+
+  protected reset() {
+    this.productsFiltered = [];
+    this.selectedCategory = undefined;
+    this.generateItems(this.products);
   }
 }

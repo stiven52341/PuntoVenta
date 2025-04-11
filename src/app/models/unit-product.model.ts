@@ -10,4 +10,5 @@ export interface IUnitProduct {
   unit?: string;
   currency?: string;
   state: boolean;
+  uploaded?: boolean
 }

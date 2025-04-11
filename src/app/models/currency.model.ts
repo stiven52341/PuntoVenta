@@ -3,5 +3,6 @@ export interface ICurrency{
   name: string,
   shortcut: string,
   state: boolean,
-  isDefault: boolean
+  isDefault: boolean,
+  uploaded?: boolean
 }

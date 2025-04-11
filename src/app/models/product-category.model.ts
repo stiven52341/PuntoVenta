@@ -3,5 +3,6 @@ export interface IProductCategory{
     idProduct: number,
     idCategory: number
   },
-  state: boolean
+  state: boolean,
+  uploaded?: boolean
 }

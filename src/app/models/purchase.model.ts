@@ -1,6 +1,10 @@
+import { IPurchaseDetail } from "./purchase-detail.model";
+
 export interface IPurchase{
   id: number,
   date: Date,
   total: number,
-  state: boolean
+  state: boolean,
+  details?: Array<IPurchaseDetail>,
+  uploaded?: boolean
 }

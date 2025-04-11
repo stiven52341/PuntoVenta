@@ -1,5 +1,6 @@
 export interface IInventoryCheck{
   id: number,
   date: Date,
-  state: boolean
+  state: boolean,
+  uploaded?: boolean
 }

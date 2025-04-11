@@ -1,6 +1,7 @@
 import { NgIf } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
+import { Observable, Subscription } from 'rxjs';
 import { ICategory } from 'src/app/models/category.model';
 
 @Component({
@@ -8,15 +9,31 @@ import { ICategory } from 'src/app/models/category.model';
   templateUrl: './category-card.component.html',
   styleUrls: ['./category-card.component.scss'],
   standalone: true,
-  imports: [NgIf, IonIcon]
+  imports: [NgIf, IonIcon],
 })
-export class CategoryCardComponent  implements OnInit {
-  @Input({required: true}) category!: ICategory;
+export class CategoryCardComponent implements OnInit, OnDestroy {
+  @Input({ required: true }) category!: ICategory;
   @Input() image?: string;
   @Input() icon?: string;
+  @Input() selectedCategory?: Observable<ICategory>;
 
-  constructor() { }
+  protected selected: boolean = false;
 
-  ngOnInit() {}
+  private sub?: Subscription;
 
+  constructor() {}
+
+  ngOnInit() {
+    this.sub = this.selectedCategory?.subscribe((category) => {
+      if(this.selected && +category.id == +this.category.id){
+        this.selected = false;
+        return;
+      }
+      this.selected = +category.id == +this.category.id;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
 }

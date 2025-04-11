@@ -5,6 +5,7 @@ import { AlertButton, AlertController } from '@ionic/angular/standalone';
   providedIn: 'root',
 })
 export class AlertsService {
+  private alert?: HTMLIonAlertElement;
   constructor(private alertCtrl: AlertController) {}
 
   public async showAlert(
@@ -16,7 +17,7 @@ export class AlertsService {
     ],
     subtitle?: string
   ) {
-    const alert = await this.alertCtrl.create({
+     this.alert = await this.alertCtrl.create({
       header: title,
       subHeader: subtitle,
       message: `
@@ -30,8 +31,8 @@ export class AlertsService {
       animated: true,
     });
 
-    await alert.present();
-    return (await alert.onDidDismiss()).data;
+    await this.alert.present();
+    return (await this.alert.onDidDismiss()).data;
   }
 
   public async showError(message: string) {
@@ -62,16 +63,21 @@ export class AlertsService {
     title: string = 'CONFIRME',
     body: string
   ): Promise<boolean> {
+    const close = async (val: boolean) => {
+      this.alert!.dismiss(val);
+    }
+
     return await this.showAlert(title, body, undefined, [
       {
         text: 'SÍ',
         handler() {
+          close(true);
         },
       },
       {
         text: 'NO',
-        handler(ctrl: AlertController){
-          ctrl.dismiss(false);
+        handler(){
+          close(false);
         }
       }
     ]);

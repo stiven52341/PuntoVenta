@@ -4,5 +4,6 @@ export interface IPurchaseDetail{
     idUnitProductCurrency: number
   },
   amount: number,
-  state: boolean
+  state: boolean,
+  uploaded?: boolean
 }

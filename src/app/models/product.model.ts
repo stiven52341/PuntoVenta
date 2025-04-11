@@ -3,5 +3,6 @@ export interface IProduct{
   name: string,
   category?: string,
   description?: string,
-  state: boolean
+  state: boolean,
+  uploaded?: boolean
 }

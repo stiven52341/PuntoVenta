@@ -5,5 +5,6 @@ export interface IInventoryCheckDetail{
     id_unit: number
   },
   amount: number,
-  state: boolean
+  state: boolean,
+  uploaded?: boolean
 }

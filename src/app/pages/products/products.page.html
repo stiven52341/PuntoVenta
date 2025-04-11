@@ -1,5 +1,9 @@
 <ion-header [translucent]="true">
-  <app-header-bar [loading]="loading" title="PRODUCTOS" [showCart]="true"></app-header-bar>
+  <app-header-bar
+    [loading]="loading"
+    title="PRODUCTOS"
+    [showCart]="true"
+  ></app-header-bar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -7,6 +11,7 @@
     <ion-searchbar
       animated="true"
       placeholder="Buscar producto"
+      (ionInput)="search($event)"
     ></ion-searchbar>
     <div class="category-part">
       <div class="title">
@@ -15,17 +20,28 @@
       </div>
       <div class="categories">
         @for(category of this.categories; track category.category.id){
-        <app-category-card [image]="category.image" [category]="category.category"></app-category-card>
+        <app-category-card
+
+          (click)="filterByCategory(category.category)"
+          [image]="category.image"
+          [category]="category.category"
+          [selectedCategory]="onSelectCategory.asObservable()"
+        ></app-category-card>
         }
       </div>
     </div>
 
     <div class="products" (scroll)="onScroll($event)">
-      @for(product of productsFiltered; track product.product.id){
-        <app-product-card [unitProduct]="product.unitProduct" (click)="onProductClick(product.product, product.unitProduct, product.image, product.categories)" (loadingEvent)="this.loading = $event" [product]="product.product" [image]="product.image"></app-product-card>
-      }
-      @if(loadingScroll){
-        <ion-spinner color="primary" size="large" name="crescent"></ion-spinner>
+      @for(product of productsFiltered; track $index){
+      <app-product-card
+        [unitProduct]="product.unitProduct"
+        (click)="onProductClick(product.product, product.unitProduct, product.image, product.categories)"
+        (loadingEvent)="this.loading = $event"
+        [product]="product.product"
+        [image]="product.image"
+      ></app-product-card>
+      } @if(loadingScroll){
+      <ion-spinner color="primary" size="large" name="crescent"></ion-spinner>
       }
     </div>
   </div>

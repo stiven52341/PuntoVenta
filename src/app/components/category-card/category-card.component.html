@@ -2,4 +2,8 @@
   <img *ngIf="image" src="{{ image }}" alt="">
   <ion-icon *ngIf="icon" name="{{ icon }}"></ion-icon>
   <span>{{ category.name }}</span>
+  @if(selected){
+    <img src="../../../assets/icon/error.png" alt="" id="remove">
+  }
+
 </div>
