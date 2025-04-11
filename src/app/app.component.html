@@ -7,26 +7,7 @@
     </ion-header>
     <ion-content>
       <div class="content">
-        <ion-list>
-          <ion-item *ngFor="let option of menuOptions">
-            <ion-button (click)="option.do()">
-              <div class="button-content">
-                <ion-icon
-                  *ngIf="option.icon"
-                  slot="start"
-                  name="{{ option.icon }}"
-                ></ion-icon>
-                <img
-                  *ngIf="option.image"
-                  slot="start"
-                  src="{{ option.image }}"
-                  alt=""
-                />
-                <ion-label size="large">{{ option.title }}</ion-label>
-              </div>
-            </ion-button>
-          </ion-item>
-        </ion-list>
+        <app-button-list [buttons]="menuOptions"></app-button-list>
       </div>
     </ion-content>
   </ion-menu>

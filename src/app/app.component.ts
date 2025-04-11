@@ -1,9 +1,6 @@
-import { NgFor, NgIf } from '@angular/common';
 import { Component, EventEmitter, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  IonLabel,
-  IonItem,
   IonApp,
   IonRouterOutlet,
   IonMenu,
@@ -11,9 +8,6 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonList,
-  IonButton,
-  IonIcon,
   MenuController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -24,20 +18,14 @@ import { ModalsService } from './services/modals/modals.service';
 
 //DO NOT REMOVE
 import { ProductComponent } from './components/modals/product/product.component'
-import { LocalCartService } from './services/local/local-cart/local-cart.service';
+import { IButton } from './models/button.model';
+import { ButtonListComponent } from './components/button-list/button-list.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   imports: [
-    NgIf,
-    IonButton,
-    IonIcon,
-    NgFor,
-    IonLabel,
-    IonItem,
-    IonList,
     IonApp,
     IonRouterOutlet,
     IonMenu,
@@ -47,24 +35,19 @@ import { LocalCartService } from './services/local/local-cart/local-cart.service
     //DO NOT REMOVE
     ProductComponent,
     IonContent,
+    ButtonListComponent
   ],
 })
 export class AppComponent implements OnInit {
   public static loadingData = new EventEmitter<boolean>();
 
-  protected menuOptions: Array<{
-    title: string;
-    icon?: string;
-    image?: string;
-    do: () => Promise<void> | void;
-  }>;
+  protected menuOptions: Array<IButton>;
 
   constructor(
     private _router: Router,
     private _menuCtrl: MenuController,
     private _generalInfo: GeneralInfoService,
     private _modal: ModalsService,
-    private _cart: LocalCartService
   ) {
 
     this.menuOptions = [

@@ -1,10 +1,10 @@
+import { IProduct } from './../../models/product.model';
 import { forwardRef, Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular/standalone';
 import { FirstOpenedComponent } from 'src/app/components/modals/first-opened/first-opened.component';
+import { ProductListComponent } from 'src/app/components/modals/product-list/product-list.component';
 import { ProductComponent } from 'src/app/components/modals/product/product.component';
-// import { ProductComponent } from 'src/app/components/modals/product/product.component';
 import { IProductCategory } from 'src/app/models/product-category.model';
-import { IProduct } from 'src/app/models/product.model';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 
 @Injectable({
@@ -36,7 +36,6 @@ export class ModalsService {
     await modal.present();
 
     return await modal.onWillDismiss();
-
   }
 
   public async showFirstOpenedModal() {
@@ -57,11 +56,20 @@ export class ModalsService {
     });
   }
 
+  public async showProductListModal(
+  ): Promise<{product: IProduct, image: string} | undefined> {
+    const result = (await this.showModal(ProductListComponent, 'product-list-modal'))?.data;
+    if(result){
+      return result as {product: IProduct, image: string};
+    }
+    return undefined;
+  }
+
   public async closeModal(id?: string, data?: any) {
     this._modalCtrl.dismiss(data, undefined, id);
   }
 
-  public async closeAllModals(){
-    this.modals.map(modal => modal.dismiss());
+  public async closeAllModals() {
+    this.modals.map((modal) => modal.dismiss());
   }
 }

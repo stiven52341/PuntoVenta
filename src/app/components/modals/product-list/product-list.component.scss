@@ -1,0 +1,22 @@
+.content{
+  padding: 1em;
+
+  ion-list{
+    ion-item{
+      .item-content{
+        margin: .3em 0;
+        display: grid;
+        grid-template-columns: 2fr 1.5em 10fr;
+        gap: .6em;
+        justify-content: center;
+        align-items: center;
+        img{
+          width: 3em;
+        }
+        p{
+          margin: 0;
+        }
+      }
+    }
+  }
+}

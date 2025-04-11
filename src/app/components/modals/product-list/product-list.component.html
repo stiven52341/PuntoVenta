@@ -1,0 +1,38 @@
+<ion-header>
+  <app-header-bar
+    [loading]="loading"
+    [arrowBack]="true"
+    title="LISTA DE PRODUCTOS"
+    [isModal]="true"
+  ></app-header-bar>
+</ion-header>
+<ion-content>
+  <div class="content">
+    <ion-searchbar
+      (ionInput)="onSearch($event)"
+      animated="true"
+      [disabled]="loading"
+      placeholder="Puede buscar por código o nombre"
+    ></ion-searchbar>
+    <div class="products">
+      <ion-list>
+        @for(product of this.productsFiltered; track product.product.id){
+        <ion-item (click)="onClick(product)">
+          <div class="item-content">
+            <img src="{{ product.image }}" alt="" />
+            <p>{{ product.product.id }}.</p>
+            <p>{{ product.product.name }}</p>
+          </div>
+        </ion-item>
+        }@empty { @if(loading){
+        <ion-label>CARGANDO...</ion-label>
+        }@else {
+        <ion-label>SIN PRODUCTOS</ion-label>
+        } }
+      </ion-list>
+    </div>
+  </div>
+  <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

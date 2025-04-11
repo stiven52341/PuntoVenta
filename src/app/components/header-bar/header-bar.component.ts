@@ -16,6 +16,7 @@ import { ModalsService } from 'src/app/services/modals/modals.service';
 import { Router } from '@angular/router';
 import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.service';
 import { ICart } from 'src/app/models/cart.model';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-header-bar',
@@ -38,11 +39,12 @@ export class HeaderBarComponent implements OnInit {
   @Input() loading: boolean = false;
   @Input() showCart: boolean = false;
   @Input() arrowBack: boolean = false;
+  @Input() isModal: boolean = true;
 
   protected cart?: ICart;
 
   constructor(private _menuCtrl: MenuController, private _modal: ModalsService, private _router: Router,
-    private _cart: LocalCartService
+    private _cart: LocalCartService, private _location: Location
   ) {
     addIcons({arrowBack,menu,cart});
   }
@@ -59,8 +61,12 @@ export class HeaderBarComponent implements OnInit {
     await this._menuCtrl.toggle('main-menu');
   }
 
-  public async closeModal(){
-    await this._modal.closeModal();
+  public async close(){
+    if(this.isModal){
+      await this._modal.closeModal();
+    }else{
+      this._location.back();
+    }
   }
 
   protected async goTo(path: string){

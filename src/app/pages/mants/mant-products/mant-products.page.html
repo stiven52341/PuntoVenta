@@ -1,0 +1,20 @@
+<ion-header [translucent]="true">
+  <app-header-bar
+    [loading]="loading"
+    [isModal]="false"
+    [arrowBack]="true"
+    [title]="title"
+  ></app-header-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content">
+    <ion-button (click)="onSearchProduct()">
+      Buscar Producto
+    </ion-button>
+    <div class="image">
+      <img src="{{ image }}" alt="" />
+      <ion-button>Cambiar Imagen</ion-button>
+    </div>
+  </div>
+</ion-content>
