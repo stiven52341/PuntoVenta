@@ -1,4 +1,9 @@
-.content{
+ion-button {
+  color: white;
+  width: 100%;
+}
+
+.content {
   padding: 1em;
   width: 100%;
   display: flex;
@@ -7,12 +12,7 @@
   align-items: center;
   gap: 1em;
 
-  ion-button{
-    color: white;
-    width: 100%;
-  }
-
-  .image{
+  .image {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -20,8 +20,39 @@
     align-items: center;
     gap: 1em;
     img {
-      width: 20vh;
+      // width: 20vh;
       height: 20vh;
+    }
+  }
+
+  form {
+    width: 100%;
+    .form-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      gap: 1em;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+
+      @media (max-width: 565px) {
+        flex-wrap: wrap;
+      }
+
+      ion-label{
+        width: 100%;
+      }
+
+      .footer-content {
+        background-color: white;
+        position: absolute;
+        bottom: 0;
+        padding: 1em;
+        width: 100%;
+        background-color: transparent;
+      }
     }
   }
 }

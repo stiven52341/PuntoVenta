@@ -1,5 +1,5 @@
 export enum ApiKeys {
-  PATH = 'http://192.168.5.99:8080/',
+  PATH = 'http://192.168.30.137:8080/',
   PRODUCTS = PATH + 'products',
   CATEGORIES = PATH + 'categories',
   CURRENCIES = PATH + 'currencies',

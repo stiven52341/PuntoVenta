@@ -9,12 +9,41 @@
 
 <ion-content [fullscreen]="true">
   <div class="content">
-    <ion-button (click)="onSearchProduct()">
-      Buscar Producto
-    </ion-button>
+    <ion-button (click)="onSearchProduct()"> Buscar Producto </ion-button>
     <div class="image">
       <img src="{{ image }}" alt="" />
-      <ion-button>Cambiar Imagen</ion-button>
+      <ion-button (click)="onChangePhoto()">Cambiar Imagen</ion-button>
     </div>
+    <form [formGroup]="form" (ngSubmit)="onSave()">
+      <div class="form-content">
+        <ion-input
+          label="NOMBRE"
+          formControlName="name"
+          label-placement="stacked"
+          fill="outline"
+          placeholder="Ingrese el nombre del producto"
+          [clearInput]="true"
+        ></ion-input>
+        <ion-input
+          label="DESCRIPCIÓN"
+          formControlName="desc"
+          labelPlacement="stacked"
+          fill="outline"
+          placeholder="Ingrese una descripción"
+          [clearInput]="true"
+        ></ion-input>
+        @if(this.product){
+          <ion-label>Estado: {{ state ? 'Activo' : 'Inactivo' }}</ion-label>
+        }
+
+        <div class="footer-content">
+          @if(this.product){
+            <ion-button color="danger">DESACTIVAR</ion-button>
+          }
+          <ion-button type="submit">GUARDAR</ion-button>
+        </div>
+
+      </div>
+    </form>
   </div>
 </ion-content>

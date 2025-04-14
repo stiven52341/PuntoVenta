@@ -15,11 +15,13 @@ import { StatusBar } from '@capacitor/status-bar';
 import { GeneralInfoService } from './services/local/general-info/general-info.service';
 import { IGeneralInfo } from './models/general-info.model';
 import { ModalsService } from './services/modals/modals.service';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 //DO NOT REMOVE
 import { ProductComponent } from './components/modals/product/product.component'
 import { IButton } from './models/button.model';
 import { ButtonListComponent } from './components/button-list/button-list.component';
+import { FilesService } from './services/files/files.service';
 
 @Component({
   selector: 'app-root',
@@ -48,7 +50,14 @@ export class AppComponent implements OnInit {
     private _menuCtrl: MenuController,
     private _generalInfo: GeneralInfoService,
     private _modal: ModalsService,
+    private _file: FilesService
   ) {
+
+    ScreenOrientation.lock({orientation: 'portrait'}).then(() =>{
+      console.log('Screen locked to portrait');
+    }).catch(async err => {
+      await this._file.saveError(err);
+    });
 
     this.menuOptions = [
       {

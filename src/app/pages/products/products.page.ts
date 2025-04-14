@@ -106,8 +106,8 @@ export class ProductsPage implements OnInit {
       ])
     );
 
-    const unitProducts = data[2];
-    const productCategories = data[3];
+    const unitProducts = data[2].filter(uni => uni.state == true);
+    const productCategories = data[3].filter(pro => pro.state == true);
 
     const getPhotosCategories = async (category: ICategory) => {
       const image = await this._photo.getPhoto(

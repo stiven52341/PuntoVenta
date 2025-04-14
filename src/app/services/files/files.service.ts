@@ -44,7 +44,7 @@ export class FilesService {
 
   public async saveError(error: any){
     const info = await App.getInfo();
-    this._toast.showToast(`Errores guardados en android/data/${info.id}/files/errors.txt`);
+    this._toast.showToast(`Errores guardados en android/data/${info.id}/files/errors.txt`,3000, 'danger');
     let data = await this.read('errors.txt') || '';
     data = `${data}\n***\n${error}`;
     await this.write(data,'errors.txt');

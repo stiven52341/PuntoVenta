@@ -7,7 +7,7 @@ import { AlertsService } from '../alerts/alerts.service';
 import { FilesService } from '../files/files.service';
 import { Directory } from '@capacitor/filesystem';
 import { App } from '@capacitor/app';
-import { Camera } from '@capacitor/camera';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Injectable({
   providedIn: 'root',
@@ -72,6 +72,37 @@ export class PhotosService {
       return requestResult.photos == 'granted';
     } else {
       return true;
+    }
+  }
+
+  public async takePhoto(): Promise<string | undefined>{
+    try {
+      const image = await Camera.getPhoto({
+        quality: 70,
+        allowEditing: false,
+        resultType: CameraResultType.Base64,
+        source: CameraSource.Camera
+      });
+      return image.base64String ? ('data:image/png;base64,' + image.base64String) : undefined;;
+    } catch (error) {
+      this._file.saveError(error);
+      return undefined;
+    }
+  }
+
+  public async openGallery(): Promise<string | undefined>{
+    try {
+      const image = await Camera.getPhoto({
+        quality: 70,
+        allowEditing: false,
+        resultType: CameraResultType.Base64,
+        source: CameraSource.Photos
+      });
+
+      return image.base64String ? ('data:image/png;base64,' + image.base64String) : undefined;
+    } catch (error) {
+      this._file.saveError(error);
+      return undefined;
     }
   }
 }

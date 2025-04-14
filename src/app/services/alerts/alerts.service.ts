@@ -17,15 +17,27 @@ export class AlertsService {
     ],
     subtitle?: string
   ) {
-     this.alert = await this.alertCtrl.create({
-      header: title,
-      subHeader: subtitle,
-      message: `
+    let str = '';
+
+    if (image) {
+      str = `
         <div class="alert">
           <img *ngIf="image" src="${image}">
           <p>${message}</p>
         </div>
-      `,
+      `;
+    } else {
+      str = `
+        <div class="alert">
+          <p>${message}</p>
+        </div>
+      `;
+    }
+
+    this.alert = await this.alertCtrl.create({
+      header: title,
+      subHeader: subtitle,
+      message: str,
       cssClass: 'alert',
       buttons: buttons,
       animated: true,
@@ -65,9 +77,9 @@ export class AlertsService {
   ): Promise<boolean> {
     const close = async (val: boolean) => {
       this.alert!.dismiss(val);
-    }
+    };
 
-    return await this.showAlert(title, body, undefined, [
+    return await this.showAlert(title, body, '../../../assets/icon/ask.png', [
       {
         text: 'SÍ',
         handler() {
@@ -76,10 +88,28 @@ export class AlertsService {
       },
       {
         text: 'NO',
-        handler(){
+        handler() {
           close(false);
-        }
-      }
+        },
+      },
     ]);
+  }
+
+  public async showOptions(
+    title: string,
+    info: string,
+    options: Array<{ label: string; do: () => void | Promise<void> }>
+  ) {
+    const buttons: Array<AlertButton> = [];
+    options.forEach((option) => {
+      buttons.push({
+        text: option.label.toUpperCase(),
+        async handler() {
+          await option.do();
+        },
+      });
+    });
+
+    return await this.showAlert(title, info, undefined, buttons);
   }
 }

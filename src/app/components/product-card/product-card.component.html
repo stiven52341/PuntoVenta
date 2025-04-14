@@ -5,7 +5,7 @@
   <div class="text">
     <span id="name">{{ product.name }}</span>
     <div class="price">
-      <span>${{ unitProduct?.price }}</span>
+      <span>${{ unitProduct?.price || 0.00 }}</span>
       <ion-icon name="cart-outline" color="primary" size="large"></ion-icon>
     </div>
   </div>
