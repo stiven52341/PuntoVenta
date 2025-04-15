@@ -59,4 +59,9 @@ export abstract class InternalStorageCoreService<T extends Entity> {
   public async getNextID(): Promise<number>{
     return (await this.getAll() || []).length + 1;
   }
+
+  public async deactivate(obj: T){
+    obj.state = false;
+    await this.update(obj);
+  }
 }

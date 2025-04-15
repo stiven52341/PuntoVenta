@@ -122,6 +122,7 @@ export class AppComponent implements OnInit {
     info = {
       id: 1,
       isFirstTime: true,
+      state: true
     };
 
     await this._generalInfo.insert(info);

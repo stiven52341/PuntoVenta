@@ -38,6 +38,8 @@ import { firstValueFrom, forkJoin } from 'rxjs';
 export class ProductListComponent implements OnInit {
   protected loading: boolean = false;
 
+  @Input() showOnlyActiveProducts: boolean = false;
+
   protected products: Array<{ product: IProduct; image: string }> = [];
   protected productsFiltered: Array<{ product: IProduct; image: string }> = [];
 
@@ -54,7 +56,9 @@ export class ProductListComponent implements OnInit {
   }
 
   private async onInit() {
-    const products = await this._products.getAll();
+    const products = this.showOnlyActiveProducts
+      ? (await this._products.getAll()).filter((pro) => pro.state)
+      : await this._products.getAll();
     const pros = products.map(async (product) => {
       const photo = await this._photo.getPhoto(
         product.id.toString(),

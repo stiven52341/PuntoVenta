@@ -1,5 +1,6 @@
 export interface IImageProduct{
   id: number,
   image: string,
-  uploaded?: boolean
+  uploaded?: boolean,
+  state: boolean
 }

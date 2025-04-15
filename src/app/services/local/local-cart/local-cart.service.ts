@@ -22,6 +22,7 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
       cart = {
         id: 1,
         products: [],
+        state: true
       };
       await this.insert(cart);
       this.cartEvent.emit(cart);

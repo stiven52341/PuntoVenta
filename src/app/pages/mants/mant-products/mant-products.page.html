@@ -33,12 +33,18 @@
           [clearInput]="true"
         ></ion-input>
         @if(this.product){
-          <ion-label>Estado: {{ state ? 'Activo' : 'Inactivo' }}</ion-label>
+          <ion-label>Estado: {{ this.product.state ? 'Activo' : 'Inactivo' }}</ion-label>
         }
 
         <div class="footer-content">
           @if(this.product){
-            <ion-button color="danger">DESACTIVAR</ion-button>
+            <ion-button (click)="onDeactivateProduct()" color="danger">
+              @if(this.product.state){
+                DESACTIVAR
+              }@else {
+                ACTIVAR
+              }
+            </ion-button>
           }
           <ion-button type="submit">GUARDAR</ion-button>
         </div>

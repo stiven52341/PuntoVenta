@@ -6,6 +6,7 @@ import { FilesService } from '../../files/files.service';
 
 export interface Entity {
   id: string | number | Object;
+  state: boolean
 }
 
 @Injectable({
