@@ -17,6 +17,7 @@ import { IProduct } from 'src/app/models/product.model';
 import { PhotosService } from 'src/app/services/photos/photos.service';
 import { PhotoKeys } from 'src/app/models/constants';
 import { firstValueFrom, forkJoin } from 'rxjs';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-product-list',
@@ -33,6 +34,7 @@ import { firstValueFrom, forkJoin } from 'rxjs';
     IonContent,
     HeaderBarComponent,
     IonSearchbar,
+    NgClass
   ],
 })
 export class ProductListComponent implements OnInit {
@@ -57,8 +59,8 @@ export class ProductListComponent implements OnInit {
 
   private async onInit() {
     const products = this.showOnlyActiveProducts
-      ? (await this._products.getAll()).filter((pro) => pro.state)
-      : await this._products.getAll();
+      ? (await this._products.getAll()).filter((pro) => pro.state).sort((a,b) => a.id - b.id)
+      : (await this._products.getAll()).sort((a,b) => a.id - b.id);
     const pros = products.map(async (product) => {
       const photo = await this._photo.getPhoto(
         product.id.toString(),
@@ -76,7 +78,7 @@ export class ProductListComponent implements OnInit {
 
   private generateItems(
     products: Array<{ product: IProduct; image: string }>,
-    offset: number = 50
+    offset: number = 25
   ) {
     const count = this.productsFiltered.length;
 

@@ -78,10 +78,13 @@ export class ProductsPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    AppComponent.loadingData.subscribe(async (loading) => {
-      if (!loading) {
-        await this.onInit();
-      }
+    // AppComponent.loadingData.subscribe(async (loading) => {
+    //   if (!loading) {
+    //     await this.onInit();
+    //   }
+    // });
+    AppComponent.loadingData.subscribe(async () => {
+      await this.onInit();
     });
   }
 
@@ -142,6 +145,7 @@ export class ProductsPage implements OnInit {
     };
 
     for (const product of data[1]) {
+      if(!product.state) continue;
       await getPhotosProducts(product);
     }
   }

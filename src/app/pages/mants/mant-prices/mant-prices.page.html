@@ -1,13 +1,60 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>mant-prices</ion-title>
-  </ion-toolbar>
+  <app-header-bar
+    title="PRECIOS"
+    [arrowBack]="true"
+    [isModal]="false"
+    [loading]="loading"
+  ></app-header-bar>
 </ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">mant-prices</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="content">
+    <form>
+      <div class="form-content">
+        <div class="complex-input">
+          <ion-input
+            [disabled]="true"
+            labelPlacement="stacked"
+            placeholder="Seleccione un producto"
+            fill="outline"
+            name="product"
+            label="PRODUCTO"
+            [value]="product?.name || ''"
+          ></ion-input>
+          <ion-button (click)="onSearchProduct()">
+            <ion-icon name="search"></ion-icon>
+          </ion-button>
+        </div>
+        <div class="complex-input">
+          <ion-input
+            [disabled]="true"
+            labelPlacement="stacked"
+            placeholder="Seleccione una unidad"
+            fill="outline"
+            name="unit"
+            label="UNIDAD"
+            [value]="unit?.name || ''"
+          ></ion-input>
+          <ion-button (click)="onSearchUnit()">
+            <ion-icon name="search"></ion-icon>
+          </ion-button>
+        </div>
+        @if(showPrices){
+        <div class="complex-input">
+          <ion-input
+            [disabled]="true"
+            labelPlacement="stacked"
+            placeholder="Seleccione un precio"
+            fill="outline"
+            name="unit"
+            label="MODIFICAR PRECIO"
+            [value]="selectedPrice?.id || ''"
+          ></ion-input>
+          <ion-button (click)="onSearchUnit()">
+            <ion-icon name="search"></ion-icon>
+          </ion-button>
+        </div>
+        }
+      </div>
+    </form>
+  </div>
 </ion-content>

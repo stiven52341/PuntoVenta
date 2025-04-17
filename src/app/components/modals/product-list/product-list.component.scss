@@ -18,6 +18,14 @@
           margin: 0;
         }
       }
+
+      .null{
+        grid-template-columns: 2fr 1.5em 10fr auto;
+
+        .danger-text{
+          color: red;
+        }
+      }
     }
   }
 }

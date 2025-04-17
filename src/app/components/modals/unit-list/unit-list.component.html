@@ -1,0 +1,35 @@
+<ion-header>
+  <app-header-bar
+    [loading]="loading"
+    title="UNIDADES"
+    [arrowBack]="true"
+    [isModal]="true"
+  ></app-header-bar>
+</ion-header>
+<ion-content>
+  <div class="content">
+    <ion-searchbar
+      (ionInput)="search($event)"
+      animated="true"
+      placeholder="Puede buscar por id, nombre o siglas"
+    ></ion-searchbar>
+
+    <ion-list>
+      @for(unit of filteredUnits; track unit.id){
+      <ion-item (click)="onClick(unit)">
+        <div class="item-content" [ngClass]="{'short': !unit.shortcut}">
+          <p>{{ unit.id }}.</p>
+          <p>{{ unit.name }}</p>
+          @if(unit.shortcut){
+            <p>({{ unit.shortcut }})</p>
+          }
+
+        </div>
+      </ion-item>
+      }
+    </ion-list>
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>

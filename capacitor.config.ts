@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'PuntoVenta',
+  appId: 'reyno.software.sells.point',
+  appName: 'Punto de Venta',
   webDir: 'www',
   plugins: {
     Media: {

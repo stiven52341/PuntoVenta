@@ -36,6 +36,7 @@ export class PhotosService {
       path: data,
       fileName: name,
       albumIdentifier: albumn!.identifier,
+
     });
   }
 
@@ -96,7 +97,7 @@ export class PhotosService {
         quality: 70,
         allowEditing: false,
         resultType: CameraResultType.Base64,
-        source: CameraSource.Photos
+        source: CameraSource.Photos,
       });
 
       return image.base64String ? ('data:image/png;base64,' + image.base64String) : undefined;

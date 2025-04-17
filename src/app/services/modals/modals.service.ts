@@ -2,10 +2,13 @@ import { IProduct } from './../../models/product.model';
 import { forwardRef, Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular/standalone';
 import { FirstOpenedComponent } from 'src/app/components/modals/first-opened/first-opened.component';
+import { PricesComponent } from 'src/app/components/modals/prices/prices.component';
 import { ProductListComponent } from 'src/app/components/modals/product-list/product-list.component';
 import { ProductComponent } from 'src/app/components/modals/product/product.component';
+import { UnitListComponent } from 'src/app/components/modals/unit-list/unit-list.component';
 import { IProductCategory } from 'src/app/models/product-category.model';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
+import { IUnit } from 'src/app/models/unit.model';
 
 @Injectable({
   providedIn: 'root',
@@ -62,6 +65,18 @@ export class ModalsService {
     if(result){
       return result as {product: IProduct, image: string};
     }
+    return undefined;
+  }
+
+  public async showUnitsList(): Promise<IUnit | undefined>{
+    const result = (await this.showModal(UnitListComponent, 'unit-list'));
+    if(result && result.data) return result.data as IUnit;
+    return undefined;
+  }
+
+  public async showPrices(prices?: Array<IUnitProduct>): Promise<IUnitProduct | undefined>{
+    const result = (await this.showModal(PricesComponent, 'prices-list',{prices: prices}));
+    if(result && result.data) return result.data as IUnitProduct;
     return undefined;
   }
 

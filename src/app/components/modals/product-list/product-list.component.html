@@ -18,10 +18,13 @@
       <ion-list>
         @for(product of this.productsFiltered; track product.product.id){
         <ion-item (click)="onClick(product)">
-          <div class="item-content">
+          <div class="item-content" [ngClass]="{'null':! product.product.state}">
             <img src="{{ product.image }}" alt="" />
             <p>{{ product.product.id }}.</p>
             <p>{{ product.product.name }}</p>
+            @if(!product.product.state){
+              <p class="danger-text">(Anulado)</p>
+            }
           </div>
         </ion-item>
         }@empty { @if(loading){

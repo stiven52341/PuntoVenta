@@ -26,6 +26,7 @@ import { IImageProduct } from 'src/app/models/image-product.model';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { PhotoKeys } from 'src/app/models/constants';
 import { AppComponent } from 'src/app/app.component';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-mant-products',
@@ -41,6 +42,7 @@ import { AppComponent } from 'src/app/app.component';
     IonInput,
     ReactiveFormsModule,
   ],
+  providers: [TitleCasePipe]
 })
 export class MantProductsPage implements OnInit {
   protected image?: string;
@@ -62,7 +64,8 @@ export class MantProductsPage implements OnInit {
     private _localProducts: LocalProductsService,
     private _products: ProductService,
     private _file: FilesService,
-    private _imageProduct: ImageProductService
+    private _imageProduct: ImageProductService,
+    private _title: TitleCasePipe
   ) {
     this.form = new FormGroup({
       name: new FormControl(null, [
@@ -151,7 +154,7 @@ export class MantProductsPage implements OnInit {
 
     const product: IProduct = {
       id: 0,
-      name: (this.form.get('name')!.value as string).trim(),
+      name: this._title.transform((this.form.get('name')!.value as string).trim()),
       description: (this.form.get('desc')!.value as string).trim(),
       state: Boolean(this.form.get('active')!.value),
     };
@@ -191,7 +194,8 @@ export class MantProductsPage implements OnInit {
       )
         .then(() => {
           this._alert.showSuccess('PRODUCTO MODIFICADO');
-          AppComponent.loadingData.emit(false);
+          // AppComponent.loadingData.emit(false);
+          AppComponent.loadingData.emit();
         })
         .catch((err) => {
           this._file.saveError(err);
@@ -233,7 +237,8 @@ export class MantProductsPage implements OnInit {
       )
         .then(() => {
           this._alert.showSuccess('PRODUCTO CREADO');
-          AppComponent.loadingData.emit(false);
+          // AppComponent.loadingData.emit(false);
+          AppComponent.loadingData.emit();
         })
         .catch((err) => {
           this._file.saveError(err);
@@ -294,7 +299,8 @@ export class MantProductsPage implements OnInit {
         .update(this.product)
         .then(() => {
           this._alert.showSuccess('PRODUCTO DESACTIVADO');
-          AppComponent.loadingData.emit(false);
+          // AppComponent.loadingData.emit(false);
+          AppComponent.loadingData.emit();
         })
         .catch((err) => {
           this._alert.showSuccess('ERROR DESACTIVANDO PRODUCTO');

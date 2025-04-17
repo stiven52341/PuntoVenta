@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package reyno.software.sells.point;
 
 import com.getcapacitor.BridgeActivity;
 
