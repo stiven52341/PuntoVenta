@@ -4,6 +4,7 @@
     [arrowBack]="true"
     [isModal]="false"
     [loading]="loading"
+    [buttons]="headerButtons"
   ></app-header-bar>
 </ion-header>
 <ion-content [fullscreen]="true">
@@ -49,12 +50,43 @@
             label="MODIFICAR PRECIO"
             [value]="selectedPrice?.id || ''"
           ></ion-input>
-          <ion-button (click)="onSearchUnit()">
+          <ion-button (click)="onSearchPrice()">
             <ion-icon name="search"></ion-icon>
           </ion-button>
         </div>
         }
+        <ion-input
+          #price
+          labelPlacement="stacked"
+          placeholder="Ingrese un precio"
+          fill="outline"
+          name="price"
+          label="PRECIO"
+          [value]="0"
+          type="number"
+          [min]="1"
+          [clearInput]="true"
+        ></ion-input>
+        <ion-checkbox name="default-price" [(ngModel)]="defaultPrice" justify="start"
+          >Precio por defecto?</ion-checkbox
+        >
       </div>
     </form>
   </div>
 </ion-content>
+<ion-footer [translucent]="true">
+  <div class="footer-content">
+    @if(this.selectedPrice){
+      <ion-button (click)="onDeactivate()" color="danger">
+        @if(this.selectedPrice.state){
+          DESACTIVAR
+        }@else {
+          ACTIVAR
+        }
+      </ion-button>
+    }
+    <ion-button (click)="onSave()"
+      ><ion-label>GUARDAR</ion-label></ion-button
+    >
+  </div>
+</ion-footer>

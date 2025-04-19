@@ -42,7 +42,7 @@ import { FilesService } from './services/files/files.service';
 })
 export class AppComponent implements OnInit {
   // public static loadingData = new EventEmitter<boolean>();
-  public static loadingData = new EventEmitter<void>();
+  public static updateData = new EventEmitter<void>();
 
   protected menuOptions: Array<IButton>;
 
@@ -101,7 +101,7 @@ export class AppComponent implements OnInit {
 
   private async onInit() {
     // AppComponent.loadingData.emit(true);
-    AppComponent.loadingData.emit();
+    AppComponent.updateData.emit();
     await StatusBar.setOverlaysWebView({
       overlay: false,
     });
@@ -118,7 +118,7 @@ export class AppComponent implements OnInit {
         await this._generalInfo.update(info);
       }
       // AppComponent.loadingData.emit(false);
-      AppComponent.loadingData.emit();
+      AppComponent.updateData.emit();
       return;
     }
 
@@ -132,7 +132,7 @@ export class AppComponent implements OnInit {
 
     await this._modal.showFirstOpenedModal();
     // AppComponent.loadingData.emit(false);
-    AppComponent.loadingData.emit();
+    AppComponent.updateData.emit();
   }
 
   private async goTo(path: string) {

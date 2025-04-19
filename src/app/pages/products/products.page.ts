@@ -83,7 +83,7 @@ export class ProductsPage implements OnInit {
     //     await this.onInit();
     //   }
     // });
-    AppComponent.loadingData.subscribe(async () => {
+    AppComponent.updateData.subscribe(async () => {
       await this.onInit();
     });
   }
@@ -112,6 +112,10 @@ export class ProductsPage implements OnInit {
     const unitProducts = data[2].filter(uni => uni.state == true);
     const productCategories = data[3].filter(pro => pro.state == true);
 
+    debugger;
+    console.log(unitProducts);
+
+
     const getPhotosCategories = async (category: ICategory) => {
       const image = await this._photo.getPhoto(
         category.id.toString(),
@@ -135,7 +139,7 @@ export class ProductsPage implements OnInit {
       this.products.push({
         product: product,
         unitProduct: unitProducts.find(
-          (u) => u.idProduct == product.id && u.isDefault
+          (u) => u.idProduct == product.id && u.isDefault && u.state
         )!,
         image: image,
         categories: productCategories.filter(

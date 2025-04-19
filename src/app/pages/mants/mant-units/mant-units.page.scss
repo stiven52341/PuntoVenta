@@ -1,0 +1,58 @@
+.content{
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  justify-content: center;
+  align-items: center;
+
+  .complex-input{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 8fr 2fr;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+
+    ion-button{
+      height: 100%;
+      width: 100%;
+
+      ion-icon{
+        font-weight:bolder;
+        color: white;
+      }
+    }
+  }
+
+  form{
+    width: 100%;
+    .form-content{
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1em;
+
+      .footer-content{
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: .5em;
+        padding: .5em;
+        bottom: 0;
+        width: 100%;
+        ion-button{
+          width: 100%;
+
+          ion-label{
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}

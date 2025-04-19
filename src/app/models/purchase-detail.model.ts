@@ -5,5 +5,6 @@ export interface IPurchaseDetail{
   },
   amount: number,
   state: boolean,
+  priceUsed: number,
   uploaded?: boolean
 }

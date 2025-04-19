@@ -150,7 +150,7 @@ export class CartPage implements OnInit {
 
     let total = 0;
     const purchaseDetails: Array<IPurchaseDetail> = [];
-    this.cart?.products.forEach((product) => {
+    this.cart?.products.forEach(async (product) => {
       purchaseDetails.push({
         id: {
           idPurchase: 0,
@@ -158,6 +158,7 @@ export class CartPage implements OnInit {
         },
         amount: product.amount,
         state: true,
+        priceUsed: product.unit.price,
       });
 
       total += this.getTotalArticulo(product);
@@ -175,7 +176,9 @@ export class CartPage implements OnInit {
       let updated = false;
       await this._purchase
         .insert(purchase)
-        .then(() => (updated = true))
+        .then((resp) => {
+          if (resp) updated = true;
+        })
         .catch((err) => {
           this._file.saveError(err);
           this._toast.showToast(
@@ -186,7 +189,7 @@ export class CartPage implements OnInit {
       await this._localPurchase
         .insert(purchase, updated)
         .then(async () => {
-          this._toast.showToast('COMPRA REGISTRADA');
+          this._alert.showSuccess('COMPRA REGISTRADA');
           await this._cart.resetCart();
         })
         .catch((err) => {

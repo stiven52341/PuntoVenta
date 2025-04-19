@@ -27,6 +27,8 @@ import { firstValueFrom, forkJoin } from 'rxjs';
 import { PhotoKeys } from 'src/app/models/constants';
 import { AppComponent } from 'src/app/app.component';
 import { TitleCasePipe } from '@angular/common';
+import { IButton } from 'src/app/models/button.model';
+import { ToastService } from 'src/app/services/toast/toast.service';
 
 @Component({
   selector: 'app-mant-products',
@@ -54,6 +56,7 @@ export class MantProductsPage implements OnInit {
 
   protected product?: IProduct;
   protected units: Array<IUnit> = [];
+  protected headerButtons: Array<IButton>;
 
   protected form: FormGroup;
 
@@ -65,7 +68,8 @@ export class MantProductsPage implements OnInit {
     private _products: ProductService,
     private _file: FilesService,
     private _imageProduct: ImageProductService,
-    private _title: TitleCasePipe
+    private _title: TitleCasePipe,
+    private _toast: ToastService
   ) {
     this.form = new FormGroup({
       name: new FormControl(null, [
@@ -75,6 +79,15 @@ export class MantProductsPage implements OnInit {
       desc: new FormControl(null, [Validators.maxLength(150)]),
       active: new FormControl(true, []),
     });
+
+    this.headerButtons = [
+      {
+        title: 'LIMPIAR',
+        do: async () => {
+          await this.cleanForm();
+        }
+      }
+    ];
   }
 
   async ngOnInit() {
@@ -195,7 +208,7 @@ export class MantProductsPage implements OnInit {
         .then(() => {
           this._alert.showSuccess('PRODUCTO MODIFICADO');
           // AppComponent.loadingData.emit(false);
-          AppComponent.loadingData.emit();
+          AppComponent.updateData.emit();
         })
         .catch((err) => {
           this._file.saveError(err);
@@ -238,7 +251,7 @@ export class MantProductsPage implements OnInit {
         .then(() => {
           this._alert.showSuccess('PRODUCTO CREADO');
           // AppComponent.loadingData.emit(false);
-          AppComponent.loadingData.emit();
+          AppComponent.updateData.emit();
         })
         .catch((err) => {
           this._file.saveError(err);
@@ -300,7 +313,7 @@ export class MantProductsPage implements OnInit {
         .then(() => {
           this._alert.showSuccess('PRODUCTO DESACTIVADO');
           // AppComponent.loadingData.emit(false);
-          AppComponent.loadingData.emit();
+          AppComponent.updateData.emit();
         })
         .catch((err) => {
           this._alert.showSuccess('ERROR DESACTIVANDO PRODUCTO');
@@ -309,5 +322,16 @@ export class MantProductsPage implements OnInit {
     }
 
     this.loading = false;
+  }
+
+  private async cleanForm(){
+    if(!await this._alert.showConfirm('CONFIRME', '¿Está seguro de limpiar el formulario?'))return;
+
+    this.image = this.noImage;
+    this.form.reset();
+    this.title = 'NUEVO PRODUCTO';
+    this.product = undefined;
+
+    this._toast.showToast('Formulario limpiado', 2000, 'primary', 'top');
   }
 }

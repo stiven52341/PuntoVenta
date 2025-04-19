@@ -1,8 +1,38 @@
 <ion-header>
-  <app-header-bar title="PRECIOS" [isModal]="true" [arrowBack]="true"></app-header-bar>
+  <app-header-bar
+    [loading]="loading"
+    title="PRECIOS"
+    [isModal]="true"
+    [arrowBack]="true"
+  ></app-header-bar>
 </ion-header>
 <ion-content>
   <div class="content">
+    <ion-searchbar
+      animated="true"
+      placeholder="Puede buscar por precio, unidad o producto"
+    ></ion-searchbar>
 
+    <ion-list>
+      @for(price of pricesFiltered; track price.price.id){
+      <ion-item (click)="onClick(price.price)">
+        <div class="item-content">
+          <p>{{ price.price.id }}. </p>
+          <p>{{ price.product?.name || 'Sin nombre registrado' }}</p>
+          <p>{{ price.unit?.name || 'Sin unidad registrada' }}</p>
+          <p class="right">${{ price.price.price| number:'1.2-2'}}</p>
+        </div>
+      </ion-item>
+      }@empty {
+        @if(loading){
+          <p>Cargando...</p>
+        }@else {
+          <p>Sin precios</p>
+        }
+      }
+    </ion-list>
   </div>
+  <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

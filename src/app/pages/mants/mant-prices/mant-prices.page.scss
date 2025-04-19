@@ -8,6 +8,10 @@
     justify-content: center;
     align-items: center;
 
+    *{
+      width: 100%;
+    }
+
     .complex-input{
       width: 100%;
       display: grid;
@@ -25,6 +29,26 @@
           color: white;
         }
       }
+    }
+  }
+}
+
+.footer-content{
+  width: 100%;
+  height: 100%;
+  padding: .5em;
+  background-color: transparent !important;
+  display: flex;
+  flex-direction: column;
+  gap: .5em;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+
+  ion-button{
+    width: 100%;
+    ion-label{
+      color: white;
     }
   }
 }

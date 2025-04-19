@@ -1,13 +1,56 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>mant-units</ion-title>
-  </ion-toolbar>
+  <app-header-bar
+    [title]="'UNIDADES'"
+    [arrowBack]="true"
+    [isModal]="false"
+  ></app-header-bar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">mant-units</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="content">
+    <div class="complex-input">
+      <ion-input
+        [disabled]="true"
+        labelPlacement="stacked"
+        fill="outline"
+        label="Modificar unidad"
+        placeholder="Buscar unidad"
+        [value]="unit?.name"
+      ></ion-input>
+      <ion-button (click)="onSearchUnit()">
+        <ion-icon name="search"></ion-icon>
+      </ion-button>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="onSave()">
+      <div class="form-content">
+        <ion-input
+          formControlName="name"
+          labelPlacement="stacked"
+          fill="outline"
+          label="Nombre"
+          placeholder="Ingrese un nombre de unidad"
+        ></ion-input>
+
+        <ion-input
+          labelPlacement="stacked"
+          fill="outline"
+          label="Abreviatura"
+          placeholder="Ingrese una abreviatura"
+          formControlName="short"
+        ></ion-input>
+
+        <div class="footer-content">
+          @if(unit){
+          <ion-button color="danger" type="button">
+            <ion-label>DESACTIVAR</ion-label>
+          </ion-button>
+          }
+
+          <ion-button type="submit">
+            <ion-label>GUARDAR</ion-label>
+          </ion-button>
+        </div>
+      </div>
+    </form>
+  </div>
 </ion-content>

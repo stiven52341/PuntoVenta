@@ -8,7 +8,7 @@ export class AlertsService {
   private alert?: HTMLIonAlertElement;
   constructor(private alertCtrl: AlertController) {}
 
-  public async showAlert(
+  private async showAlert(
     title: string,
     message: string,
     image?: string,

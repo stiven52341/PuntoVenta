@@ -23,5 +23,19 @@
     </ion-button>
   </ion-buttons>
   }
+  @if(!showCart && buttons.length > 0){
+    <ion-buttons slot="end">
+      @for(button of buttons; track $index){
+        <ion-button (click)="button.do()">
+          <div class="button-content">
+            @if(button.icon){
+              <ion-icon slot="icon-only" name="{{ button.icon }}"></ion-icon>
+            }
+            <ion-label>{{ button.title }}</ion-label>
+          </div>
+        </ion-button>
+      }
+    </ion-buttons>
+  }
 </ion-toolbar>
 <ion-progress-bar *ngIf="loading" type="indeterminate"></ion-progress-bar>

@@ -17,11 +17,10 @@ import { LocalCategoriesService } from 'src/app/services/local/local-categories/
 import { ICategory } from 'src/app/models/category.model';
 import { addIcons } from 'ionicons';
 import { heart, shareSocial, camera } from 'ionicons/icons';
-import { FormsModule, NgModel } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
 import { firstValueFrom, forkJoin } from 'rxjs';
-import { UnitProductService } from 'src/app/services/api/unit-product/unit-product.service';
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { IUnit } from 'src/app/models/unit.model';
 import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.service';
@@ -99,11 +98,9 @@ export class ProductComponent implements OnInit {
         }
       }
     });
-    this.selectedPrice = this.prices[0].unitPro.id;
-
-    this._cart.getCart().subscribe((cart) => {
-      console.log(cart);
-    });
+    this.selectedPrice =
+      this.prices.find((price) => price.unitPro.isDefault)?.unitPro.id ||
+      this.prices[0].unitPro.id;
   }
 
   protected getTotal() {
@@ -138,6 +135,6 @@ export class ProductComponent implements OnInit {
         .unitPro
     );
 
-    await this._toast.showToast('PRODUCTO AGREGADO',1000);
+    await this._toast.showToast('PRODUCTO AGREGADO', 1000);
   }
 }

@@ -6,8 +6,7 @@ import {
   IonButton,
   IonIcon,
   IonProgressBar,
-  IonTabButton,
-} from '@ionic/angular/standalone';
+  IonTabButton, IonLabel } from '@ionic/angular/standalone';
 import { Component, Input, OnInit } from '@angular/core';
 import { NgIf, UpperCasePipe } from '@angular/common';
 import { addIcons } from 'ionicons';
@@ -17,13 +16,14 @@ import { Router } from '@angular/router';
 import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.service';
 import { ICart } from 'src/app/models/cart.model';
 import { Location } from '@angular/common';
+import { IButton } from 'src/app/models/button.model';
 
 @Component({
   selector: 'app-header-bar',
   templateUrl: './header-bar.component.html',
   styleUrls: ['./header-bar.component.scss'],
   standalone: true,
-  imports: [
+  imports: [IonLabel,
     NgIf,
     IonProgressBar,
     IonIcon,
@@ -40,6 +40,7 @@ export class HeaderBarComponent implements OnInit {
   @Input() showCart: boolean = false;
   @Input() arrowBack: boolean = false;
   @Input() isModal: boolean = true;
+  @Input() buttons: Array<IButton> = [];
 
   protected cart?: ICart;
 

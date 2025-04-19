@@ -1,3 +1,30 @@
 .content{
   padding: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+
+  ion-list{
+    width: 100%;
+
+    .item-content{
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 8fr 2fr 2fr;
+      gap:1em;
+      justify-content: space-between;
+      align-items: center;
+      p{
+        width: 100%;
+        margin: 0;
+        text-align: start;
+      }
+
+      .right{
+        text-align: right;
+      }
+    }
+  }
 }
