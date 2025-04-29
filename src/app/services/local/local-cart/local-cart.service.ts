@@ -1,16 +1,18 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, inject, Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
 import { ICart } from 'src/app/models/cart.model';
-import { StorageKeys } from 'src/app/models/constants';
+import { States, StorageKeys } from 'src/app/models/constants';
 import { IProduct } from 'src/app/models/product.model';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { Observable, shareReplay } from 'rxjs';
+import { LocalUnitsService } from '../local-units/local-units.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocalCartService extends InternalStorageCoreService<ICart> {
   private cartEvent = new EventEmitter<ICart>();
+  private _unit = inject(LocalUnitsService);
 
   constructor() {
     super(StorageKeys.CART);
@@ -22,7 +24,8 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
       cart = {
         id: 1,
         products: [],
-        state: true
+        state: true,
+        uploaded: States.NOT_SYNCABLE
       };
       await this.insert(cart);
       this.cartEvent.emit(cart);
@@ -32,31 +35,34 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
     }
   }
 
-  public async addProduct(product: IProduct, amount: number, unit: IUnitProduct) {
+  public async addProduct(product: IProduct, amount: number, price: IUnitProduct) {
     if (!amount || amount <= 0) return;
 
     const cart = await this.setCart();
 
     if(cart.products.findIndex(pro => pro.product.id == product.id) != -1){
-      await this.updateProduct(product, amount, unit);
+      await this.updateProduct(product, amount, price);
       return;
     }
 
-    cart.products.push({ product: product, amount: amount, unit: unit });
+    const unit = await this._unit.get(price.idUnit);
+    cart.products.push({ product: product, amount: amount, price: price, unit: unit! });
     this.cartEvent.emit(cart);
     await this.update(cart);
   }
 
-  public async updateProduct(product: IProduct, amount: number, unit: IUnitProduct){
+  public async updateProduct(product: IProduct, amount: number, price: IUnitProduct){
     if (!amount || amount <= 0) return;
     const cart = await this.setCart();
     const index = cart.products.findIndex(pro => pro.product.id == product.id);
     if(index == -1) return;
 
+    const unit = await this._unit.get(price.idUnit);
     cart.products[index] = {
       product: product,
       amount: amount,
-      unit: unit
+      price: price,
+      unit: unit!
     };
     this.cartEvent.emit(cart);
     await this.update(cart);
@@ -84,7 +90,7 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
   public async getTotal(cart?: ICart): Promise<number>{
     const cart_ = cart ? cart : await this.setCart();
     let total = 0;
-    cart_.products.map(product => total += (product.amount * product.unit.price));
+    cart_.products.map(product => total += (product.amount * product.price.price));
     return total;
   }
 

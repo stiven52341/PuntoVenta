@@ -24,11 +24,13 @@ import { FilesService } from 'src/app/services/files/files.service';
 import { ImageProductService } from 'src/app/services/api/image-product/image-product.service';
 import { IImageProduct } from 'src/app/models/image-product.model';
 import { firstValueFrom, forkJoin } from 'rxjs';
-import { PhotoKeys } from 'src/app/models/constants';
+import { PhotoKeys, States } from 'src/app/models/constants';
 import { AppComponent } from 'src/app/app.component';
 import { TitleCasePipe } from '@angular/common';
 import { IButton } from 'src/app/models/button.model';
 import { ToastService } from 'src/app/services/toast/toast.service';
+import { State } from 'ionicons/dist/types/stencil-public-runtime';
+import { GlobalService } from 'src/app/services/global/global.service';
 
 @Component({
   selector: 'app-mant-products',
@@ -44,7 +46,7 @@ import { ToastService } from 'src/app/services/toast/toast.service';
     IonInput,
     ReactiveFormsModule,
   ],
-  providers: [TitleCasePipe]
+  providers: [TitleCasePipe],
 })
 export class MantProductsPage implements OnInit {
   protected image?: string;
@@ -69,7 +71,8 @@ export class MantProductsPage implements OnInit {
     private _file: FilesService,
     private _imageProduct: ImageProductService,
     private _title: TitleCasePipe,
-    private _toast: ToastService
+    private _toast: ToastService,
+    private _global: GlobalService
   ) {
     this.form = new FormGroup({
       name: new FormControl(null, [
@@ -85,8 +88,8 @@ export class MantProductsPage implements OnInit {
         title: 'LIMPIAR',
         do: async () => {
           await this.cleanForm();
-        }
-      }
+        },
+      },
     ];
   }
 
@@ -161,22 +164,31 @@ export class MantProductsPage implements OnInit {
   public async onSave() {
     if (!this.checkForm()) return;
 
-    if(!await this._alert.showConfirm('CONFIRME','¿Está seguro de guardar los cambios?'))return;
+    if (
+      !(await this._alert.showConfirm(
+        'CONFIRME',
+        '¿Está seguro de guardar los cambios?'
+      ))
+    )
+      return;
 
     this.loading = true;
 
     const product: IProduct = {
       id: 0,
-      name: this._title.transform((this.form.get('name')!.value as string).trim()),
-      description: (this.form.get('desc')!.value as string).trim(),
+      name: this._title.transform(
+        (this.form.get('name')!.value as string).trim()
+      ),
+      description: (this.form.get('desc')?.value || ('' as string)).trim(),
       state: Boolean(this.form.get('active')!.value),
+      uploaded: States.NOT_INSERTED
     };
 
     if (this.product) {
       //MODIFYING
       product.id = this.product.id;
 
-      const response = await this._products.update(product);
+      const response = await this._products.update(product) ? States.SYNC : States.NOT_UPDATED;
       let photoInserted: boolean | undefined;
 
       if (response && this.image != this.noImage) {
@@ -184,6 +196,7 @@ export class MantProductsPage implements OnInit {
           id: product.id,
           image: this.image!.replace('data:image/png;base64,', ''),
           state: true,
+          uploaded: States.SYNC
         });
       }
 
@@ -191,7 +204,7 @@ export class MantProductsPage implements OnInit {
       const image: IImageProduct = {
         id: product.id,
         image: this.image!,
-        uploaded: photoInserted || false,
+        uploaded: photoInserted ? States.SYNC : States.NOT_UPDATED,
         state: true,
       };
 
@@ -208,7 +221,7 @@ export class MantProductsPage implements OnInit {
         .then(() => {
           this._alert.showSuccess('PRODUCTO MODIFICADO');
           // AppComponent.loadingData.emit(false);
-          AppComponent.updateData.emit();
+          this._global.updateData();
         })
         .catch((err) => {
           this._file.saveError(err);
@@ -227,14 +240,15 @@ export class MantProductsPage implements OnInit {
           id: response as number,
           image: this.image!.replace('data:image/png;base64,', ''),
           state: true,
+          uploaded: States.SYNC
         });
       }
 
-      product.uploaded = response ? true : false;
+      product.uploaded = response ? States.SYNC : States.NOT_INSERTED;
       const image: IImageProduct = {
         id: product.id,
         image: this.image!,
-        uploaded: photoInserted ? true : false,
+        uploaded: photoInserted ? States.SYNC : States.NOT_INSERTED,
         state: true,
       };
 
@@ -251,7 +265,7 @@ export class MantProductsPage implements OnInit {
         .then(() => {
           this._alert.showSuccess('PRODUCTO CREADO');
           // AppComponent.loadingData.emit(false);
-          AppComponent.updateData.emit();
+          this._global.updateData();
         })
         .catch((err) => {
           this._file.saveError(err);
@@ -272,20 +286,18 @@ export class MantProductsPage implements OnInit {
 
     if (!(await this._alert.showConfirm('CONFIRME', confirmText))) return;
 
-    let result: boolean = false;
-
     this.loading = true;
     if (this.product.state) {
       await this._products
         .delete(this.product)
         .then((r) => {
           console.log('Product deleted');
-          result = r;
+          this.product!.uploaded = States.SYNC;
         })
-        .catch((err) => this._file.saveError(err));
-
-      this.product.uploaded = result;
-
+        .catch((err) => {
+          this._file.saveError(err);
+          this.product!.uploaded = States.NOT_DELETED;
+        });
       await this._localProducts
         .deactivate(this.product)
         .then(() => {
@@ -302,18 +314,19 @@ export class MantProductsPage implements OnInit {
         .update(this.product)
         .then((r) => {
           console.log('Product deleted');
-          result = r;
+          this.product!.uploaded = States.SYNC;
         })
-        .catch((err) => this._file.saveError(err));
-
-      this.product.uploaded = result;
+        .catch((err) => {
+          this._file.saveError(err);
+          this.product!.uploaded = States.NOT_UPDATED;
+        });
 
       await this._localProducts
         .update(this.product)
         .then(() => {
           this._alert.showSuccess('PRODUCTO DESACTIVADO');
           // AppComponent.loadingData.emit(false);
-          AppComponent.updateData.emit();
+          this._global.updateData();
         })
         .catch((err) => {
           this._alert.showSuccess('ERROR DESACTIVANDO PRODUCTO');
@@ -324,8 +337,14 @@ export class MantProductsPage implements OnInit {
     this.loading = false;
   }
 
-  private async cleanForm(){
-    if(!await this._alert.showConfirm('CONFIRME', '¿Está seguro de limpiar el formulario?'))return;
+  private async cleanForm() {
+    if (
+      !(await this._alert.showConfirm(
+        'CONFIRME',
+        '¿Está seguro de limpiar el formulario?'
+      ))
+    )
+      return;
 
     this.image = this.noImage;
     this.form.reset();

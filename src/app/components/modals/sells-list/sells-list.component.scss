@@ -1,0 +1,18 @@
+.content{
+  padding: 1em;
+
+  ion-list{
+    background-color: white;
+  }
+
+  .item-content{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 2fr 10fr 2fr;
+    justify-content: center;
+    align-items: center;
+    p{
+      margin: 0;
+    }
+  }
+}

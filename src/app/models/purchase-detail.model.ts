@@ -1,3 +1,5 @@
+import { States } from "./constants"
+
 export interface IPurchaseDetail{
   id: {
     idPurchase: number,
@@ -6,5 +8,5 @@ export interface IPurchaseDetail{
   amount: number,
   state: boolean,
   priceUsed: number,
-  uploaded?: boolean
+  uploaded: States
 }

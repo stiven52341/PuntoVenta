@@ -38,6 +38,15 @@ export const routes: Routes = [
     path: 'mant/categories',
     loadComponent: () => import('./pages/mants/mant-categories/mant-categories.page').then( m => m.MantCategoriesPage)
   },
+  {
+    path: 'consults',
+    loadComponent: () => import('./pages/consults/consults.page').then( m => m.ConsultsPage)
+  },
+  {
+    path: 'consults/sells/:id',
+    loadComponent: () => import('./pages/consults/sells/sells.page').then( m => m.SellsPage)
+  },
+
 
 
 

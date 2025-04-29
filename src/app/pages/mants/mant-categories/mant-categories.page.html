@@ -1,13 +1,67 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>mant-categories</ion-title>
-  </ion-toolbar>
+  <app-header-bar
+    title="CATEGORÍAS"
+    [arrowBack]="true"
+    [isModal]="false"
+  ></app-header-bar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">mant-categories</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="content">
+    <ion-button (click)="onSearch()">
+      <div class="button-content">
+        <ion-icon name="search"></ion-icon>
+        <ion-label>Buscar categoría</ion-label>
+      </div>
+    </ion-button>
+    <div class="image">
+      <img src="{{ image }}" alt="" />
+      <ion-button (click)="onChangePhoto()">
+        <div class="button-content">
+          <ion-icon name="camera"></ion-icon>
+          <ion-label>Cambiar Imagen</ion-label>
+        </div>
+      </ion-button>
+    </div>
+    <form [formGroup]="this.form">
+      <div class="form-content">
+        <ion-input
+          label="NOMBRE"
+          formControlName="name"
+          label-placement="stacked"
+          fill="outline"
+          placeholder="Ingrese el nombre de la categoría"
+          [counter]="true"
+          [maxlength]="50"
+        ></ion-input>
+        <ion-input
+          label="DESCRIPCIÓN"
+          formControlName="desc"
+          label-placement="stacked"
+          fill="outline"
+          placeholder="Ingrese la descripción de la categoría"
+          [counter]="true"
+          [maxlength]="255"
+        ></ion-input>
+      </div>
+    </form>
+  </div>
 </ion-content>
+<ion-footer translucent="true">
+  <div class="footer-content">
+    <ion-button>
+      <div class="button-content">
+        <ion-icon name="save"></ion-icon>
+        <ion-label>GUARDAR</ion-label>
+      </div>
+    </ion-button>
+    @if(category){
+    <ion-button color="danger">
+      <div class="button-content">
+        <ion-icon name="trash"></ion-icon>
+        <ion-label>DESACTIVAR</ion-label>
+      </div>
+    </ion-button>
+    }
+  </div>
+</ion-footer>

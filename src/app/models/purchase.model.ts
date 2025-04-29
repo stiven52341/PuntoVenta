@@ -1,3 +1,4 @@
+import { States } from "./constants";
 import { IPurchaseDetail } from "./purchase-detail.model";
 
 export interface IPurchase{
@@ -6,5 +7,5 @@ export interface IPurchase{
   total: number,
   state: boolean,
   details?: Array<IPurchaseDetail>,
-  uploaded?: boolean
+  uploaded: States
 }

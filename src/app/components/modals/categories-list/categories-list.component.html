@@ -1,0 +1,28 @@
+<ion-header>
+  <app-header-bar
+    title="LISTA DE CATEGORÍAS"
+    [arrowBack]="true"
+    [isModal]="true"
+    [loading]="loading"
+  ></app-header-bar>
+</ion-header>
+<ion-content>
+  <div class="content">
+    <ion-searchbar (ionInput)="onSearch($event)" [debounce]="300" animated="true" placeholder="Puede buscar por id o nombre"></ion-searchbar>
+
+    <ion-list>
+      @for(category of categoriesFiltered; track category.category.id){
+        <ion-item (click)="onClose(category)">
+          <div class="item-content" [ngClass]="{'null':! category.category.state}">
+            <img src="{{ category.image }}" alt="" />
+            <p>{{ category.category.id }}.</p>
+            <p>{{ category.category.name }}</p>
+            @if(!category.category.state){
+              <p class="danger-text">(Anulado)</p>
+            }
+          </div>
+        </ion-item>
+      }
+    </ion-list>
+  </div>
+</ion-content>

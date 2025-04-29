@@ -1,3 +1,4 @@
+import { TitleCasePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import {
   FormControl,
@@ -16,9 +17,16 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { search } from 'ionicons/icons';
+import { AppComponent } from 'src/app/app.component';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { IButton } from 'src/app/models/button.model';
+import { States } from 'src/app/models/constants';
 import { IUnit } from 'src/app/models/unit.model';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
+import { UnitService } from 'src/app/services/api/unit/unit.service';
+import { FilesService } from 'src/app/services/files/files.service';
+import { GlobalService } from 'src/app/services/global/global.service';
+import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 
 @Component({
@@ -36,12 +44,23 @@ import { ModalsService } from 'src/app/services/modals/modals.service';
     HeaderBarComponent,
     ReactiveFormsModule,
   ],
+  providers: [TitleCasePipe],
 })
 export class MantUnitsPage implements OnInit {
   protected unit?: IUnit;
   protected form: FormGroup;
+  protected headerButtons: Array<IButton>;
+  protected loading: boolean = false;
 
-  constructor(private _modal: ModalsService, private _alert: AlertsService) {
+  constructor(
+    private _modal: ModalsService,
+    private _alert: AlertsService,
+    private _localUnit: LocalUnitsService,
+    private _unit: UnitService,
+    private _file: FilesService,
+    private _title: TitleCasePipe,
+    private _global: GlobalService
+  ) {
     addIcons({ search });
 
     this.form = new FormGroup({
@@ -51,6 +70,15 @@ export class MantUnitsPage implements OnInit {
       ]),
       short: new FormControl(null, [Validators.maxLength(10)]),
     });
+
+    this.headerButtons = [
+      {
+        title: 'LIMPIAR',
+        do: async () => {
+          await this.clearForm();
+        },
+      },
+    ];
   }
 
   ngOnInit() {}
@@ -65,13 +93,13 @@ export class MantUnitsPage implements OnInit {
     this.form.get('short')?.setValue(unit.shortcut);
   }
 
-  private checkForm(): boolean{
-    if(this.form.get('name')?.invalid){
+  private checkForm(): boolean {
+    if (this.form.get('name')?.invalid) {
       this._alert.showError('Nombre inválido');
       return false;
     }
 
-    if(this.form.get('short')?.invalid){
+    if (this.form.get('short')?.invalid) {
       this._alert.showError('Abreviatura inválida');
       return false;
     }
@@ -79,9 +107,120 @@ export class MantUnitsPage implements OnInit {
     return true;
   }
 
-  protected async onSave(){
-    if(!this.checkForm()) return;
+  protected async onSave() {
+    if (!this.checkForm()) return;
 
+    const text = this.unit
+      ? '¿Está seguro de modificar la unidad?'
+      : '¿Está seguro de guardar la unidad?';
+    if (!(await this._alert.showConfirm('CONFIRME', text))) return;
 
+    this.loading = true;
+    const unit: IUnit = {
+      id: await this._localUnit.getNextID(),
+      name: this._title.transform(this.form.get('name')!.value as string),
+      shortcut:  this.form.get('short')?.value ? (this.form.get('short')?.value as string).toUpperCase() : undefined,
+      state: true,
+      uploaded: States.NOT_INSERTED
+    };
+
+    if (!this.unit) {
+      const updated = (await this._unit.insert(unit)) ? States.SYNC : States.NOT_INSERTED;
+
+      unit.uploaded = updated;
+      await this._localUnit
+        .insert(unit)
+        .then(() => {
+          this._alert.showSuccess('UNIDAD GUARDADA');
+          this._global.updateData();
+          this.clearForm(false);
+        })
+        .catch((err) => {
+          this._alert.showError('Error guardando unidad');
+          this._file.saveError(err);
+        });
+    } else {
+      unit.id = this.unit.id;
+      const updated = (await this._unit.update(unit)) ? States.SYNC : States.NOT_UPDATED;
+      unit.uploaded = updated;
+      await this._localUnit
+        .update(unit)
+        .then(() => {
+          this._alert.showSuccess('UNIDAD MODIFICADA');
+          this._global.updateData();
+          this.clearForm(false);
+        })
+        .catch((err) => {
+          this._alert.showError('Error modificando unidad');
+          this._file.saveError(err);
+        });
+    }
+    this.loading = false;
+  }
+
+  private async clearForm(showWarning: boolean = true) {
+    if (showWarning) {
+      if (
+        !(await this._alert.showConfirm(
+          'CONFIRME',
+          '¿Está seguro de limpiar el formulario?'
+        ))
+      )
+        return;
+    }
+
+    this.form.reset();
+    this.unit = undefined;
+  }
+
+  protected async deactivate() {
+    if (!this.unit) return;
+
+    if (
+      !(await this._alert.showConfirm(
+        'CONFIRME',
+        '¿Está seguro de desactivar esta unidad?'
+      ))
+    )
+      return;
+
+    const disable = async (unit: IUnit) => {
+      const result = (await this._unit.delete(unit)) ? States.SYNC : States.NOT_DELETED;
+
+      unit.uploaded = result;
+      await this._localUnit
+        .deactivate(unit)
+        .then(() => {
+          this._alert.showSuccess('Unidad desactivada');
+          this._global.updateData();
+        })
+        .catch((err) => {
+          this._alert.showError('Error al desactivar unidad');
+          this._file.saveError(err);
+        });
+    };
+
+    const activate = async (unit: IUnit) => {
+      unit.state = true;
+      const result = (await this._unit.update(unit)) ? States.SYNC : States.NOT_UPDATED;
+
+      unit.uploaded = result;
+      await this._localUnit
+        .update(unit)
+        .then(() => {
+          this._alert.showSuccess('Unidad activada');
+          this._global.updateData();
+        })
+        .catch((err) => {
+          this._alert.showError('Error al activar unidad');
+          this._file.saveError(err);
+        });
+    };
+
+    if (this.unit.state) {
+      await disable(this.unit);
+    } else {
+      await activate(this.unit);
+    }
   }
 }

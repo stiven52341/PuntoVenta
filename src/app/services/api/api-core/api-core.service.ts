@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { ApiKeys } from 'src/app/models/constants';
+import { ApiKeys, States } from 'src/app/models/constants';
 import { FilesService } from '../../files/files.service';
 
 export interface Entity {
   id: string | number | Object;
-  state: boolean
+  state: boolean,
+  uploaded: States
 }
 
 @Injectable({
@@ -28,7 +29,9 @@ export class ApiCoreService<T extends Entity> {
 
     if (!result) return null;
 
-    return JSON.parse(result) as Array<T>;
+    const data =  JSON.parse(result) as Array<T>;
+    data.map(value => value.uploaded = States.DOWNLOADED);
+    return data;
   }
 
   public async get(id: string | number | Object): Promise<T | null> {
@@ -52,13 +55,15 @@ export class ApiCoreService<T extends Entity> {
 
     if (!result) return null;
 
-    return result as T;
+    const data = result as T;
+    data.uploaded = States.DOWNLOADED;
+    return data;
   }
 
   public async getByParam(
     param: string,
     value: string | number | Object
-  ): Promise<T | Array<T> | null> {
+  ): Promise<Array<T> | null> {
     if (value instanceof Object) {
       value = JSON.stringify(value);
     }
@@ -72,10 +77,13 @@ export class ApiCoreService<T extends Entity> {
 
     if (!result) return null;
 
-    return (result as T) || Array<T>;
+    const data = result as Array<T>;
+    data.map(val => val.uploaded =States.DOWNLOADED);
+    return data;
   }
 
   public async insert(object: T): Promise<number | string | Object | undefined> {
+
     const result = await firstValueFrom(
       this._http.post(`${this.path}/insert`, object)
     ).catch((err) => {

@@ -1,6 +1,8 @@
+import { States } from "./constants"
+
 export interface IImageCategory {
   id: number,
   image: string,
-  uploaded?: boolean,
+  uploaded: States
   state: boolean
 }

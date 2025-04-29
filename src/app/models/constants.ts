@@ -1,5 +1,5 @@
 export enum ApiKeys {
-  PATH = 'http://192.168.100.11:8080/',
+  PATH = 'http://192.168.235.145:8080/',
   PRODUCTS = PATH + 'products',
   CATEGORIES = PATH + 'categories',
   CURRENCIES = PATH + 'currencies',
@@ -35,4 +35,13 @@ export enum StorageKeys {
 export enum PhotoKeys {
   PRODUCTS_ALBUMN = 'products',
   CATEGORIES_ALBUM = 'categories',
+}
+
+export enum States {
+  SYNC = 'sync',
+  NOT_INSERTED = 'not-inserted',
+  NOT_UPDATED = 'not-updated',
+  NOT_DELETED = 'not-deleted',
+  NOT_SYNCABLE = 'not-syncable',
+  DOWNLOADED = 'downloaded'
 }

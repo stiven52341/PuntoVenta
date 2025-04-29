@@ -1,9 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  OnInit,
-} from '@angular/core';
+import { Component, EventEmitter, OnInit } from '@angular/core';
 import {
   IonContent,
   IonHeader,
@@ -20,7 +15,6 @@ import { PhotosService } from 'src/app/services/photos/photos.service';
 import { PhotoKeys } from 'src/app/models/constants';
 import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
 import { IProduct } from 'src/app/models/product.model';
-import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
@@ -28,6 +22,13 @@ import { AppComponent } from 'src/app/app.component';
 import { LocalProductCategoryService } from 'src/app/services/local/local-product-category/local-product-category.service';
 import { IProductCategory } from 'src/app/models/product-category.model';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { GlobalService } from 'src/app/services/global/global.service';
+
+interface IProductDetail {
+  product: IProduct;
+  unitProduct: IUnitProduct;
+  image?: string;
+}
 
 @Component({
   selector: 'app-products',
@@ -66,15 +67,16 @@ export class ProductsPage implements OnInit {
   protected onSelectCategory = new EventEmitter<ICategory>();
   protected selectedCategory?: ICategory;
 
+  private generating: boolean = false;
+
   constructor(
     private _categories: LocalCategoriesService,
     private _photo: PhotosService,
     private _products: LocalProductsService,
-    private _cart: LocalCartService,
     private _modal: ModalsService,
     private _unitProduct: LocalUnitProductsService,
     private _productCategory: LocalProductCategoryService,
-    private _cg: ChangeDetectorRef
+    private _global: GlobalService
   ) {}
 
   async ngOnInit() {
@@ -83,7 +85,7 @@ export class ProductsPage implements OnInit {
     //     await this.onInit();
     //   }
     // });
-    AppComponent.updateData.subscribe(async () => {
+    this._global.listenToChanges().subscribe(async () => {
       await this.onInit();
     });
   }
@@ -91,7 +93,7 @@ export class ProductsPage implements OnInit {
   private async onInit() {
     this.loading = true;
     await this.loadProducts();
-    this.generateItems(this.products);
+    await this.generateItems(this.products);
     this.loading = false;
   }
 
@@ -109,12 +111,8 @@ export class ProductsPage implements OnInit {
       ])
     );
 
-    const unitProducts = data[2].filter(uni => uni.state == true);
-    const productCategories = data[3].filter(pro => pro.state == true);
-
-    debugger;
-    console.log(unitProducts);
-
+    const unitProducts = data[2].filter((uni) => uni.state == true);
+    const productCategories = data[3].filter((pro) => pro.state == true);
 
     const getPhotosCategories = async (category: ICategory) => {
       const image = await this._photo.getPhoto(
@@ -131,17 +129,13 @@ export class ProductsPage implements OnInit {
       await getPhotosCategories(category);
     }
 
-    const getPhotosProducts = async (product: IProduct) => {
-      const image = await this._photo.getPhoto(
-        product.id.toString(),
-        PhotoKeys.PRODUCTS_ALBUMN
-      );
+    const assignProducts = async (product: IProduct) => {
       this.products.push({
         product: product,
         unitProduct: unitProducts.find(
           (u) => u.idProduct == product.id && u.isDefault && u.state
         )!,
-        image: image,
+        image: undefined,
         categories: productCategories.filter(
           (c) => c.id.idProduct == product.id
         ),
@@ -149,21 +143,21 @@ export class ProductsPage implements OnInit {
     };
 
     for (const product of data[1]) {
-      if(!product.state) continue;
-      await getPhotosProducts(product);
+      if (!product.state) continue;
+      await assignProducts(product);
     }
   }
 
-  protected generateItems(
-    products: Array<{
-      product: IProduct;
-      unitProduct: IUnitProduct;
-      image?: string;
-    }>,
+  protected async generateItems(
+    products: Array<IProductDetail>,
     offset: number = 10
   ) {
+    if(this.generating) return;
+
+    this.generating = true;
     const count = this.productsFiltered.length;
 
+    const newList: Array<IProductDetail> = [];
     for (let i = 0; i < offset; i++) {
       if (
         products[i + count] &&
@@ -171,12 +165,23 @@ export class ProductsPage implements OnInit {
           (pro) => +pro.product.id == +products[i + count].product.id
         )
       ) {
-        this.productsFiltered.push(products[i + count]);
+        const product = products[i + count];
+        newList.push(product);
       }
     }
+
+    const pros = newList.map(async product => {
+      if(!product.image || product.image == ''){
+        product.image = await this.getPhotoProduct(product.product);
+      }
+    });
+
+    await firstValueFrom(forkJoin(pros));
+    this.productsFiltered.push(...newList);
+    this.generating = false;
   }
 
-  protected onScroll($event: Event) {
+  protected async onScroll($event: Event) {
     if (this.productsFiltered.length >= this.products.length) return;
 
     this.loadingScroll = true;
@@ -187,8 +192,10 @@ export class ProductsPage implements OnInit {
     const offsetHeight = target.offsetHeight;
 
     if (scrollTop + offsetHeight >= scrollHeight - 5) {
-      this.generateItems(this.products);
+      this.loading = true;
+      await this.generateItems(this.products);
       setTimeout(() => (this.loadingScroll = false), 700);
+      this.loading = false;
     }
   }
 
@@ -206,7 +213,7 @@ export class ProductsPage implements OnInit {
     );
   }
 
-  protected search($event: CustomEvent) {
+  protected async search($event: CustomEvent) {
     const search = ($event.detail.value as string).trim().toLowerCase();
 
     const newList = this.products.filter((product) => {
@@ -214,10 +221,14 @@ export class ProductsPage implements OnInit {
     });
 
     this.productsFiltered = [];
-    this.generateItems(newList);
+    this.loading = true;
+    await this.generateItems(newList);
+    this.loading = false;
   }
 
-  protected filterByCategory(category: ICategory) {
+  protected async filterByCategory(category: ICategory) {
+    if(this.loading)return;
+
     this.onSelectCategory.emit(category);
     if (this.selectedCategory && +this.selectedCategory.id == +category.id) {
       this.reset();
@@ -232,13 +243,24 @@ export class ProductsPage implements OnInit {
       });
 
       this.productsFiltered = [];
-      this.generateItems(newList);
+      this.loading = true;
+      await this.generateItems(newList);
+      this.loading = false;
     }
   }
 
-  protected reset() {
+  protected async reset() {
+    this.loading = true;
     this.productsFiltered = [];
     this.selectedCategory = undefined;
-    this.generateItems(this.products);
+    await this.generateItems(this.products);
+    this.loading = false;
+  }
+
+  private async getPhotoProduct(product: IProduct) {
+    return await this._photo.getPhoto(
+      product.id.toString(),
+      PhotoKeys.PRODUCTS_ALBUMN
+    );
   }
 }

@@ -46,7 +46,7 @@ export class UnitListComponent implements OnInit {
   }
 
   private async onInit() {
-    this.units = await this._unit.getAll();
+    this.units = (await this._unit.getAll()).sort((a,b) => +a.id - +b.id);
     this.generateItems(this.units);
   }
 

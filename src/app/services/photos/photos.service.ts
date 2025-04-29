@@ -16,6 +16,7 @@ export class PhotosService {
   constructor(private _alert: AlertsService, private _file: FilesService) {}
 
   public async createAlbumn(albumn: PhotoKeys) {
+    if (!(await this.requestGalleryAccess())) return;
     const alb = await this.getAlbumn(albumn);
     if (alb) return alb;
 
@@ -24,38 +25,47 @@ export class PhotosService {
   }
 
   public async getAlbumn(albumn: PhotoKeys) {
+    if (!(await this.requestGalleryAccess())) return;
     return ((await Media.getAlbums()).albums || []).find(
       (a) => a.name == albumn
     );
   }
 
   public async savePhoto(name: string, data: string, albumnName: PhotoKeys) {
-
+    if (!(await this.requestGalleryAccess())) return;
     const albumn = await this.createAlbumn(albumnName);
     await Media.savePhoto({
       path: data,
       fileName: name,
       albumIdentifier: albumn!.identifier,
-
     });
   }
 
   public async savePhotos(photos: Array<IImageProduct>, album: PhotoKeys) {
     if (!(await this.requestGalleryAccess())) return;
-    const pros: Array<Promise<void>> = [];
-    photos.forEach((photo) => {
-      pros.push(this.savePhoto(photo.id.toString(), photo.image, album));
-    });
 
-    await firstValueFrom(forkJoin(pros)).catch((err) => {
-      throw err;
-    });
+    try {
+      await this.savePhoto(photos[0].id.toString(), photos[0].image, album);
+
+      photos.shift();
+      const pros: Array<Promise<void>> = [];
+      photos.map(async (photo) => {
+        pros.push(this.savePhoto(photo.id.toString(), photo.image, album));
+      });
+      await firstValueFrom(forkJoin(pros)).catch((err) => {
+        throw err;
+      });
+    } catch (err) {
+      this._file.saveError(err);
+    }
   }
 
   public async getPhoto(
     name: string,
     album: PhotoKeys
   ): Promise<string | undefined> {
+    if (!(await this.requestGalleryAccess())) return;
+
     const path = `/Android/media/${
       (await App.getInfo()).id
     }/${album}/${name}.png`;
@@ -65,34 +75,42 @@ export class PhotosService {
   }
 
   public async requestGalleryAccess(): Promise<boolean> {
+    if (!(await this._file.requestStoragePermission())) return false;
+
     const status = await Camera.checkPermissions();
-    if (status.photos !== 'granted') {
+    if (status.photos !== 'granted' || status.camera !== 'granted') {
       const requestResult = await Camera.requestPermissions({
-        permissions: ['photos'],
+        permissions: ['photos', 'camera'],
       });
-      return requestResult.photos == 'granted';
+      return (
+        requestResult.photos === 'granted' && requestResult.camera === 'granted'
+      );
     } else {
       return true;
     }
   }
 
-  public async takePhoto(): Promise<string | undefined>{
+  public async takePhoto(): Promise<string | undefined> {
     try {
+      if (!(await this.requestGalleryAccess())) return;
       const image = await Camera.getPhoto({
         quality: 70,
         allowEditing: false,
         resultType: CameraResultType.Base64,
-        source: CameraSource.Camera
+        source: CameraSource.Camera,
       });
-      return image.base64String ? ('data:image/png;base64,' + image.base64String) : undefined;;
+      return image.base64String
+        ? 'data:image/png;base64,' + image.base64String
+        : undefined;
     } catch (error) {
       this._file.saveError(error);
       return undefined;
     }
   }
 
-  public async openGallery(): Promise<string | undefined>{
+  public async openGallery(): Promise<string | undefined> {
     try {
+      if (!(await this.requestGalleryAccess())) return;
       const image = await Camera.getPhoto({
         quality: 70,
         allowEditing: false,
@@ -100,7 +118,9 @@ export class PhotosService {
         source: CameraSource.Photos,
       });
 
-      return image.base64String ? ('data:image/png;base64,' + image.base64String) : undefined;
+      return image.base64String
+        ? 'data:image/png;base64,' + image.base64String
+        : undefined;
     } catch (error) {
       this._file.saveError(error);
       return undefined;

@@ -6,23 +6,23 @@ const config: CapacitorConfig = {
   webDir: 'www',
   plugins: {
     Media: {
-      androidGalleryMode: true
+      androidGalleryMode: true,
     },
     SplashScreen: {
       launchShowDuration: 0,
     },
     StatusBar: {
       overlaysWebView: false,
-      style: "DARK",
-      backgroundColor: "#ffffffff"
+      style: 'DARK',
+      backgroundColor: '#ffffffff',
     }
   },
   android: {
-    allowMixedContent: true
+    allowMixedContent: true,
   },
   server: {
-    cleartext: true  // This enables HTTP support for local dev
-  }
+    cleartext: true, // This enables HTTP support for local dev
+  },
 };
 
 export default config;

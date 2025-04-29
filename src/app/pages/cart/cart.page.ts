@@ -19,7 +19,7 @@ import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.s
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { IProduct } from 'src/app/models/product.model';
 import { PhotosService } from 'src/app/services/photos/photos.service';
-import { PhotoKeys } from 'src/app/models/constants';
+import { PhotoKeys, States } from 'src/app/models/constants';
 import { distinctUntilChanged, firstValueFrom, forkJoin } from 'rxjs';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
@@ -28,10 +28,12 @@ import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';
 import { IPurchase } from 'src/app/models/purchase.model';
 import { PurchaseService } from 'src/app/services/api/purchase/purchase.service';
 import { LocalPurchaseService } from 'src/app/services/local/local-purchase/local-purchase.service';
+import { IUnit } from 'src/app/models/unit.model';
 
-interface IProductCart {
+export interface IProductCart {
   product: IProduct;
-  unit: IUnitProduct;
+  price: IUnitProduct;
+  unit: IUnit
   amount: number;
   photo?: string;
 }
@@ -115,14 +117,14 @@ export class CartPage implements OnInit {
     await firstValueFrom(forkJoin(pros));
   }
 
-  protected getTotalArticulo(product: IProductCart): number {
-    return product.unit.price * product.amount;
+  protected getTotalArticle(product: IProductCart): number {
+    return product.price.price * product.amount;
   }
 
   protected getTotal() {
     let total = 0;
     this.products.map((product) => {
-      total += this.getTotalArticulo(product);
+      total += this.getTotalArticle(product);
     });
     return total;
   }
@@ -154,14 +156,15 @@ export class CartPage implements OnInit {
       purchaseDetails.push({
         id: {
           idPurchase: 0,
-          idUnitProductCurrency: product.unit.id,
+          idUnitProductCurrency: product.price.id,
         },
         amount: product.amount,
         state: true,
-        priceUsed: product.unit.price,
+        priceUsed: product.price.price,
+        uploaded: States.NOT_INSERTED
       });
 
-      total += this.getTotalArticulo(product);
+      total += this.getTotalArticle(product);
     });
 
     const purchase: IPurchase = {
@@ -170,6 +173,7 @@ export class CartPage implements OnInit {
       state: true,
       details: purchaseDetails,
       id: 0,
+      uploaded: States.NOT_INSERTED
     };
 
     const save = async (purchase: IPurchase) => {

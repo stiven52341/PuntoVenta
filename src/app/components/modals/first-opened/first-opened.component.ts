@@ -11,7 +11,7 @@ import {
   IonCardContent,
   IonSpinner,
 } from '@ionic/angular/standalone';
-import { firstValueFrom, forkJoin } from 'rxjs';
+import { firstValueFrom, forkJoin, lastValueFrom } from 'rxjs';
 import { PhotoKeys } from 'src/app/models/constants';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { CategoryService } from 'src/app/services/api/category/category.service';
@@ -25,6 +25,7 @@ import { ProductCategoryService } from 'src/app/services/api/product-category/pr
 import { ProductService } from 'src/app/services/api/product/product.service';
 import { UnitProductService } from 'src/app/services/api/unit-product/unit-product.service';
 import { UnitService } from 'src/app/services/api/unit/unit.service';
+import { FilesService } from 'src/app/services/files/files.service';
 import { GeneralInfoService } from 'src/app/services/local/general-info/general-info.service';
 import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
 import { LocalCurrenciesService } from 'src/app/services/local/local-currencies/local-currencies.service';
@@ -38,6 +39,12 @@ import { LocalUnitProductsService } from 'src/app/services/local/local-unit-prod
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 import { PhotosService } from 'src/app/services/photos/photos.service';
+import { AndroidPermissionsOriginal } from '@ionic-native/android-permissions';
+import { PurchaseService } from 'src/app/services/api/purchase/purchase.service';
+import { LocalPurchaseService } from 'src/app/services/local/local-purchase/local-purchase.service';
+import { LocalPurchaseDetailService } from 'src/app/services/local/local-purchase-detail/local-purchase-detail.service';
+import { IPurchase } from 'src/app/models/purchase.model';
+import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';
 
 @Component({
   selector: 'app-first-opened',
@@ -62,6 +69,7 @@ export class FirstOpenedComponent implements OnInit {
   private _alert = inject(AlertsService);
   private _info = inject(GeneralInfoService);
   private _modal = inject(ModalsService);
+  private _file = inject(FilesService);
 
   //Api
   private _categoryApi = inject(CategoryService);
@@ -75,7 +83,8 @@ export class FirstOpenedComponent implements OnInit {
   private _inventoryIncomeApi = inject(InventoryIncomeService);
   private _inventoryIncomeDetailApi = inject(InventoryIncomeDetailService);
   private _imageCategoriesApi = inject(ImageCategoryService);
-  private _productCategoryApi = inject(ProductCategoryService)
+  private _productCategoryApi = inject(ProductCategoryService);
+  private _purchaseApi = inject(PurchaseService);
 
   //Local
   private _categorySto = inject(LocalCategoriesService);
@@ -89,6 +98,8 @@ export class FirstOpenedComponent implements OnInit {
   private _unitSto = inject(LocalUnitsService);
   private _photoSto = inject(PhotosService);
   private _proCategoriesSto = inject(LocalProductCategoryService);
+  private _purchaseSto = inject(LocalPurchaseService);
+  private _purchaseDetailSto = inject(LocalPurchaseDetailService);
 
   constructor() {}
 
@@ -98,27 +109,33 @@ export class FirstOpenedComponent implements OnInit {
     this.loading = false;
   }
 
-  public async onInit(){
-    const result = await firstValueFrom(forkJoin([
-      this._categoryApi.getAll(),
-      this._currencyApi.getAll(),
-      this._imageApi.getAll(),
-      this._inventoryCheckApi.getAll(),
-      this._inventoryCheckDetailApi.getAll(),
-      this._productsApi.getAll(),
-      this._unitApi.getAll(),
-      this._unitProductApi.getAll(),
-      this._inventoryIncomeApi.getAll(),
-      this._inventoryIncomeDetailApi.getAll(),
-      this._imageCategoriesApi.getAll(),
-      this._productCategoryApi.getAll()
-    ])).catch(async err => {
+  public async onInit() {
+    if (!(await this._file.requestStoragePermission())) return;
+    if (!(await this._photoSto.requestGalleryAccess())) return;
+
+    const result = await firstValueFrom(
+      forkJoin([
+        this._categoryApi.getAll(),
+        this._currencyApi.getAll(),
+        this._imageApi.getAll(),
+        this._inventoryCheckApi.getAll(),
+        this._inventoryCheckDetailApi.getAll(),
+        this._productsApi.getAll(),
+        this._unitApi.getAll(),
+        this._unitProductApi.getAll(),
+        this._inventoryIncomeApi.getAll(),
+        this._inventoryIncomeDetailApi.getAll(),
+        this._imageCategoriesApi.getAll(),
+        this._productCategoryApi.getAll(),
+        this._purchaseApi.getAll(),
+      ])
+    ).catch(async (err) => {
       this._alert.showError('Error descargando los datos');
       this._info.setNotSuccessful();
       console.error(err);
     });
 
-    if(!result) return;
+    if (!result) return;
 
     const categories = result[0] || [];
     const currencies = result[1] || [];
@@ -130,38 +147,68 @@ export class FirstOpenedComponent implements OnInit {
     const unitProducts = result[7] || [];
     const incomes = result[8] || [];
     const incomeDetails = result[9] || [];
-    const imagesCategories =result[10] || [];
-    const productCategories =result[11] || [];
+    const imagesCategories = result[10] || [];
+    const productCategories = result[11] || [];
+    const purchases = result[12] || [];
 
-    imagesPros.map(image => image.image = `data:image/png;base64,${image.image}`);
-    imagesCategories.map(image => image.image = `data:image/png;base64,${image.image}`);
+    imagesPros.map(
+      (image) => (image.image = `data:image/png;base64,${image.image}`)
+    );
+    imagesCategories.map(
+      (image) => (image.image = `data:image/png;base64,${image.image}`)
+    );
 
-    const result2 = await firstValueFrom(forkJoin([
-      this._categorySto.set(categories),
-      this._currenciesSto.set(currencies),
-      this._inventoryCheckSto.set(inventoryChecks),
-      this._inventoryCheckDetailsSto.set(inventoryCheckDetails),
-      this._productsSto.set(products),
-      this._unitSto.set(units),
-      this._unitProductsSto.set(unitProducts),
-      this._inventoryIncomeSto.set(incomes),
-      this._inventoryIncomeDetailSto.set(incomeDetails),
-      this._photoSto.savePhotos(imagesPros, PhotoKeys.PRODUCTS_ALBUMN),
-      this._photoSto.savePhotos(imagesCategories,PhotoKeys.CATEGORIES_ALBUM),
-      this._proCategoriesSto.set(productCategories)
-    ])).catch(err => {
+    const setPurchases = async (purchases: Array<IPurchase>) => {
+      const details: Array<IPurchaseDetail> = [];
+      purchases.forEach((purchase) => {
+        details.push(...(purchase.details || []));
+        purchase.details = undefined;
+      });
+
+      await firstValueFrom(
+        forkJoin([
+          this._purchaseSto.set(purchases),
+          this._purchaseDetailSto.set(details),
+        ])
+      );
+    };
+
+    const result2 = await firstValueFrom(
+      forkJoin([
+        this._categorySto.set(categories),
+        this._currenciesSto.set(currencies),
+        this._inventoryCheckSto.set(inventoryChecks),
+        this._inventoryCheckDetailsSto.set(inventoryCheckDetails),
+        this._productsSto.set(products),
+        this._unitSto.set(units),
+        this._unitProductsSto.set(unitProducts),
+        this._inventoryIncomeSto.set(incomes),
+        this._inventoryIncomeDetailSto.set(incomeDetails),
+        this._proCategoriesSto.set(productCategories),
+        setPurchases(purchases)
+      ])
+    ).catch((err) => {
       this._alert.showError('Error guardando los datos');
       this._info.setNotSuccessful();
       console.error(err);
+      return err as Error;
     });
 
-    if(!result2){
+    await this._photoSto.savePhotos(imagesPros, PhotoKeys.PRODUCTS_ALBUMN);
+    await this._photoSto.savePhotos(
+      imagesCategories,
+      PhotoKeys.CATEGORIES_ALBUM
+    );
+
+    if (!result2 || result2 instanceof Error) {
       this._modal.closeModal('first-time-modal');
       return;
     }
 
     await this._info.setSuccesful();
-    this._modal.closeModal('first-time-modal');
-    this._alert.showSuccess('Datos descargados. Puede comenzar a utilizar la aplicación.');
+    await this._modal.closeModal('first-time-modal');
+    this._alert.showSuccess(
+      'Datos descargados. Puede comenzar a utilizar la aplicación.'
+    );
   }
 }

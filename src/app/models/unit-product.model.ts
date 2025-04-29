@@ -1,3 +1,5 @@
+import { States } from "./constants";
+
 export interface IUnitProduct {
   id: number;
   idUnit: number;
@@ -10,5 +12,5 @@ export interface IUnitProduct {
   unit?: string;
   currency?: string;
   state: boolean;
-  uploaded?: boolean
+  uploaded: States
 }

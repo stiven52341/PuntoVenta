@@ -18,10 +18,14 @@ import { ModalsService } from './services/modals/modals.service';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 //DO NOT REMOVE
-import { ProductComponent } from './components/modals/product/product.component'
+import { ProductComponent } from './components/modals/product/product.component';
 import { IButton } from './models/button.model';
 import { ButtonListComponent } from './components/button-list/button-list.component';
 import { FilesService } from './services/files/files.service';
+import { PhotosService } from './services/photos/photos.service';
+import { States } from './models/constants';
+import { GlobalService } from './services/global/global.service';
+import { ToastService } from './services/toast/toast.service';
 
 @Component({
   selector: 'app-root',
@@ -37,12 +41,11 @@ import { FilesService } from './services/files/files.service';
     //DO NOT REMOVE
     ProductComponent,
     IonContent,
-    ButtonListComponent
+    ButtonListComponent,
   ],
 })
 export class AppComponent implements OnInit {
   // public static loadingData = new EventEmitter<boolean>();
-  public static updateData = new EventEmitter<void>();
 
   protected menuOptions: Array<IButton>;
 
@@ -51,14 +54,17 @@ export class AppComponent implements OnInit {
     private _menuCtrl: MenuController,
     private _generalInfo: GeneralInfoService,
     private _modal: ModalsService,
-    private _file: FilesService
+    private _file: FilesService,
+    private _global: GlobalService,
+    private _toast: ToastService
   ) {
-
-    ScreenOrientation.lock({orientation: 'portrait'}).then(() =>{
-      console.log('Screen locked to portrait');
-    }).catch(async err => {
-      await this._file.saveError(err);
-    });
+    ScreenOrientation.lock({ orientation: 'portrait' })
+      .then(() => {
+        console.log('Screen locked to portrait');
+      })
+      .catch(async (err) => {
+        await this._file.saveError(err);
+      });
 
     this.menuOptions = [
       {
@@ -89,7 +95,13 @@ export class AppComponent implements OnInit {
           await this.goTo('/mants');
         },
       },
-
+      {
+        title: 'Consultas',
+        image: '../assets/icon/search.png',
+        do: async () => {
+          await this.goTo('/consults');
+        },
+      },
     ];
 
     addIcons({});
@@ -97,11 +109,14 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     await this.onInit();
+    this._global.SyncData().then((result) => {
+      if(result) this._toast.showToast('Datos sincronizados');
+    });
   }
 
   private async onInit() {
     // AppComponent.loadingData.emit(true);
-    AppComponent.updateData.emit();
+    // AppComponent.updateData.emit();
     await StatusBar.setOverlaysWebView({
       overlay: false,
     });
@@ -118,21 +133,22 @@ export class AppComponent implements OnInit {
         await this._generalInfo.update(info);
       }
       // AppComponent.loadingData.emit(false);
-      AppComponent.updateData.emit();
+      this._global.updateData();
       return;
     }
 
     info = {
       id: 1,
       isFirstTime: true,
-      state: true
+      state: true,
+      uploaded: States.NOT_SYNCABLE,
     };
 
     await this._generalInfo.insert(info);
 
     await this._modal.showFirstOpenedModal();
     // AppComponent.loadingData.emit(false);
-    AppComponent.updateData.emit();
+    this._global.updateData();
   }
 
   private async goTo(path: string) {

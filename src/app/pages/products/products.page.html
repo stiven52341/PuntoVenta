@@ -21,7 +21,6 @@
       <div class="categories">
         @for(category of this.categories; track category.category.id){
         <app-category-card
-
           (click)="filterByCategory(category.category)"
           [image]="category.image"
           [category]="category.category"

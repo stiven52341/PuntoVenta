@@ -1,8 +1,9 @@
-import { IProduct } from "./product.model";
-import { IUnitProduct } from "./unit-product.model";
+import { IProductCart } from "../pages/cart/cart.page";
+import { States } from "./constants";
 
 export interface ICart{
   id: number,
-  products: Array<{product: IProduct, unit: IUnitProduct, amount: number}>,
-  state: boolean
+  products: Array<IProductCart>,
+  state: boolean,
+  uploaded: States
 }

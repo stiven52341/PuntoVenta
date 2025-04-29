@@ -3,6 +3,7 @@
     [title]="'UNIDADES'"
     [arrowBack]="true"
     [isModal]="false"
+    [buttons]="headerButtons"
   ></app-header-bar>
 </ion-header>
 
@@ -41,12 +42,12 @@
 
         <div class="footer-content">
           @if(unit){
-          <ion-button color="danger" type="button">
+          <ion-button (click)="deactivate()" color="danger" type="button">
             <ion-label>DESACTIVAR</ion-label>
           </ion-button>
           }
 
-          <ion-button type="submit">
+          <ion-button [disabled]="loading" type="submit">
             <ion-label>GUARDAR</ion-label>
           </ion-button>
         </div>

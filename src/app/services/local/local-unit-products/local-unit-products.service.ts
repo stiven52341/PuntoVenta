@@ -14,14 +14,16 @@ export class LocalUnitProductsService extends InternalStorageCoreService<IUnitPr
 
   public override async insert(obj: IUnitProduct) {
     if (obj.isDefault) {
-      debugger;
+
       const prices = (await this.getAll()).filter(
         (price) => +price.idProduct == +obj.idProduct
       );
 
       prices.map((price) => (price.isDefault = false));
-      const pros = prices.map((price) => this.update(price));
-      await firstValueFrom(forkJoin(pros));
+
+      for(const price of prices){
+        await this.update(price);
+      }
     }
 
     const oldValues = await this.getAll();

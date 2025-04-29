@@ -85,7 +85,7 @@
         }
       </ion-button>
     }
-    <ion-button (click)="onSave()"
+    <ion-button [disabled]="loading" (click)="onSave()"
       ><ion-label>GUARDAR</ion-label></ion-button
     >
   </div>

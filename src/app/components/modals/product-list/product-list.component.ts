@@ -16,7 +16,7 @@ import { LocalProductsService } from 'src/app/services/local/local-products/loca
 import { IProduct } from 'src/app/models/product.model';
 import { PhotosService } from 'src/app/services/photos/photos.service';
 import { PhotoKeys } from 'src/app/models/constants';
-import { firstValueFrom, forkJoin } from 'rxjs';
+import { firstValueFrom, forkJoin, Observable, Subscription } from 'rxjs';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -34,7 +34,7 @@ import { NgClass } from '@angular/common';
     IonContent,
     HeaderBarComponent,
     IonSearchbar,
-    NgClass
+    NgClass,
   ],
 })
 export class ProductListComponent implements OnInit {
@@ -44,6 +44,10 @@ export class ProductListComponent implements OnInit {
 
   protected products: Array<{ product: IProduct; image: string }> = [];
   protected productsFiltered: Array<{ product: IProduct; image: string }> = [];
+
+  private searchingSub?: Subscription;
+
+  private readonly noImage = '../../../../assets/no-image.png';
 
   constructor(
     private _modalCtrl: ModalController,
@@ -59,43 +63,84 @@ export class ProductListComponent implements OnInit {
 
   private async onInit() {
     const products = this.showOnlyActiveProducts
-      ? (await this._products.getAll()).filter((pro) => pro.state).sort((a,b) => a.id - b.id)
-      : (await this._products.getAll()).sort((a,b) => a.id - b.id);
+      ? (await this._products.getAll())
+          .filter((pro) => pro.state)
+          .sort((a, b) => a.id - b.id)
+      : (await this._products.getAll()).sort((a, b) => a.id - b.id);
     const pros = products.map(async (product) => {
-      const photo = await this._photo.getPhoto(
-        product.id.toString(),
-        PhotoKeys.PRODUCTS_ALBUMN
-      );
       this.products.push({
         product: product,
-        image: photo || '../../../../assets/no-image.png',
+        image: this.noImage,
       });
     });
     await firstValueFrom(forkJoin(pros));
 
-    this.generateItems(this.products);
+    await firstValueFrom(this.generateItems(this.products));
   }
 
   private generateItems(
     products: Array<{ product: IProduct; image: string }>,
-    offset: number = 25
-  ) {
-    const count = this.productsFiltered.length;
+    offset: number = 15
+  ): Observable<void> {
+    return new Observable<void>((ob) => {
+      this.loading = true;
 
-    for (let i = 0; i < offset; i++) {
-      if (products[count + i]) {
-        this.productsFiltered.push(products[count + i]);
+      if (this.searchingSub) {
+        this.searchingSub.unsubscribe();
+        this.searchingSub = undefined;
       }
-    }
+
+      const count = this.productsFiltered.length;
+
+      const newList: Array<{ product: IProduct; image: string }> = [];
+      for (let i = 0; i < offset; i++) {
+        if (
+          products[count + i] &&
+          !this.productsFiltered.some(
+            (pro) => +pro.product.id == +products[count + i].product.id
+          )
+        ) {
+          newList.push(products[count + i]);
+        }
+      }
+
+      const pros = newList.map(async (product) => {
+        if (product.image == this.noImage) {
+          product.image =
+            (await this._photo.getPhoto(
+              product.product.id.toString(),
+              PhotoKeys.PRODUCTS_ALBUMN
+            )) || this.noImage;
+        }
+      });
+
+      this.searchingSub = forkJoin(pros).subscribe({
+        next: () => {
+          this.productsFiltered.push(...newList);
+        },
+        complete: () => {
+          this.loading = false;
+          ob.complete();
+        },
+      });
+    });
   }
-  onIonInfinite(event: InfiniteScrollCustomEvent) {
-    this.generateItems(this.products);
+
+  async onIonInfinite(event: InfiniteScrollCustomEvent) {
+    await firstValueFrom(this.generateItems(this.products));
     setTimeout(() => {
       event.target.complete();
     }, 500);
   }
 
-  protected onSearch($event: CustomEvent) {
+  protected async onSearch($event: CustomEvent) {
+    this.loading = true;
+
+    if (this.searchingSub) {
+      this.searchingSub.unsubscribe();
+      this.searchingSub = undefined;
+    }
+
     const value = $event.detail.value as string;
     const newList = this.products.filter((product) => {
       return (
@@ -111,7 +156,8 @@ export class ProductListComponent implements OnInit {
       );
     });
     this.productsFiltered = [];
-    this.generateItems(newList);
+    this.searchingSub = this.generateItems(newList).subscribe();
+    this.loading = false;
   }
 
   protected async onClick(product: { product: IProduct; image: string }) {

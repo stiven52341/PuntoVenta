@@ -6,9 +6,13 @@ import { PricesComponent } from 'src/app/components/modals/prices/prices.compone
 import { ProductListComponent } from 'src/app/components/modals/product-list/product-list.component';
 import { ProductComponent } from 'src/app/components/modals/product/product.component';
 import { UnitListComponent } from 'src/app/components/modals/unit-list/unit-list.component';
+import { SellsListComponent } from 'src/app/components/modals/sells-list/sells-list.component';
 import { IProductCategory } from 'src/app/models/product-category.model';
+import { IPurchase } from 'src/app/models/purchase.model';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { IUnit } from 'src/app/models/unit.model';
+import { CategoriesListComponent } from 'src/app/components/modals/categories-list/categories-list.component';
+import { ICategory } from 'src/app/models/category.model';
 
 @Injectable({
   providedIn: 'root',
@@ -59,24 +63,46 @@ export class ModalsService {
     });
   }
 
-  public async showProductListModal(
-  ): Promise<{product: IProduct, image: string} | undefined> {
-    const result = (await this.showModal(ProductListComponent, 'product-list-modal'))?.data;
-    if(result){
-      return result as {product: IProduct, image: string};
+  public async showProductListModal(): Promise<
+    { product: IProduct; image: string } | undefined
+  > {
+    const result = (
+      await this.showModal(ProductListComponent, 'product-list-modal')
+    )?.data;
+    if (result) {
+      return result as { product: IProduct; image: string };
     }
     return undefined;
   }
 
-  public async showUnitsList(): Promise<IUnit | undefined>{
-    const result = (await this.showModal(UnitListComponent, 'unit-list'));
-    if(result && result.data) return result.data as IUnit;
+  public async showUnitsList(): Promise<IUnit | undefined> {
+    const result = await this.showModal(UnitListComponent, 'unit-list');
+    if (result && result.data) return result.data as IUnit;
     return undefined;
   }
 
-  public async showPrices(prices?: Array<IUnitProduct>): Promise<IUnitProduct | undefined>{
-    const result = (await this.showModal(PricesComponent, 'prices-list',{prices: prices}));
-    if(result && result.data) return result.data as IUnitProduct;
+  public async showPrices(
+    prices?: Array<IUnitProduct>
+  ): Promise<IUnitProduct | undefined> {
+    const result = await this.showModal(PricesComponent, 'prices-list', {
+      prices: prices,
+    });
+    if (result && result.data) return result.data as IUnitProduct;
+    return undefined;
+  }
+
+  public async showSellsList(): Promise<IPurchase | undefined> {
+    const result = await this.showModal(SellsListComponent, 'sells-list');
+    if (result && result.data) return result.data as IPurchase;
+    return undefined;
+  }
+
+  public async showCategoriesList(): Promise<
+    { category: ICategory; image: string } | undefined
+  > {
+    const result = await this.showModal(CategoriesListComponent, 'sells-list');
+    if (result && result.data)
+      return result.data as { category: ICategory; image: string };
     return undefined;
   }
 

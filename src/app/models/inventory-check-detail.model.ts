@@ -1,3 +1,5 @@
+import { States } from "./constants"
+
 export interface IInventoryCheckDetail{
   id: {
     id_inventory_check: number,
@@ -6,5 +8,5 @@ export interface IInventoryCheckDetail{
   },
   amount: number,
   state: boolean,
-  uploaded?: boolean
+  uploaded: States
 }

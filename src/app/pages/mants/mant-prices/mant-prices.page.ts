@@ -24,6 +24,8 @@ import { FilesService } from 'src/app/services/files/files.service';
 import { AppComponent } from 'src/app/app.component';
 import { IButton } from 'src/app/models/button.model';
 import { ToastService } from 'src/app/services/toast/toast.service';
+import { States } from 'src/app/models/constants';
+import { GlobalService } from 'src/app/services/global/global.service';
 
 @Component({
   selector: 'app-mant-prices',
@@ -63,7 +65,7 @@ export class MantPricesPage implements OnInit {
     private _alert: AlertsService,
     private _prices: UnitProductService,
     private _file: FilesService,
-    private _toast: ToastService
+    private _global: GlobalService
   ) {
     addIcons({ search });
 
@@ -151,6 +153,7 @@ export class MantPricesPage implements OnInit {
       idUnit: this.unit!.id,
       isDefault: this.defaultPrice,
       state: true,
+      uploaded: States.NOT_INSERTED
     };
 
     if (!this.selectedPrice) {
@@ -162,9 +165,10 @@ export class MantPricesPage implements OnInit {
       )
         return;
 
+      this.loading = true;
       const updated = (await this._prices.insert(newPrice)) ? true : false;
 
-      newPrice.uploaded = updated;
+      newPrice.uploaded = updated ? States.SYNC : States.NOT_INSERTED;
       await this._localPrices
         .insert(newPrice)
         .then(() => {
@@ -175,6 +179,7 @@ export class MantPricesPage implements OnInit {
           this._alert.showError('Error al guardar el nuevo precio');
           this._file.saveError(err);
         });
+      this.loading = false;
     } else {
       if (
         !(await this._alert.showConfirm(
@@ -184,20 +189,22 @@ export class MantPricesPage implements OnInit {
       )
         return;
 
+      this.loading = true;
       newPrice.id = this.selectedPrice.id;
       const updated = (await this._prices.update(newPrice)) ? true : false;
-      newPrice.uploaded = updated;
+      newPrice.uploaded = updated ? States.SYNC : States.NOT_UPDATED;
       await this._localPrices
         .update(newPrice)
         .then(() => {
           this._alert.showSuccess('Precio actualizado');
-          AppComponent.updateData.emit();
+          this._global.updateData();
           this.cleanForm(false);
         })
         .catch((err) => {
           this._alert.showError('Error al actualizar el precio');
           this._file.saveError(err);
         });
+      this.loading = false;
     }
   }
 
@@ -221,12 +228,12 @@ export class MantPricesPage implements OnInit {
           this._file.saveError(err);
         });
 
-      price.uploaded = result;
+      price.uploaded = result ? States.SYNC : States.NOT_DELETED;
       await this._localPrices
         .deactivate(price)
         .then(() => {
           this._alert.showSuccess('Precio desactivado');
-          AppComponent.updateData.emit();
+          this._global.updateData();
         })
         .catch((err) => {
           this._alert.showError('ERROR DESACIVANDO PRECIO');
@@ -246,12 +253,12 @@ export class MantPricesPage implements OnInit {
           this._file.saveError(err);
         });
 
-      price.uploaded = result;
+      price.uploaded = result ? States.SYNC : States.NOT_UPDATED;
       await this._localPrices
         .update(price)
         .then(() => {
           this._alert.showSuccess('Precio activado');
-          AppComponent.updateData.emit();
+          this._global.updateData();
         })
         .catch((err) => {
           this._alert.showError('ERROR ACTIVANDO PRECIO');
@@ -287,5 +294,6 @@ export class MantPricesPage implements OnInit {
     this.defaultPrice = false;
     this.selectedPrice = undefined;
     this.showPrices = false;
+    this.prices = [];
   }
 }
