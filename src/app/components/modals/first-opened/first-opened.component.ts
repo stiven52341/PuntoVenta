@@ -11,7 +11,7 @@ import {
   IonCardContent,
   IonSpinner,
 } from '@ionic/angular/standalone';
-import { firstValueFrom, forkJoin, lastValueFrom } from 'rxjs';
+import { firstValueFrom, forkJoin } from 'rxjs';
 import { PhotoKeys } from 'src/app/models/constants';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { CategoryService } from 'src/app/services/api/category/category.service';
@@ -39,12 +39,13 @@ import { LocalUnitProductsService } from 'src/app/services/local/local-unit-prod
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 import { PhotosService } from 'src/app/services/photos/photos.service';
-import { AndroidPermissionsOriginal } from '@ionic-native/android-permissions';
 import { PurchaseService } from 'src/app/services/api/purchase/purchase.service';
 import { LocalPurchaseService } from 'src/app/services/local/local-purchase/local-purchase.service';
 import { LocalPurchaseDetailService } from 'src/app/services/local/local-purchase-detail/local-purchase-detail.service';
 import { IPurchase } from 'src/app/models/purchase.model';
 import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';
+import { CashBoxService } from 'src/app/services/api/cash-box/cash-box.service';
+import { LocalCashBoxService } from 'src/app/services/local/local-cash-box/local-cash-box.service';
 
 @Component({
   selector: 'app-first-opened',
@@ -85,6 +86,7 @@ export class FirstOpenedComponent implements OnInit {
   private _imageCategoriesApi = inject(ImageCategoryService);
   private _productCategoryApi = inject(ProductCategoryService);
   private _purchaseApi = inject(PurchaseService);
+  private _cashBoxApi = inject(CashBoxService);
 
   //Local
   private _categorySto = inject(LocalCategoriesService);
@@ -100,6 +102,7 @@ export class FirstOpenedComponent implements OnInit {
   private _proCategoriesSto = inject(LocalProductCategoryService);
   private _purchaseSto = inject(LocalPurchaseService);
   private _purchaseDetailSto = inject(LocalPurchaseDetailService);
+  private _cashBoxSto = inject(LocalCashBoxService);
 
   constructor() {}
 
@@ -128,6 +131,7 @@ export class FirstOpenedComponent implements OnInit {
         this._imageCategoriesApi.getAll(),
         this._productCategoryApi.getAll(),
         this._purchaseApi.getAll(),
+        this._cashBoxApi.getAll(),
       ])
     ).catch(async (err) => {
       this._alert.showError('Error descargando los datos');
@@ -150,6 +154,7 @@ export class FirstOpenedComponent implements OnInit {
     const imagesCategories = result[10] || [];
     const productCategories = result[11] || [];
     const purchases = result[12] || [];
+    const cashBoxes = result[13] || [];
 
     imagesPros.map(
       (image) => (image.image = `data:image/png;base64,${image.image}`)
@@ -185,7 +190,8 @@ export class FirstOpenedComponent implements OnInit {
         this._inventoryIncomeSto.set(incomes),
         this._inventoryIncomeDetailSto.set(incomeDetails),
         this._proCategoriesSto.set(productCategories),
-        setPurchases(purchases)
+        setPurchases(purchases),
+        this._cashBoxSto.set(cashBoxes),
       ])
     ).catch((err) => {
       this._alert.showError('Error guardando los datos');

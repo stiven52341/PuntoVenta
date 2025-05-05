@@ -33,7 +33,7 @@ import { IUnit } from 'src/app/models/unit.model';
 export interface IProductCart {
   product: IProduct;
   price: IUnitProduct;
-  unit: IUnit
+  unit: IUnit;
   amount: number;
   photo?: string;
 }
@@ -161,7 +161,7 @@ export class CartPage implements OnInit {
         amount: product.amount,
         state: true,
         priceUsed: product.price.price,
-        uploaded: States.NOT_INSERTED
+        uploaded: States.NOT_INSERTED,
       });
 
       total += this.getTotalArticle(product);
@@ -173,16 +173,11 @@ export class CartPage implements OnInit {
       state: true,
       details: purchaseDetails,
       id: 0,
-      uploaded: States.NOT_INSERTED
+      uploaded: States.NOT_INSERTED,
     };
 
     const save = async (purchase: IPurchase) => {
-      let updated = false;
-      await this._purchase
-        .insert(purchase)
-        .then((resp) => {
-          if (resp) updated = true;
-        })
+      const result = await this._purchase.insert(purchase)
         .catch((err) => {
           this._file.saveError(err);
           this._toast.showToast(
@@ -190,8 +185,10 @@ export class CartPage implements OnInit {
           );
         });
 
+      purchase.uploaded = result ? States.SYNC : States.NOT_INSERTED;
+
       await this._localPurchase
-        .insert(purchase, updated)
+        .insert(purchase)
         .then(async () => {
           this._alert.showSuccess('COMPRA REGISTRADA');
           await this._cart.resetCart();

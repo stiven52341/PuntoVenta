@@ -68,6 +68,13 @@ export class AppComponent implements OnInit {
 
     this.menuOptions = [
       {
+        title: 'Caja',
+        image: '../assets/icon/cash.png',
+        do: async () => {
+
+        }
+      },
+      {
         title: 'Productos',
         image: '../assets/icon/apple.png',
         do: async () => {

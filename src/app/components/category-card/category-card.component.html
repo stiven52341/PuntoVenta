@@ -1,5 +1,8 @@
 <div class="card">
-  <img *ngIf="image" src="{{ image }}" alt="">
+  <div class="image">
+    <img *ngIf="image" src="{{ image }}" alt="">
+  </div>
+
   <ion-icon *ngIf="icon" name="{{ icon }}"></ion-icon>
   <span>{{ category.name }}</span>
   @if(selected){

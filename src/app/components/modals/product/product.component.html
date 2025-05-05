@@ -28,9 +28,23 @@
     </div>
     <div class="details">
       <div class="header">
-        <ion-select label="Precio" labelPlacement="stacked" placeholder="Seleccione un precio" [(ngModel)]="this.selectedPrice" name="price" id="price">
+        <ion-select
+          label="Precio"
+          labelPlacement="stacked"
+          placeholder="Seleccione un precio"
+          [(ngModel)]="this.selectedPrice"
+          name="price"
+          id="price"
+        >
           @for(price of this.prices; track price.unitPro.id){
-          <ion-select-option [value]="price.unitPro.id">{{ price.unit.name }} - ${{ price.unitPro.price | number:'1.2-2' }}</ion-select-option>
+          <ion-select-option [value]="price.unitPro.id">
+            {{ price.unit.name }} - ${{
+              price.unitPro.price | number : "1.2-2"
+            }}
+            @if(price.unitPro.label){
+            <b style="color: red">({{ price.unitPro.label }})</b>
+            }
+          </ion-select-option>
           }
         </ion-select>
         @for(category of categories; track category.id){

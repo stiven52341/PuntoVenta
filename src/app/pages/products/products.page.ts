@@ -5,6 +5,7 @@ import {
   IonSearchbar,
   IonLabel,
   IonSpinner,
+  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { ProductCardComponent } from 'src/app/components/product-card/product-card.component';
 import { ICategory } from 'src/app/models/category.model';
@@ -80,21 +81,16 @@ export class ProductsPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    // AppComponent.loadingData.subscribe(async (loading) => {
-    //   if (!loading) {
-    //     await this.onInit();
-    //   }
-    // });
     this._global.listenToChanges().subscribe(async () => {
+      this.loading = true;
       await this.onInit();
+      this.loading = false;
     });
   }
 
   private async onInit() {
-    this.loading = true;
     await this.loadProducts();
     await this.generateItems(this.products);
-    this.loading = false;
   }
 
   private async loadProducts() {
@@ -152,7 +148,7 @@ export class ProductsPage implements OnInit {
     products: Array<IProductDetail>,
     offset: number = 10
   ) {
-    if(this.generating) return;
+    if(this.generating || products.length == 0) return;
 
     this.generating = true;
     const count = this.productsFiltered.length;

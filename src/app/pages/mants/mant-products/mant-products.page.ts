@@ -1,3 +1,4 @@
+import { ProductCategoryService } from 'src/app/services/api/product-category/product-category.service';
 import { Component, OnInit } from '@angular/core';
 import {
   IonContent,
@@ -5,6 +6,7 @@ import {
   IonButton,
   IonInput,
   IonLabel,
+  IonIcon,
 } from '@ionic/angular/standalone';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { IProduct } from 'src/app/models/product.model';
@@ -25,12 +27,16 @@ import { ImageProductService } from 'src/app/services/api/image-product/image-pr
 import { IImageProduct } from 'src/app/models/image-product.model';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { PhotoKeys, States } from 'src/app/models/constants';
-import { AppComponent } from 'src/app/app.component';
 import { TitleCasePipe } from '@angular/common';
 import { IButton } from 'src/app/models/button.model';
 import { ToastService } from 'src/app/services/toast/toast.service';
-import { State } from 'ionicons/dist/types/stencil-public-runtime';
 import { GlobalService } from 'src/app/services/global/global.service';
+import { addIcons } from 'ionicons';
+import { search } from 'ionicons/icons';
+import { ICategory } from 'src/app/models/category.model';
+import { IProductCategory } from 'src/app/models/product-category.model';
+import { LocalProductCategoryService } from 'src/app/services/local/local-product-category/local-product-category.service';
+import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
 
 @Component({
   selector: 'app-mant-products',
@@ -38,6 +44,7 @@ import { GlobalService } from 'src/app/services/global/global.service';
   styleUrls: ['./mant-products.page.scss'],
   standalone: true,
   imports: [
+    IonIcon,
     IonLabel,
     IonButton,
     IonContent,
@@ -53,6 +60,7 @@ export class MantProductsPage implements OnInit {
   protected loading: boolean = false;
   protected title: string = 'NUEVO PRODUCTO';
   protected state: boolean = true;
+  protected category?: ICategory;
 
   private readonly noImage = '../../../../assets/no-image.png';
 
@@ -72,8 +80,13 @@ export class MantProductsPage implements OnInit {
     private _imageProduct: ImageProductService,
     private _title: TitleCasePipe,
     private _toast: ToastService,
-    private _global: GlobalService
+    private _global: GlobalService,
+    private _localProductCategory: LocalProductCategoryService,
+    private _productCategory: ProductCategoryService,
+    private _localCategories: LocalCategoriesService
   ) {
+    addIcons({ search });
+
     this.form = new FormGroup({
       name: new FormControl(null, [
         Validators.required,
@@ -113,7 +126,7 @@ export class MantProductsPage implements OnInit {
 
     this.image = result.image;
 
-    this.setForm(this.product);
+    await this.setForm(this.product);
   }
 
   protected async onChangePhoto() {
@@ -141,11 +154,17 @@ export class MantProductsPage implements OnInit {
     );
   }
 
-  private setForm(product: IProduct) {
+  private async setForm(product: IProduct) {
     this.form.get('name')?.setValue(product.name);
     this.form.get('desc')?.setValue(product.description || '');
 
     this.state = product.state;
+
+    const productCategory = (await this._localProductCategory.getAll()).find(
+      proCa => proCa.id.idProduct == product!.id
+    );
+
+    this.category = await this._localCategories.get(productCategory!.id.idCategory);
   }
 
   private checkForm(): boolean {
@@ -181,14 +200,18 @@ export class MantProductsPage implements OnInit {
       ),
       description: (this.form.get('desc')?.value || ('' as string)).trim(),
       state: Boolean(this.form.get('active')!.value),
-      uploaded: States.NOT_INSERTED
+      uploaded: States.NOT_INSERTED,
     };
 
     if (this.product) {
       //MODIFYING
       product.id = this.product.id;
 
-      const response = await this._products.update(product) ? States.SYNC : States.NOT_UPDATED;
+      await this.syncCategory(product);
+
+      const response = (await this._products.update(product))
+        ? States.SYNC
+        : States.NOT_UPDATED;
       let photoInserted: boolean | undefined;
 
       if (response && this.image != this.noImage) {
@@ -196,7 +219,7 @@ export class MantProductsPage implements OnInit {
           id: product.id,
           image: this.image!.replace('data:image/png;base64,', ''),
           state: true,
-          uploaded: States.SYNC
+          uploaded: States.SYNC,
         });
       }
 
@@ -233,6 +256,7 @@ export class MantProductsPage implements OnInit {
       //NEW
       product.id = await this._localProducts.getNextID();
       const response = await this._products.insert(product);
+      await this.syncCategory(product);
       let photoInserted: string | number | Object | undefined;
 
       if (response && this.image != this.noImage) {
@@ -240,7 +264,7 @@ export class MantProductsPage implements OnInit {
           id: response as number,
           image: this.image!.replace('data:image/png;base64,', ''),
           state: true,
-          uploaded: States.SYNC
+          uploaded: States.SYNC,
         });
       }
 
@@ -352,5 +376,34 @@ export class MantProductsPage implements OnInit {
     this.product = undefined;
 
     this._toast.showToast('Formulario limpiado', 2000, 'primary', 'top');
+  }
+
+  protected async onSearchCategory() {
+    const result = await this._modal.showCategoriesList();
+    if(result){
+      this.category = result.category;
+    }
+  }
+
+  private async syncCategory(product: IProduct) {
+    if (!this.category) return;
+
+    const productCategory: IProductCategory = {
+      id: {
+        idCategory: this.category.id,
+        idProduct: product.id,
+      },
+      state: true,
+      uploaded: States.NOT_INSERTED,
+    };
+
+    const result = (await this._productCategory.insert(productCategory))
+      ? States.SYNC
+      : States.NOT_INSERTED;
+    productCategory.uploaded = result;
+
+    await this._localProductCategory.insert(productCategory).catch((err) => {
+      throw err;
+    });
   }
 }

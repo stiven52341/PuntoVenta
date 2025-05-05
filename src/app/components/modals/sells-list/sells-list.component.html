@@ -8,7 +8,11 @@
 </ion-header>
 <ion-content>
   <div class="content">
-    <ion-searchbar (ionInput)="onSearch($event)" animated="true" placeholder="Puede buscar por id, fecha o total"></ion-searchbar>
+    <ion-searchbar
+      (ionInput)="onSearch($event)"
+      animated="true"
+      placeholder="Puede buscar por id, fecha o total"
+    ></ion-searchbar>
     <ion-list>
       @for(sell of sellsFiltered; track sell.id){
       <ion-item (click)="onClick(sell)">

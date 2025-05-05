@@ -22,6 +22,7 @@ const config: CapacitorConfig = {
   },
   server: {
     cleartext: true, // This enables HTTP support for local dev
+    allowNavigation: ['*']
   },
 };
 

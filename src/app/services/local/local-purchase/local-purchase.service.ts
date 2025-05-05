@@ -15,15 +15,15 @@ export class LocalPurchaseService extends InternalStorageCoreService<IPurchase>{
     super(StorageKeys.PURCHASES);
   }
 
-  public override async insert(obj: IPurchase, updated?: boolean){
+  public override async insert(obj: IPurchase){
     if(!obj.details || obj.details.length == 0)return;
 
     const values = await this.getAll();
     obj.id = await this.getNextID();
-    const details = obj.details || [];
+    const details = new Array<IPurchaseDetail>(...obj.details) || [];
     obj.details = undefined;
     values.push(obj);
-    this._storage.set(this.key, values);
+    await this._storage.set(this.key, values);
 
     const insertDetails = async (detail: IPurchaseDetail) => {
       detail.id.idPurchase = obj.id;

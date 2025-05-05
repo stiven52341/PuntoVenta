@@ -33,6 +33,19 @@
           placeholder="Ingrese una descripción"
           [clearInput]="true"
         ></ion-input>
+        <div class="complex-input">
+          <ion-input
+            [disabled]="true"
+            labelPlacement="stacked"
+            placeholder="Seleccione una categoría"
+            fill="outline"
+            label="CATEGORÍA"
+            [value]="category?.name"
+          ></ion-input>
+          <ion-button (click)="onSearchCategory()">
+            <ion-icon name="search"></ion-icon>
+          </ion-button>
+        </div>
         @if(this.product){
           <ion-label>Estado: {{ this.product.state ? 'Activo' : 'Inactivo' }}</ion-label>
         }

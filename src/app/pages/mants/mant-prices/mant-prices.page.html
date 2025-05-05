@@ -67,6 +67,16 @@
           [min]="1"
           [clearInput]="true"
         ></ion-input>
+        <ion-input
+          labelPlacement="stacked"
+          placeholder="Ingrese una etiqueta"
+          fill="outline"
+          name="label"
+          label="ETIQUETA"
+          [(ngModel)]="label"
+          [counter]="true"
+          [maxlength]="50"
+        ></ion-input>
         <ion-checkbox name="default-price" [(ngModel)]="defaultPrice" justify="start"
           >Precio por defecto?</ion-checkbox
         >

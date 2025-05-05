@@ -45,7 +45,7 @@ export class ProductListComponent implements OnInit {
   protected products: Array<{ product: IProduct; image: string }> = [];
   protected productsFiltered: Array<{ product: IProduct; image: string }> = [];
 
-  private searchingSub?: Subscription;
+  private loadingSub?: Subscription;
 
   private readonly noImage = '../../../../assets/no-image.png';
 
@@ -85,11 +85,6 @@ export class ProductListComponent implements OnInit {
     return new Observable<void>((ob) => {
       this.loading = true;
 
-      if (this.searchingSub) {
-        this.searchingSub.unsubscribe();
-        this.searchingSub = undefined;
-      }
-
       const count = this.productsFiltered.length;
 
       const newList: Array<{ product: IProduct; image: string }> = [];
@@ -114,14 +109,14 @@ export class ProductListComponent implements OnInit {
         }
       });
 
-      this.searchingSub = forkJoin(pros).subscribe({
+      forkJoin(pros).subscribe({
         next: () => {
           this.productsFiltered.push(...newList);
+          ob.next();
         },
         complete: () => {
-          this.loading = false;
           ob.complete();
-        },
+        }
       });
     });
   }
@@ -136,9 +131,9 @@ export class ProductListComponent implements OnInit {
   protected async onSearch($event: CustomEvent) {
     this.loading = true;
 
-    if (this.searchingSub) {
-      this.searchingSub.unsubscribe();
-      this.searchingSub = undefined;
+    if (this.loadingSub) {
+      this.loadingSub.unsubscribe();
+      this.loadingSub = undefined;
     }
 
     const value = $event.detail.value as string;
@@ -156,8 +151,11 @@ export class ProductListComponent implements OnInit {
       );
     });
     this.productsFiltered = [];
-    this.searchingSub = this.generateItems(newList).subscribe();
-    this.loading = false;
+    this.loadingSub = this.generateItems(newList).subscribe({
+      complete: () => {
+        this.loading = false;
+      },
+    });
   }
 
   protected async onClick(product: { product: IProduct; image: string }) {

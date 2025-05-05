@@ -11,6 +11,7 @@ export interface IUnitProduct {
   cost: number;
   unit?: string;
   currency?: string;
+  label?: string,
   state: boolean;
   uploaded: States
 }

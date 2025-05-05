@@ -21,11 +21,10 @@ import { LocalUnitProductsService } from 'src/app/services/local/local-unit-prod
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { UnitProductService } from 'src/app/services/api/unit-product/unit-product.service';
 import { FilesService } from 'src/app/services/files/files.service';
-import { AppComponent } from 'src/app/app.component';
 import { IButton } from 'src/app/models/button.model';
-import { ToastService } from 'src/app/services/toast/toast.service';
 import { States } from 'src/app/models/constants';
 import { GlobalService } from 'src/app/services/global/global.service';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-mant-prices',
@@ -44,6 +43,7 @@ import { GlobalService } from 'src/app/services/global/global.service';
     HeaderBarComponent,
     FormsModule,
   ],
+  providers: [TitleCasePipe]
 })
 export class MantPricesPage implements OnInit {
   protected loading: boolean = false;
@@ -54,6 +54,7 @@ export class MantPricesPage implements OnInit {
   protected selectedPrice?: IUnitProduct;
   protected defaultPrice: boolean = false;
   protected headerButtons: Array<IButton>;
+  protected label?: string;
 
   private fieldsFullfilled: EventEmitter<void>;
 
@@ -65,7 +66,8 @@ export class MantPricesPage implements OnInit {
     private _alert: AlertsService,
     private _prices: UnitProductService,
     private _file: FilesService,
-    private _global: GlobalService
+    private _global: GlobalService,
+    private _title: TitleCasePipe
   ) {
     addIcons({ search });
 
@@ -137,6 +139,11 @@ export class MantPricesPage implements OnInit {
       return false;
     }
 
+    if(this.label && this.label.length > 50){
+      this._alert.showError('Etiqueta inválida');
+      return false;
+    }
+
     return true;
   }
 
@@ -153,7 +160,8 @@ export class MantPricesPage implements OnInit {
       idUnit: this.unit!.id,
       isDefault: this.defaultPrice,
       state: true,
-      uploaded: States.NOT_INSERTED
+      uploaded: States.NOT_INSERTED,
+      label: this._title.transform(this.label ? this.label : '')
     };
 
     if (!this.selectedPrice) {
@@ -275,9 +283,7 @@ export class MantPricesPage implements OnInit {
     this.loading = false;
   }
 
-  private async cleanForm(
-    showConfirm: boolean = true,
-  ) {
+  private async cleanForm(showConfirm: boolean = true) {
     if (showConfirm) {
       if (
         !(await this._alert.showConfirm(

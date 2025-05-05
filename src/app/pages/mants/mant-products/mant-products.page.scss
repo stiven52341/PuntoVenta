@@ -3,6 +3,25 @@ ion-button {
   width: 100%;
 }
 
+.complex-input{
+  width: 100%;
+  display: grid;
+  grid-template-columns: 8fr 2fr;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1em;
+
+  ion-button{
+    height: 100%;
+    width: 100%;
+
+    ion-icon{
+      font-weight:bolder;
+      color: white;
+    }
+  }
+}
+
 .content {
   padding: 1em;
   width: 100%;

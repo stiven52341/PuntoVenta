@@ -3,6 +3,8 @@
     title="CATEGORÍAS"
     [arrowBack]="true"
     [isModal]="false"
+    [loading]="loading"
+    [buttons]="this.options"
   ></app-header-bar>
 </ion-header>
 
@@ -49,7 +51,7 @@
 </ion-content>
 <ion-footer translucent="true">
   <div class="footer-content">
-    <ion-button>
+    <ion-button (click)="onSave()">
       <div class="button-content">
         <ion-icon name="save"></ion-icon>
         <ion-label>GUARDAR</ion-label>
