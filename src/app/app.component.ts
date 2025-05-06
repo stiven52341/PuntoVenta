@@ -71,8 +71,8 @@ export class AppComponent implements OnInit {
         title: 'Caja',
         image: '../assets/icon/cash.png',
         do: async () => {
-
-        }
+          await this.goTo('/cash-box');
+        },
       },
       {
         title: 'Productos',
@@ -117,7 +117,7 @@ export class AppComponent implements OnInit {
   async ngOnInit() {
     await this.onInit();
     this._global.SyncData().then((result) => {
-      if(result) this._toast.showToast('Datos sincronizados');
+      if (result) this._toast.showToast('Datos sincronizados');
     });
   }
 

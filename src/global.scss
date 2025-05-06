@@ -127,3 +127,11 @@ ion-content {
     text-align: left;
   }
 }
+.my-partial-modal .modal-wrapper {
+  --height: 50vh;        /* set to half the screen height */
+  --width: 90vw;         /* optional: limit full width */
+  position: absolute;    /* allow manual top positioning */
+  top: 25vh;             /* center vertically: (100vh − 50vh)/2 = 25vh */
+  border-radius: 12px;   /* optional styling */
+  display: block;        /* ensure it respects our custom props */
+}

@@ -1,0 +1,24 @@
+<ion-header>
+  <app-header-bar
+    title="CAJA"
+    [arrowBack]="false"
+    [isModal]="false"
+  ></app-header-bar>
+</ion-header>
+<ion-content>
+  <div class="content">
+    <app-button-list [whiteColor]="true" [buttons]="buttons"></app-button-list>
+    <div class="info">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Balance Incial: $0.00</ion-card-title>
+        </ion-card-header>
+      </ion-card>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Balance Actual: $0.00</ion-card-title>
+        </ion-card-header>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>

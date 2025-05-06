@@ -13,6 +13,7 @@ import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { IUnit } from 'src/app/models/unit.model';
 import { CategoriesListComponent } from 'src/app/components/modals/categories-list/categories-list.component';
 import { ICategory } from 'src/app/models/category.model';
+import { CashBoxComponent } from 'src/app/components/modals/cash-box/cash-box.component';
 
 @Injectable({
   providedIn: 'root',
@@ -27,16 +28,26 @@ export class ModalsService {
     id?: string,
     data?: any,
     cssClass: string = 'default',
-    canDismiss: boolean = true
+    canDismiss: boolean = true,
+    partialModal: boolean = false
   ) {
-    const modal = await this._modalCtrl.create({
+    const modalInfo: any = {
       component: component,
       animated: true,
       componentProps: data,
       cssClass: cssClass,
       canDismiss: canDismiss,
       id: id,
-    });
+      breakpoints: undefined, // can snap to 0% (dismiss), 30%, 60%, or 100%
+      initialBreakpoint: undefined,
+    };
+
+    if (partialModal) {
+      (modalInfo.breakpoints = [0, 0.3, 0.6, 1]),
+        (modalInfo.initialBreakpoint = 0.4);
+    }
+
+    const modal = await this._modalCtrl.create(modalInfo);
 
     this.modals.push(modal);
 
@@ -103,6 +114,21 @@ export class ModalsService {
     const result = await this.showModal(CategoriesListComponent, 'sells-list');
     if (result && result.data)
       return result.data as { category: ICategory; image: string };
+    return undefined;
+  }
+
+  public async showCashbox(
+    type: 'open' | 'close'
+  ): Promise<number | undefined> {
+    const result = await this.showModal(
+      CashBoxComponent,
+      'sells-list',
+      { type: type },
+      'my-partial-modal',
+      undefined,
+      true
+    );
+    if (result && result.data) return result.data as number;
     return undefined;
   }
 

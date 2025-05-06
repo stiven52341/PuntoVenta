@@ -1,0 +1,23 @@
+<ion-header>
+  <app-header-bar
+    [title]="title"
+    [arrowBack]="true"
+    [isModal]="true"
+  ></app-header-bar>
+</ion-header>
+<ion-content>
+  <div class="content">
+    <ion-input
+      [min]="1"
+      name="amount"
+      [(ngModel)]="amount"
+      [label]="label"
+      label-placement="stacked"
+      fill="outline"
+      [placeholder]="inputPlaceholder"
+      type="number"
+      [clearInput]="true"
+    ></ion-input>
+    <ion-button (click)="onClose()">{{ this.buttonText }}</ion-button>
+  </div>
+</ion-content>

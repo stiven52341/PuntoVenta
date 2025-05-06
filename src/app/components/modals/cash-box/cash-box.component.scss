@@ -1,0 +1,13 @@
+.content{
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap:1em;
+  justify-content: center;
+  align-items: center;
+
+  ion-button{
+    color: white;
+    width: 100%;
+  }
+}
