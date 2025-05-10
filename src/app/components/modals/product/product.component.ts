@@ -110,7 +110,7 @@ export class ProductComponent implements OnInit {
     );
   }
 
-  private async check(): Promise<boolean> {
+  private async check(unit: IUnit): Promise<boolean> {
     if (!this.cantidad || this.cantidad <= 0) {
       await this._alert.showError('CANTIDAD INVÁLIDA');
       return false;
@@ -122,18 +122,29 @@ export class ProductComponent implements OnInit {
       await this._alert.showError('PRECIO INVÁLIDO');
       return false;
     }
+
+    if (!unit.allowDecimals) {
+      if(!Number.isInteger(this.cantidad)){
+        await this._alert.showError('LA UNIDAD SELECCIONADA NO PERMITE DECIMALES');
+        return false;
+      }
+    }
+
     return true;
   }
 
   protected async onAddProduct() {
-    if (!(await this.check())) return;
+    const price = this.prices.find(
+      (price) => price.unitPro.id == this.selectedPrice
+    )!.unitPro;
+    const unit = await this._unit.get(price.idUnit);
+    if (!unit) {
+      this._alert.showError('No se encontró la unidad seleccionada');
+      return;
+    }
+    if (!(await this.check(unit))) return;
 
-    await this._cart.addProduct(
-      this.product!,
-      this.cantidad!,
-      this.prices.find((price) => price.unitPro.id == this.selectedPrice)!
-        .unitPro
-    );
+    await this._cart.addProduct(this.product!, this.cantidad!, price);
 
     await this._toast.showToast('PRODUCTO AGREGADO', 1000);
   }

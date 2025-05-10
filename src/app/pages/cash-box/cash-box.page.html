@@ -3,6 +3,7 @@
     title="CAJA"
     [arrowBack]="false"
     [isModal]="false"
+    [loading]="loading"
   ></app-header-bar>
 </ion-header>
 <ion-content>
@@ -11,12 +12,12 @@
     <div class="info">
       <ion-card>
         <ion-card-header>
-          <ion-card-title>Balance Incial: $0.00</ion-card-title>
+          <ion-card-title>Balance Inicial: ${{ openedWith | number:"1.2-2" }}</ion-card-title>
         </ion-card-header>
       </ion-card>
       <ion-card>
         <ion-card-header>
-          <ion-card-title>Balance Actual: $0.00</ion-card-title>
+          <ion-card-title>Balance Actual: ${{ balance | number:'1.2-2' }}</ion-card-title>
         </ion-card-header>
       </ion-card>
     </div>

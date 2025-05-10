@@ -118,12 +118,12 @@ export class ModalsService {
   }
 
   public async showCashbox(
-    type: 'open' | 'close'
+    type: 'open' | 'close', balance: number = 0
   ): Promise<number | undefined> {
     const result = await this.showModal(
       CashBoxComponent,
       'sells-list',
-      { type: type },
+      { type: type, balance: balance },
       'my-partial-modal',
       undefined,
       true

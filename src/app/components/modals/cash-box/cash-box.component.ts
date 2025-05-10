@@ -9,6 +9,11 @@ import {
 import { HeaderBarComponent } from '../../header-bar/header-bar.component';
 import { FormsModule, NgModel } from '@angular/forms';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
+import { LocalCashBoxService } from 'src/app/services/local/local-cash-box/local-cash-box.service';
+import { CashBoxService } from 'src/app/services/api/cash-box/cash-box.service';
+import { ICashBox } from 'src/app/models/cash-box.model';
+import { States } from 'src/app/models/constants';
+import { FilesService } from 'src/app/services/files/files.service';
 
 @Component({
   selector: 'app-cash-box',
@@ -31,13 +36,19 @@ export class CashBoxComponent implements OnInit {
   protected amount: number = 0;
   protected buttonText: string = '';
   @Input({ required: true }) type!: 'open' | 'close';
+  @Input() balance: number = 0;
+
+  private cashbox?: ICashBox;
 
   constructor(
     private _modalCtrl: ModalController,
-    private _alert: AlertsService
+    private _alert: AlertsService,
+    private _localCashbox: LocalCashBoxService,
+    private _cashbox: CashBoxService,
+    private _file: FilesService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     switch (this.type) {
       case 'open':
         this.title = 'Abrir Caja';
@@ -46,10 +57,19 @@ export class CashBoxComponent implements OnInit {
         this.buttonText = 'Abrir Caja';
         break;
       case 'close':
+        this.cashbox = (await this._localCashbox.getAll()).find(c => c.state);
+
+        if(!this.cashbox){
+          this._alert.showError('No hay ninguna caja abierta');
+          this._modalCtrl.dismiss();
+          return;
+        }
+
         this.title = 'Cerrar Caja';
         this.inputPlaceholder = 'Ingrese la cantidad de cierre';
         this.label = 'Cantidad de Cierre';
         this.buttonText = 'Cerrar Caja';
+        this.amount = this.balance;
         break;
     }
   }
@@ -75,16 +95,59 @@ export class CashBoxComponent implements OnInit {
     )
       return;
 
-    const open = async (amount: number) => {};
+    let cashbox: ICashBox = {
+      id: await this._localCashbox.getNextID(),
+      init: new Date(),
+      initCash: this.amount,
+      state: true,
+      uploaded: States.NOT_INSERTED,
+    };
 
-    const close = async (amount: number) => {};
+    const open = async () => {
+      const result = await this._cashbox.insert(cashbox);
+
+      cashbox.uploaded = result ? States.SYNC : States.NOT_INSERTED;
+      await this._localCashbox
+        .insert(cashbox)
+        .then(() => {
+          this._alert.showSuccess(`Caja abierta con $${this.amount.toFixed(2)}`);
+          this._modalCtrl.dismiss(this.amount);
+        })
+        .catch((err) => {
+          this._file.saveError(err);
+          this._alert.showError('Error abriendo caja');
+        });
+    };
+
+    const close = async () => {
+      cashbox = this.cashbox!;
+
+      cashbox.end = new Date();
+      cashbox.endCash = this.amount;
+      cashbox.state = false;
+
+      const result = await this._cashbox.update(cashbox);
+
+      cashbox.uploaded = result ? States.SYNC : States.NOT_UPDATED;
+
+      await this._localCashbox
+        .update(cashbox)
+        .then(() => {
+          this._alert.showSuccess(`Caja cerrada con $${this.amount.toFixed(2)}`);
+          this._modalCtrl.dismiss(this.amount);
+        })
+        .catch((err) => {
+          this._file.saveError(err);
+          this._alert.showError('Error cerrando caja');
+        });
+    };
 
     switch (this.type) {
       case 'open':
-        await open(this.amount);
+        await open();
         break;
       case 'close':
-        await close(this.amount);
+        await close();
         break;
     }
   }

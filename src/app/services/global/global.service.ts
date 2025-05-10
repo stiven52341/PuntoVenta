@@ -25,6 +25,8 @@ import { PurchaseService } from '../api/purchase/purchase.service';
 import { UnitService } from '../api/unit/unit.service';
 import { UnitProductService } from '../api/unit-product/unit-product.service';
 import { FilesService } from '../files/files.service';
+import { LocalCashBoxService } from '../local/local-cash-box/local-cash-box.service';
+import { CashBoxService } from '../api/cash-box/cash-box.service';
 
 @Injectable({
   providedIn: 'root',
@@ -46,6 +48,7 @@ export class GlobalService {
   private _localPurchase = inject(LocalPurchaseService);
   private _localUnit = inject(LocalUnitsService);
   private _localUnitProduct = inject(LocalUnitProductsService);
+  private _localCashbox = inject(LocalCashBoxService);
 
   //Api
   private _categories = inject(CategoryService);
@@ -59,6 +62,7 @@ export class GlobalService {
   private _purchases = inject(PurchaseService);
   private _unit = inject(UnitService);
   private _unitProduct = inject(UnitProductService);
+  private _cashbox = inject(CashBoxService);
 
   //Other
   private _files = inject(FilesService);
@@ -80,6 +84,7 @@ export class GlobalService {
         this._localPurchase.getAll(),
         this._localUnit.getAll(),
         this._localUnitProduct.getAll(),
+        this._localCashbox.getAll(),
       ])
     );
 
@@ -128,6 +133,11 @@ export class GlobalService {
         value.uploaded != States.SYNC && value.uploaded != States.DOWNLOADED
     );
 
+    const cashboxes = results[11].filter(
+      (value) =>
+        value.uploaded != States.SYNC && value.uploaded != States.DOWNLOADED
+    );
+
     const promises: Array<Promise<any>> = [
       this.syncValues(categories, this._categories),
       this.syncValues(currencies, this._currencies),
@@ -140,6 +150,7 @@ export class GlobalService {
       this.syncValues(purchases, this._purchases),
       this.syncValues(units, this._unit),
       this.syncValues(unitProducts, this._unitProduct),
+      this.syncValues(cashboxes, this._cashbox),
     ];
 
     const result = await firstValueFrom(forkJoin(promises)).catch(
@@ -165,13 +176,13 @@ export class GlobalService {
     for (const value of values) {
       switch (value.uploaded) {
         case States.NOT_INSERTED:
-          await service.insert(value)
+          await service.insert(value);
           break;
         case States.NOT_UPDATED:
-          service.update(value)
+          service.update(value);
           break;
         case States.NOT_DELETED:
-          service.delete(value)
+          service.delete(value);
           break;
         default:
           throw new Error('State not valid');

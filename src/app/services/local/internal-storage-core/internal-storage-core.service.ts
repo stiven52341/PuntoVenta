@@ -57,9 +57,11 @@ export abstract class InternalStorageCoreService<T extends Entity> {
   }
 
   public async getNextID(): Promise<number>{
-    const values = (await this.getAll()).sort((a,b) => {
+    const values = (await this.getAll() || []).sort((a,b) => {
       return Number(b.id) - Number(a.id);
     });
+
+    if(values.length == 0) return 1;
     return Number(values[0].id) + 1;
   }
 

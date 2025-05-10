@@ -12,12 +12,11 @@ import {
   IonInput,
   IonButton,
   IonIcon,
-  IonTabButton,
   IonLabel,
+  IonCheckbox,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { search } from 'ionicons/icons';
-import { AppComponent } from 'src/app/app.component';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
 import { States } from 'src/app/models/constants';
@@ -43,6 +42,7 @@ import { ModalsService } from 'src/app/services/modals/modals.service';
     IonHeader,
     HeaderBarComponent,
     ReactiveFormsModule,
+    IonCheckbox
   ],
   providers: [TitleCasePipe],
 })
@@ -69,6 +69,7 @@ export class MantUnitsPage implements OnInit {
         Validators.maxLength(50),
       ]),
       short: new FormControl(null, [Validators.maxLength(10)]),
+      allowDecimals: new FormControl(false, [])
     });
 
     this.headerButtons = [
@@ -91,6 +92,7 @@ export class MantUnitsPage implements OnInit {
   private setForm(unit: IUnit) {
     this.form.get('name')?.setValue(unit.name);
     this.form.get('short')?.setValue(unit.shortcut);
+    this.form.get('allowDecimals')?.setValue(unit.allowDecimals);
   }
 
   private checkForm(): boolean {
@@ -121,7 +123,8 @@ export class MantUnitsPage implements OnInit {
       name: this._title.transform(this.form.get('name')!.value as string),
       shortcut:  this.form.get('short')?.value ? (this.form.get('short')?.value as string).toUpperCase() : undefined,
       state: true,
-      uploaded: States.NOT_INSERTED
+      uploaded: States.NOT_INSERTED,
+      allowDecimals: this.form.get('allowDecimals')?.value || false
     };
 
     if (!this.unit) {

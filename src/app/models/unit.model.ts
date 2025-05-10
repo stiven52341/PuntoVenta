@@ -5,5 +5,6 @@ export interface IUnit{
   name: string,
   shortcut?: string,
   state: boolean,
-  uploaded: States
+  uploaded: States,
+  allowDecimals: boolean
 }

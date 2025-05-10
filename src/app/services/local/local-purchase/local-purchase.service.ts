@@ -3,14 +3,13 @@ import { InternalStorageCoreService } from '../internal-storage-core/internal-st
 import { IPurchase } from 'src/app/models/purchase.model';
 import { StorageKeys } from 'src/app/models/constants';
 import { LocalPurchaseDetailService } from '../local-purchase-detail/local-purchase-detail.service';
-import { firstValueFrom, forkJoin, lastValueFrom } from 'rxjs';
 import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';
+import { GlobalService } from '../../global/global.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalPurchaseService extends InternalStorageCoreService<IPurchase>{
-
   constructor(private _details: LocalPurchaseDetailService) {
     super(StorageKeys.PURCHASES);
   }
@@ -20,6 +19,7 @@ export class LocalPurchaseService extends InternalStorageCoreService<IPurchase>{
 
     const values = await this.getAll();
     obj.id = await this.getNextID();
+
     const details = new Array<IPurchaseDetail>(...obj.details) || [];
     obj.details = undefined;
     values.push(obj);

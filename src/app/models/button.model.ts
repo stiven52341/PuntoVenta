@@ -3,4 +3,5 @@ export interface IButton {
   icon?: string;
   image?: string;
   do: () => Promise<void> | void;
+  disable?: boolean
 }

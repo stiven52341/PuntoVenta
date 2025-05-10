@@ -40,6 +40,10 @@
           formControlName="short"
         ></ion-input>
 
+        <ion-checkbox formControlName="allowDecimals" labelPlacement="start"
+          >Permitir decimales</ion-checkbox
+        >
+
         <div class="footer-content">
           @if(unit){
           <ion-button (click)="deactivate()" color="danger" type="button">

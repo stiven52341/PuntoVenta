@@ -7,5 +7,5 @@ export interface IPurchase{
   total: number,
   state: boolean,
   details?: Array<IPurchaseDetail>,
-  uploaded: States
+  uploaded: States,
 }
