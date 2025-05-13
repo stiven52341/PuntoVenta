@@ -44,18 +44,21 @@
           >Permitir decimales</ion-checkbox
         >
 
-        <div class="footer-content">
-          @if(unit){
-          <ion-button (click)="deactivate()" color="danger" type="button">
-            <ion-label>DESACTIVAR</ion-label>
-          </ion-button>
-          }
 
-          <ion-button [disabled]="loading" type="submit">
-            <ion-label>GUARDAR</ion-label>
-          </ion-button>
-        </div>
       </div>
     </form>
   </div>
 </ion-content>
+<ion-footer>
+  <div class="footer-content">
+    @if(unit){
+    <ion-button (click)="deactivate()" color="danger" type="button">
+      <ion-label>DESACTIVAR</ion-label>
+    </ion-button>
+    }
+
+    <ion-button [disabled]="loading" type="submit">
+      <ion-label>GUARDAR</ion-label>
+    </ion-button>
+  </div>
+</ion-footer>

@@ -1,4 +1,5 @@
 import type { CapacitorConfig } from '@capacitor/cli';
+import { KeyboardResize } from '@capacitor/keyboard';
 
 const config: CapacitorConfig = {
   appId: 'reyno.software.sells.point',
@@ -15,6 +16,10 @@ const config: CapacitorConfig = {
       overlaysWebView: false,
       style: 'DARK',
       backgroundColor: '#ffffffff',
+    },
+    Keyboard: {
+      resize: KeyboardResize.Ionic,
+      resizeOnFullScreen: true
     }
   },
   android: {

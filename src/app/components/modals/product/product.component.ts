@@ -116,7 +116,7 @@ export class ProductComponent implements OnInit {
       return false;
     }
     if (
-      !this.selectedPrice ||
+      !this.selectedPrice || this.selectedPrice == 0 ||
       !this.prices.some((price) => price.unitPro.id == this.selectedPrice)
     ) {
       await this._alert.showError('PRECIO INVÁLIDO');
@@ -134,6 +134,11 @@ export class ProductComponent implements OnInit {
   }
 
   protected async onAddProduct() {
+    if(this.prices.length == 0){
+      await this._alert.showError('NO HAY PRECIOS REGISTRADOS PARA ESTE PRODUCTO');
+      return;
+    }
+
     const price = this.prices.find(
       (price) => price.unitPro.id == this.selectedPrice
     )!.unitPro;

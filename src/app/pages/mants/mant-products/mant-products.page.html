@@ -15,7 +15,7 @@
       <img src="{{ image }}" alt="" />
       <ion-button (click)="onChangePhoto()">Cambiar Imagen</ion-button>
     </div>
-    <form [formGroup]="form" (ngSubmit)="onSave()">
+    <form [formGroup]="form">
       <div class="form-content">
         <ion-input
           label="NOMBRE"
@@ -47,23 +47,33 @@
           </ion-button>
         </div>
         @if(this.product){
-          <ion-label>Estado: {{ this.product.state ? 'Activo' : 'Inactivo' }}</ion-label>
+        <ion-label
+          >Estado: {{ this.product.state ? 'Activo' : 'Inactivo' }}</ion-label
+        >
         }
-
-        <div class="footer-content">
-          @if(this.product){
-            <ion-button (click)="onDeactivateProduct()" color="danger">
-              @if(this.product.state){
-                DESACTIVAR
-              }@else {
-                ACTIVAR
-              }
-            </ion-button>
-          }
-          <ion-button type="submit">GUARDAR</ion-button>
-        </div>
-
       </div>
     </form>
   </div>
 </ion-content>
+<ion-footer>
+  <div class="footer-content">
+    @if(this.product){
+    <ion-button (click)="onDeactivateProduct()" color="danger">
+      @if(this.product.state){ DESACTIVAR }@else { ACTIVAR }
+    </ion-button>
+    }
+    <ion-button (click)="onSave()">GUARDAR</ion-button>
+  </div>
+  <!-- <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button color="light" (click)="onSave()">GUARDAR</ion-button>
+    </ion-buttons>
+    @if(this.product){
+    <ion-buttons slot="end">
+      <ion-button (click)="onDeactivateProduct()" color="danger">
+        @if(this.product.state){ DESACTIVAR }@else { ACTIVAR }
+      </ion-button>
+    </ion-buttons>
+    }
+  </ion-toolbar> -->
+</ion-footer>

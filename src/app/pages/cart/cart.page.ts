@@ -137,7 +137,7 @@ export class CartPage implements OnInit {
       return;
     }
 
-    if(!await this._alert.showConfirm('CONFIRME','¿Está seguro de remover este artículo del carrito'))return;
+    if(!await this._alert.showConfirm('CONFIRME','¿Está seguro de remover este artículo del carrito?'))return;
 
     this.loading = true;
     await this._cart.removeProduct(product.product);

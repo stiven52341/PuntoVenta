@@ -7,6 +7,7 @@ import {
   IonInput,
   IonLabel,
   IonIcon,
+  IonFooter,
 } from '@ionic/angular/standalone';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { IProduct } from 'src/app/models/product.model';
@@ -44,6 +45,7 @@ import { LocalCategoriesService } from 'src/app/services/local/local-categories/
   styleUrls: ['./mant-products.page.scss'],
   standalone: true,
   imports: [
+    IonFooter,
     IonIcon,
     IonLabel,
     IonButton,
@@ -161,10 +163,12 @@ export class MantProductsPage implements OnInit {
     this.state = product.state;
 
     const productCategory = (await this._localProductCategory.getAll()).find(
-      proCa => proCa.id.idProduct == product!.id
+      (proCa) => proCa.id.idProduct == product!.id
     );
 
-    this.category = await this._localCategories.get(productCategory!.id.idCategory);
+    this.category = await this._localCategories.get(
+      productCategory!.id.idCategory
+    );
   }
 
   private checkForm(): boolean {
@@ -380,7 +384,7 @@ export class MantProductsPage implements OnInit {
 
   protected async onSearchCategory() {
     const result = await this._modal.showCategoriesList();
-    if(result){
+    if (result) {
       this.category = result.category;
     }
   }

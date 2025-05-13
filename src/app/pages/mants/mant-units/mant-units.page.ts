@@ -14,6 +14,7 @@ import {
   IonIcon,
   IonLabel,
   IonCheckbox,
+  IonFooter,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { search } from 'ionicons/icons';
@@ -42,7 +43,8 @@ import { ModalsService } from 'src/app/services/modals/modals.service';
     IonHeader,
     HeaderBarComponent,
     ReactiveFormsModule,
-    IonCheckbox
+    IonCheckbox,
+    IonFooter
   ],
   providers: [TitleCasePipe],
 })

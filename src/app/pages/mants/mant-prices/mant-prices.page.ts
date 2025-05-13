@@ -43,7 +43,7 @@ import { TitleCasePipe } from '@angular/common';
     HeaderBarComponent,
     FormsModule,
   ],
-  providers: [TitleCasePipe]
+  providers: [TitleCasePipe],
 })
 export class MantPricesPage implements OnInit {
   protected loading: boolean = false;
@@ -104,6 +104,9 @@ export class MantPricesPage implements OnInit {
 
     this.product = result;
     if (this.unit) this.fieldsFullfilled.emit();
+    this.priceInput.value = '0';
+    this.label = '';
+    this.selectedPrice = undefined;
   }
 
   protected async onSearchUnit() {
@@ -112,6 +115,9 @@ export class MantPricesPage implements OnInit {
 
     this.unit = result;
     if (this.product) this.fieldsFullfilled.emit();
+    this.priceInput.value = '0';
+    this.label = '';
+    this.selectedPrice = undefined;
   }
 
   protected async onSearchPrice() {
@@ -139,7 +145,7 @@ export class MantPricesPage implements OnInit {
       return false;
     }
 
-    if(this.label && this.label.length > 50){
+    if (this.label && this.label.length > 50) {
       this._alert.showError('Etiqueta inválida');
       return false;
     }
@@ -161,7 +167,7 @@ export class MantPricesPage implements OnInit {
       isDefault: this.defaultPrice,
       state: true,
       uploaded: States.NOT_INSERTED,
-      label: this._title.transform(this.label ? this.label : '')
+      label: this._title.transform(this.label ? this.label : ''),
     };
 
     if (!this.selectedPrice) {

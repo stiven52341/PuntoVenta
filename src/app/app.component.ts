@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   IonApp,
@@ -22,10 +22,10 @@ import { ProductComponent } from './components/modals/product/product.component'
 import { IButton } from './models/button.model';
 import { ButtonListComponent } from './components/button-list/button-list.component';
 import { FilesService } from './services/files/files.service';
-import { PhotosService } from './services/photos/photos.service';
 import { States } from './models/constants';
 import { GlobalService } from './services/global/global.service';
 import { ToastService } from './services/toast/toast.service';
+import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
 
 @Component({
   selector: 'app-root',
@@ -42,6 +42,7 @@ import { ToastService } from './services/toast/toast.service';
     ProductComponent,
     IonContent,
     ButtonListComponent,
+
   ],
 })
 export class AppComponent implements OnInit {
@@ -112,6 +113,22 @@ export class AppComponent implements OnInit {
     ];
 
     addIcons({});
+
+    Keyboard.addListener('keyboardWillShow', (info) => {
+      // Opcional: cambiar modo de resize en caliente
+      Keyboard.setResizeMode({ mode: KeyboardResize.None });
+      // Scroll manual a la posición del input activo
+      setTimeout(() => {
+        const el: any = document.activeElement;
+        if (el && el.scrollIntoView) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    });
+
+    Keyboard.addListener('keyboardWillHide', () => {
+      Keyboard.setResizeMode({ mode: KeyboardResize.Native });
+    });
   }
 
   async ngOnInit() {

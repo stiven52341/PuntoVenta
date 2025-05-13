@@ -1,9 +1,8 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   IonContent,
   IonHeader,
-  IonLabel,
   IonCard,
   IonCardHeader,
   IonCardTitle,
@@ -11,9 +10,9 @@ import {
 } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 import { ButtonListComponent } from 'src/app/components/button-list/button-list.component';
+import { CircleGraphComponent } from 'src/app/components/charts/circle-graph/circle-graph.component';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
-import { GlobalService } from 'src/app/services/global/global.service';
 import { LocalCashBoxService } from 'src/app/services/local/local-cash-box/local-cash-box.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 
@@ -31,6 +30,7 @@ import { ModalsService } from 'src/app/services/modals/modals.service';
     HeaderBarComponent,
     ButtonListComponent,
     DecimalPipe,
+    CircleGraphComponent,
   ],
 })
 export class CashBoxPage implements ViewWillEnter {
@@ -38,8 +38,7 @@ export class CashBoxPage implements ViewWillEnter {
   protected openedWith: number = 0;
   protected balance: number = 0;
   protected loading: boolean = false;
-
-  private subs: Array<Subscription> = [];
+  protected circleGraphData: Array<{ name: string; value: number }> = [];
 
   constructor(
     private _modal: ModalsService,
@@ -51,6 +50,7 @@ export class CashBoxPage implements ViewWillEnter {
         image: '../../../assets/icon/open-cash.png',
         do: async () => {
           this.openedWith = (await this._modal.showCashbox('open')) || 0;
+          this.balance = this.openedWith;
           this.buttons[0].disable = true;
           this.buttons[1].disable = false;
         },
@@ -80,6 +80,17 @@ export class CashBoxPage implements ViewWillEnter {
       this.buttons[0].disable = false;
       this.buttons[1].disable = true;
     }
+
+    this.circleGraphData = [
+      {
+        name: 'Testing 1',
+        value: 50,
+      },
+      {
+        name: 'Testing 2',
+        value: 50,
+      },
+    ];
   }
 
   async ionViewWillEnter() {

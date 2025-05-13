@@ -3,7 +3,7 @@ ion-button {
   width: 100%;
 }
 
-.complex-input{
+.complex-input {
   width: 100%;
   display: grid;
   grid-template-columns: 8fr 2fr;
@@ -11,12 +11,12 @@ ion-button {
   align-items: center;
   gap: 1em;
 
-  ion-button{
+  ion-button {
     height: 100%;
     width: 100%;
 
-    ion-icon{
-      font-weight:bolder;
+    ion-icon {
+      font-weight: bolder;
       color: white;
     }
   }
@@ -61,18 +61,21 @@ ion-button {
         flex-wrap: wrap;
       }
 
-      ion-label{
+      ion-label {
         width: 100%;
-      }
-
-      .footer-content {
-        background-color: white;
-        position: absolute;
-        bottom: 0;
-        padding: 1em;
-        width: 100%;
-        background-color: transparent;
       }
     }
+  }
+}
+
+ion-footer {
+  .footer-content {
+    padding: .5em;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .5em;
+    justify-content: center;
+    align-items: center;
   }
 }

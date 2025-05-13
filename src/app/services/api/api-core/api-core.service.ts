@@ -14,10 +14,10 @@ export interface Entity {
   providedIn: 'root',
 })
 export class ApiCoreService<T extends Entity> {
-  private _http = inject(HttpClient);
-  private _file = inject(FilesService);
+  protected _http = inject(HttpClient);
+  protected _file = inject(FilesService);
 
-  constructor(private path: ApiKeys) {}
+  constructor(protected path: ApiKeys) {}
 
   public async getAll(): Promise<Array<T> | null> {
     const result = await firstValueFrom(
