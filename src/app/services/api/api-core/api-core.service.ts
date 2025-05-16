@@ -6,14 +6,14 @@ import { FilesService } from '../../files/files.service';
 
 export interface Entity {
   id: string | number | Object;
-  state: boolean,
-  uploaded: States
+  state: boolean;
+  uploaded: States;
 }
 
 @Injectable({
   providedIn: 'root',
 })
-export class ApiCoreService<T extends Entity> {
+export abstract class ApiCoreService<T extends Entity> {
   protected _http = inject(HttpClient);
   protected _file = inject(FilesService);
 
@@ -22,15 +22,15 @@ export class ApiCoreService<T extends Entity> {
   public async getAll(): Promise<Array<T> | null> {
     const result = await firstValueFrom(
       this._http.get(this.path, { responseType: 'text' })
-    ).catch((err) =>{
+    ).catch((err) => {
       console.log(`Error while getting all: ${JSON.stringify(err)}`);
       this._file.saveError(err);
     });
 
     if (!result) return null;
 
-    const data =  JSON.parse(result) as Array<T>;
-    data.map(value => value.uploaded = States.DOWNLOADED);
+    const data = JSON.parse(result) as Array<T>;
+    data.map((value) => (value.uploaded = States.DOWNLOADED));
     return data;
   }
 
@@ -47,7 +47,7 @@ export class ApiCoreService<T extends Entity> {
     } else {
       result = await firstValueFrom(
         this._http.get(`${this.path}/get?id=${id}`)
-      ).catch((err) =>{
+      ).catch((err) => {
         console.log(`Error while getting: ${JSON.stringify(err)}`);
         this._file.saveError(err);
       });
@@ -78,12 +78,13 @@ export class ApiCoreService<T extends Entity> {
     if (!result) return null;
 
     const data = result as Array<T>;
-    data.map(val => val.uploaded =States.DOWNLOADED);
+    data.map((val) => (val.uploaded = States.DOWNLOADED));
     return data;
   }
 
-  public async insert(object: T): Promise<number | string | Object | undefined> {
-
+  public async insert(
+    object: T
+  ): Promise<number | string | Object | undefined> {
     const result = await firstValueFrom(
       this._http.post(`${this.path}/insert`, object)
     ).catch((err) => {
@@ -99,7 +100,7 @@ export class ApiCoreService<T extends Entity> {
   public async update(object: T): Promise<boolean> {
     const result = await firstValueFrom(
       this._http.post(`${this.path}/update`, object)
-    ).catch((err) =>{
+    ).catch((err) => {
       console.log(`Error while updating: ${JSON.stringify(err)}`);
       this._file.saveError(err);
     });
@@ -112,7 +113,7 @@ export class ApiCoreService<T extends Entity> {
   public async delete(object: T): Promise<boolean> {
     const result = await firstValueFrom(
       this._http.post(`${this.path}/delete`, object)
-    ).catch((err) =>{
+    ).catch((err) => {
       console.log(`Error while deleting: ${JSON.stringify(err)}`);
       this._file.saveError(err);
     });
