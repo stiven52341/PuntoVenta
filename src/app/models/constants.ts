@@ -1,6 +1,6 @@
 export enum ApiKeys {
-  // PATH = 'http://157.230.224.218:16000/',//Production
-  PATH = 'http://192.168.216.134:8080/',
+  PATH = 'http://157.230.224.218:16000/',//Production
+  // PATH = 'http://192.168.148.191:8080/',
   PRODUCTS = PATH + 'products',
   CATEGORIES = PATH + 'categories',
   CURRENCIES = PATH + 'currencies',

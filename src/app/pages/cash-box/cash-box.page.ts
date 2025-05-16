@@ -1,3 +1,4 @@
+import { LocalPurchaseService } from './../../services/local/local-purchase/local-purchase.service';
 import { DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import {
@@ -8,7 +9,6 @@ import {
   IonCardTitle,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { Subscription } from 'rxjs';
 import { ButtonListComponent } from 'src/app/components/button-list/button-list.component';
 import { CircleGraphComponent } from 'src/app/components/charts/circle-graph/circle-graph.component';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
@@ -42,7 +42,8 @@ export class CashBoxPage implements ViewWillEnter {
 
   constructor(
     private _modal: ModalsService,
-    private _localCash: LocalCashBoxService
+    private _localCash: LocalCashBoxService,
+    private _localSells: LocalPurchaseService
   ) {
     this.buttons = [
       {

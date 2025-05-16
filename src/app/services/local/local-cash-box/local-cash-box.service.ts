@@ -9,7 +9,6 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class LocalCashBoxService extends InternalStorageCoreService<ICashBox> {
-
   constructor(private _purchases: LocalPurchaseService) {
     super(StorageKeys.CASH_BOXES);
   }
@@ -36,5 +35,11 @@ export class LocalCashBoxService extends InternalStorageCoreService<ICashBox> {
 
   public async getOpenedCashbox(): Promise<ICashBox | undefined> {
     return ((await this.getAll()) || []).find((cashbox) => cashbox.state);
+  }
+
+  public async getPurchasesOnCurrentCashbox() {
+    const cashbox = await this.getOpenedCashbox();
+    if (!cashbox) return [];
+    return await this._purchases.getPurchasesByDates(cashbox!.init, new Date());
   }
 }
