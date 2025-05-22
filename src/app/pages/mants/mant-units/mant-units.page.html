@@ -57,7 +57,7 @@
     </ion-button>
     }
 
-    <ion-button [disabled]="loading" type="submit">
+    <ion-button (click)="onSave()" [disabled]="loading" type="submit">
       <ion-label>GUARDAR</ion-label>
     </ion-button>
   </div>

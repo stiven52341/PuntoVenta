@@ -8,8 +8,7 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  MenuController,
-} from '@ionic/angular/standalone';
+  MenuController, IonFooter, IonLabel } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { StatusBar } from '@capacitor/status-bar';
 import { GeneralInfoService } from './services/local/general-info/general-info.service';
@@ -26,12 +25,13 @@ import { States } from './models/constants';
 import { GlobalService } from './services/global/global.service';
 import { ToastService } from './services/toast/toast.service';
 import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
-  imports: [
+  imports: [IonLabel, IonFooter, 
     IonApp,
     IonRouterOutlet,
     IonMenu,
@@ -42,13 +42,14 @@ import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
     ProductComponent,
     IonContent,
     ButtonListComponent,
-
+    IonFooter
   ],
 })
 export class AppComponent implements OnInit {
   // public static loadingData = new EventEmitter<boolean>();
 
   protected menuOptions: Array<IButton>;
+  protected version?: string;
 
   constructor(
     private _router: Router,
@@ -59,6 +60,10 @@ export class AppComponent implements OnInit {
     private _global: GlobalService,
     private _toast: ToastService
   ) {
+    App.getInfo().then((info) => {
+      this.version = info.version;
+    });
+
     ScreenOrientation.lock({ orientation: 'portrait' })
       .then(() => {
         console.log('Screen locked to portrait');

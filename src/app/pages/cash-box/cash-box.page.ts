@@ -50,7 +50,9 @@ export class CashBoxPage implements ViewWillEnter {
         title: 'Abrir caja',
         image: '../../../assets/icon/open-cash.png',
         do: async () => {
-          this.openedWith = (await this._modal.showCashbox('open')) || 0;
+          const result = await this._modal.showCashbox('open');
+          if(!result) return;
+          this.openedWith = result;
           this.balance = this.openedWith;
           this.buttons[0].disable = true;
           this.buttons[1].disable = false;

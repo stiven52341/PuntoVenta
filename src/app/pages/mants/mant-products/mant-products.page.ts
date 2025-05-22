@@ -166,9 +166,11 @@ export class MantProductsPage implements OnInit {
       (proCa) => proCa.id.idProduct == product!.id
     );
 
-    this.category = await this._localCategories.get(
-      productCategory!.id.idCategory
-    );
+    if (productCategory) {
+      this.category = await this._localCategories.get(
+        productCategory!.id.idCategory
+      );
+    }
   }
 
   private checkForm(): boolean {
@@ -247,7 +249,6 @@ export class MantProductsPage implements OnInit {
       )
         .then(() => {
           this._alert.showSuccess('PRODUCTO MODIFICADO');
-          // AppComponent.loadingData.emit(false);
           this._global.updateData();
         })
         .catch((err) => {
@@ -292,7 +293,6 @@ export class MantProductsPage implements OnInit {
       )
         .then(() => {
           this._alert.showSuccess('PRODUCTO CREADO');
-          // AppComponent.loadingData.emit(false);
           this._global.updateData();
         })
         .catch((err) => {
@@ -330,6 +330,7 @@ export class MantProductsPage implements OnInit {
         .deactivate(this.product)
         .then(() => {
           this._alert.showSuccess('PRODUCTO DESACTIVADO');
+          this._global.updateData();
         })
         .catch((err) => {
           this._alert.showSuccess('ERROR DESACTIVANDO PRODUCTO');
@@ -352,8 +353,7 @@ export class MantProductsPage implements OnInit {
       await this._localProducts
         .update(this.product)
         .then(() => {
-          this._alert.showSuccess('PRODUCTO DESACTIVADO');
-          // AppComponent.loadingData.emit(false);
+          this._alert.showSuccess('PRODUCTO ACTIVADO');
           this._global.updateData();
         })
         .catch((err) => {

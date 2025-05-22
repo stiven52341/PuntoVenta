@@ -5,7 +5,6 @@ import {
   IonSearchbar,
   IonLabel,
   IonSpinner,
-  ViewWillEnter,
 } from '@ionic/angular/standalone';
 import { ProductCardComponent } from 'src/app/components/product-card/product-card.component';
 import { ICategory } from 'src/app/models/category.model';
@@ -19,7 +18,6 @@ import { IProduct } from 'src/app/models/product.model';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
-import { AppComponent } from 'src/app/app.component';
 import { LocalProductCategoryService } from 'src/app/services/local/local-product-category/local-product-category.service';
 import { IProductCategory } from 'src/app/models/product-category.model';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
@@ -125,7 +123,7 @@ export class ProductsPage implements OnInit {
       await getPhotosCategories(category);
     }
 
-    const assignProducts = async (product: IProduct) => {
+    const assignProducts = (product: IProduct) => {
       this.products.push({
         product: product,
         unitProduct: unitProducts.find(
@@ -140,7 +138,7 @@ export class ProductsPage implements OnInit {
 
     for (const product of data[1]) {
       if (!product.state) continue;
-      await assignProducts(product);
+      assignProducts(product);
     }
   }
 

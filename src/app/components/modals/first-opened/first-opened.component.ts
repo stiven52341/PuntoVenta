@@ -10,6 +10,7 @@ import {
   IonCardTitle,
   IonCardContent,
   IonSpinner,
+  ModalController,
 } from '@ionic/angular/standalone';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { PhotoKeys } from 'src/app/models/constants';
@@ -46,6 +47,8 @@ import { IPurchase } from 'src/app/models/purchase.model';
 import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';
 import { CashBoxService } from 'src/app/services/api/cash-box/cash-box.service';
 import { LocalCashBoxService } from 'src/app/services/local/local-cash-box/local-cash-box.service';
+import { ProductPurchaseService } from 'src/app/services/api/product-purchase/product-purchase.service';
+import { LocalProductPurchaseService } from 'src/app/services/local/local-product-purchase/local-product-purchase.service';
 
 @Component({
   selector: 'app-first-opened',
@@ -70,6 +73,7 @@ export class FirstOpenedComponent implements OnInit {
   private _alert = inject(AlertsService);
   private _info = inject(GeneralInfoService);
   private _modal = inject(ModalsService);
+  private _modalCtrl = inject(ModalController);
   private _file = inject(FilesService);
 
   //Api
@@ -87,6 +91,7 @@ export class FirstOpenedComponent implements OnInit {
   private _productCategoryApi = inject(ProductCategoryService);
   private _purchaseApi = inject(PurchaseService);
   private _cashBoxApi = inject(CashBoxService);
+  private _productPurhchase = inject(ProductPurchaseService);
 
   //Local
   private _categorySto = inject(LocalCategoriesService);
@@ -103,6 +108,7 @@ export class FirstOpenedComponent implements OnInit {
   private _purchaseSto = inject(LocalPurchaseService);
   private _purchaseDetailSto = inject(LocalPurchaseDetailService);
   private _cashBoxSto = inject(LocalCashBoxService);
+  private _productPurchaseSto = inject(LocalProductPurchaseService);
 
   constructor() {}
 
@@ -132,6 +138,7 @@ export class FirstOpenedComponent implements OnInit {
         this._productCategoryApi.getAll(),
         this._purchaseApi.getAll(),
         this._cashBoxApi.getAll(),
+        this._productPurhchase.getAll()
       ])
     ).catch(async (err) => {
       this._alert.showError('Error descargando los datos');
@@ -139,7 +146,11 @@ export class FirstOpenedComponent implements OnInit {
       console.error(err);
     });
 
-    if (!result) return;
+    if (!result) {
+      this._info.setNotSuccessful();
+      this._modalCtrl.dismiss(false);
+      return;
+    }
 
     const categories = result[0] || [];
     const currencies = result[1] || [];
@@ -155,6 +166,7 @@ export class FirstOpenedComponent implements OnInit {
     const productCategories = result[11] || [];
     const purchases = result[12] || [];
     const cashBoxes = result[13] || [];
+    const productPurchases = result[14] || [];
 
     imagesPros.map(
       (image) => (image.image = `data:image/png;base64,${image.image}`)
@@ -192,6 +204,7 @@ export class FirstOpenedComponent implements OnInit {
         this._proCategoriesSto.set(productCategories),
         setPurchases(purchases),
         this._cashBoxSto.set(cashBoxes),
+        this._productPurchaseSto.set(productPurchases)
       ])
     ).catch((err) => {
       this._alert.showError('Error guardando los datos');
@@ -207,7 +220,7 @@ export class FirstOpenedComponent implements OnInit {
     );
 
     if (!result2 || result2 instanceof Error) {
-      this._modal.closeModal('first-time-modal');
+      this._modalCtrl.dismiss(false);
       return;
     }
 

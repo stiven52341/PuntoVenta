@@ -56,8 +56,10 @@ export class ModalsService {
     return await modal.onWillDismiss();
   }
 
-  public async showFirstOpenedModal() {
-    return await this.showModal(FirstOpenedComponent, 'first-time-modal');
+  public async showFirstOpenedModal(): Promise<boolean> {
+    const result = await this.showModal(FirstOpenedComponent, 'first-time-modal');
+    if (result && result.data) return result.data as boolean;
+    return false;
   }
 
   public async showProductModal(

@@ -98,6 +98,7 @@ export class PhotosService {
         allowEditing: false,
         resultType: CameraResultType.Base64,
         source: CameraSource.Camera,
+        width: 480
       });
       return image.base64String
         ? 'data:image/png;base64,' + image.base64String
@@ -116,6 +117,7 @@ export class PhotosService {
         allowEditing: false,
         resultType: CameraResultType.Base64,
         source: CameraSource.Photos,
+        width: 480
       });
 
       return image.base64String

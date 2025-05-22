@@ -25,6 +25,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while getting all: ${JSON.stringify(err)}`);
       this._file.saveError(err);
+      throw new Error(err);
     });
 
     if (!result) return null;
@@ -43,6 +44,8 @@ export abstract class ApiCoreService<T extends Entity> {
         this._http.post(`${this.path}/get`, id)
       ).catch((err) => {
         console.log(`Error while getting: ${JSON.stringify(err)}`);
+        this._file.saveError(err);
+        throw new Error(err);
       });
     } else {
       result = await firstValueFrom(
@@ -50,6 +53,7 @@ export abstract class ApiCoreService<T extends Entity> {
       ).catch((err) => {
         console.log(`Error while getting: ${JSON.stringify(err)}`);
         this._file.saveError(err);
+        throw new Error(err);
       });
     }
 
@@ -73,6 +77,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while getting by param: ${JSON.stringify(err)}`);
       this._file.saveError(err);
+      throw new Error(err);
     });
 
     if (!result) return null;
@@ -90,6 +95,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while inserting: ${JSON.stringify(err)}`);
       this._file.saveError(err);
+      throw new Error(err);
     });
 
     if (!result) return undefined;
@@ -103,6 +109,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while updating: ${JSON.stringify(err)}`);
       this._file.saveError(err);
+      throw new Error(err);
     });
 
     if (!result) return false;
@@ -116,6 +123,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while deleting: ${JSON.stringify(err)}`);
       this._file.saveError(err);
+      throw new Error(err);
     });
 
     if (!result) return false;
