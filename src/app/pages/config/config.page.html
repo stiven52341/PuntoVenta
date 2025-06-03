@@ -1,0 +1,19 @@
+<ion-header [translucent]="true">
+  <app-header-bar title="configuración" [isModal]="false"></app-header-bar>
+  <ion-toolbar>
+    <ion-segment [value]="'printer'">
+      <ion-segment-button value="printer">
+        <ion-icon name="print"></ion-icon>
+        <ion-label>Impresora</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content">
+    <ion-segment-view id="printer">
+      <app-printer-config></app-printer-config>
+    </ion-segment-view>
+  </div>
+</ion-content>

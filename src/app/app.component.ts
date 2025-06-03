@@ -115,6 +115,13 @@ export class AppComponent implements OnInit {
           await this.goTo('/consults');
         },
       },
+      {
+        title: 'Configuración',
+        image: '../assets/icon/setting.png',
+        do: async () => {
+          await this.goTo('/config');
+        }
+      }
     ];
 
     addIcons({});

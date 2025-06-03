@@ -1,0 +1,31 @@
+import { Injectable } from '@angular/core';
+import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
+import { StorageKeys } from 'src/app/models/constants';
+import { Printer } from 'src/app/models/printer.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PrinterService extends InternalStorageCoreService<Printer>{
+
+  constructor() {
+    super(StorageKeys.PRINTER);
+  }
+
+  public override async insert(obj: Printer){
+    const olds = await this.getAll();
+
+    if(olds.length >= 1){
+      throw new Error('Only one printer allowed at same time');
+    }
+
+    olds.push(obj);
+    await this.set(olds);
+  }
+
+  public async getCurrentPrinter(): Promise<Printer | undefined>{
+    const printers = await this.getAll();
+    if(printers.length == 0) return undefined;
+    return printers[0];
+  }
+}

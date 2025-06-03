@@ -1,0 +1,39 @@
+<div class="content">
+  <form [formGroup]="form" (ngSubmit)="onSave()">
+    <div class="form-content">
+      <div class="complex-input">
+        <ion-input
+          formControlName="id"
+          [disabled]="true"
+          labelPlacement="stacked"
+          placeholder="Seleccione una impresora"
+          fill="outline"
+          name="printer"
+          label="IMPRESORA"
+        ></ion-input>
+        <ion-button (click)="getPrinter()">
+          <ion-icon size="large" name="search"></ion-icon>
+        </ion-button>
+      </div>
+      <ion-select
+        label="Modelo"
+        label-placement="stacked"
+        fill="outline"
+        formControlName="model"
+        placeholder="Seleccione el modelo de impresora"
+      >
+        @for(model of models; track $index){
+        <ion-select-option value="{{ model.name }}">{{
+          model.name
+        }}</ion-select-option>
+        }
+      </ion-select>
+      <ion-button type="submit" style="width: 100%">
+        <div class="button-content">
+          <ion-icon size="large" color="light" name="save"></ion-icon>
+          <ion-label color="light">GUARDAR</ion-label>
+        </div>
+      </ion-button>
+    </div>
+  </form>
+</div>

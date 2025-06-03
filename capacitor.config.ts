@@ -20,6 +20,14 @@ const config: CapacitorConfig = {
     Keyboard: {
       resize: KeyboardResize.Ionic,
       resizeOnFullScreen: true
+    },
+    BluetoothLe: {
+      displayStrings: {
+        scanning: "Scanning",
+        cancel: "Cancel",
+        availableDevices: "Available devices",
+        noDeviceFound: "No device found"
+      }
     }
   },
   android: {

@@ -34,7 +34,8 @@ export enum StorageKeys {
   PURCHASES = 'purchases',
   PURCHASES_DETAILS = 'purchases-details',
   CASH_BOXES = 'cash-boxes',
-  PRODUCT_PURCHASE = 'product-purchase'
+  PRODUCT_PURCHASE = 'product-purchase',
+  PRINTER = 'printer'
 }
 
 export enum PhotoKeys {

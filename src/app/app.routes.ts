@@ -49,6 +49,10 @@ export const routes: Routes = [
     path: 'cash-box',
     loadComponent: () => import('./pages/cash-box/cash-box.page').then( m => m.CashBoxPage)
   },
+  {
+    path: 'config',
+    loadComponent: () => import('./pages/config/config.page').then( m => m.ConfigPage)
+  },
 
 
 
