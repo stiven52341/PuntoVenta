@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { ESCCMD } from 'src/app/models/constants/constants';
-import { BluetoothStorageService } from '../storage/bluetooth/bluetooth-storage.service';
-
+import { LocalPrinterService } from '../local/local-printer/printer.service';
+import { Printer } from 'src/app/models/printer.model';
 @Injectable({
   providedIn: 'root',
 })
 export class StringToPrintService {
   private maxLength: number = 1;
   private encoder = new TextEncoder();
+  private printer?: Printer;
 
   /**Caracter utilizado para la identificación de cada salto de linea */
   private readonly caracterSeparacion: string = '不';
@@ -30,7 +30,7 @@ export class StringToPrintService {
     { '¿': '?' },
   ];
 
-  constructor(private _blue: BluetoothStorageService) {
+  constructor(private _localPrinter: LocalPrinterService) {
     this.getLenght();
   }
 
@@ -38,8 +38,13 @@ export class StringToPrintService {
    * Función que obtiene el tamaño de la impresora.
    * Es neceserio hacerlo de esta forma por si la impresora cambia
    */
-  private getLenght() {
-    this.maxLength = this._blue.bluetoothData.tipoImpresora.CantLineas;
+  private async getLenght() {
+    this.printer = await this._localPrinter.getCurrentPrinter();
+    if(!this.printer){
+      this.maxLength = 1;
+      return;
+    }
+    this.maxLength = this.printer.model.space;
 
     if (!this.maxLength || this.maxLength <= 0) {
       this.maxLength = 1;
@@ -208,16 +213,16 @@ export class StringToPrintService {
           case 'bold':
             intArray.push(
               new Uint8Array([
-                ...ESCCMD.NEGRITA_START,
+                ...this.printer!.getCommands().BOLD_START,
                 ...this.encoder.encode(_str),
-                ...ESCCMD.NEGRITA_END,
+                ...this.printer!.getCommands().BOLD_END,
               ])
             );
             break;
           case 'large':
             intArray.push(
               new Uint8Array([
-                ...ESCCMD.FUENTE_DOBLE,
+                ...this.printer!.getCommands().LARGE,
                 ...this.encoder.encode(_str),
               ])
             );
@@ -225,7 +230,7 @@ export class StringToPrintService {
           case 'larger':
             intArray.push(
               new Uint8Array([
-                ...ESCCMD.FUENTE_ENORME,
+                ...this.printer!.getCommands().LARGER,
                 ...this.encoder.encode(_str),
               ])
             );
@@ -233,7 +238,7 @@ export class StringToPrintService {
           default:
             intArray.push(
               new Uint8Array([
-                ...ESCCMD.FUENTE_NORMAL,
+                ...this.printer!.getCommands().NORMAL,
                 ...this.encoder.encode(_str),
               ])
             );
@@ -307,31 +312,31 @@ export class StringToPrintService {
     switch (size) {
       case 'normal':
         intArray = new Uint8Array([
-          ...ESCCMD.FUENTE_NORMAL,
+          ...this.printer!.getCommands().NORMAL,
           ...this.encoder.encode(str),
         ]);
         break;
       case 'bold':
         intArray = new Uint8Array([
-          ...ESCCMD.NEGRITA_END,
+          ...this.printer!.getCommands().BOLD_END,
           ...this.encoder.encode(str),
         ]);
         break;
       case 'large':
         intArray = new Uint8Array([
-          ...ESCCMD.FUENTE_DOBLE,
+          ...this.printer!.getCommands().LARGE,
           ...this.encoder.encode(str),
         ]);
         break;
       case 'larger':
         intArray = new Uint8Array([
-          ...ESCCMD.FUENTE_ENORME,
+          ...this.printer!.getCommands().LARGER,
           ...this.encoder.encode(str),
         ]);
         break;
       default:
         intArray = new Uint8Array([
-          ...ESCCMD.FUENTE_NORMAL,
+          ...this.printer!.getCommands().NORMAL,
           ...this.encoder.encode(str),
         ]);
         break;
@@ -593,7 +598,7 @@ export class StringToPrintService {
           case 'normal':
             intArray.push(
               new Uint8Array([
-                ...ESCCMD.FUENTE_NORMAL,
+                ...this.printer!.getCommands().NORMAL,
                 ...this.encoder.encode(line),
               ])
             );
@@ -601,16 +606,16 @@ export class StringToPrintService {
           case 'bold':
             intArray.push(
               new Uint8Array([
-                ...ESCCMD.NEGRITA_START,
+                ...this.printer!.getCommands().BOLD_START,
                 ...this.encoder.encode(line),
-                ...ESCCMD.NEGRITA_END,
+                ...this.printer!.getCommands().BOLD_END,
               ])
             );
             break;
           default:
             intArray.push(
               new Uint8Array([
-                ...ESCCMD.FUENTE_NORMAL,
+                ...this.printer!.getCommands().NORMAL,
                 ...this.encoder.encode(line),
               ])
             );

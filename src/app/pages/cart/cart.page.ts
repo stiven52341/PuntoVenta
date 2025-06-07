@@ -29,6 +29,7 @@ import { IPurchase } from 'src/app/models/purchase.model';
 import { PurchaseService } from 'src/app/services/api/purchase/purchase.service';
 import { LocalPurchaseService } from 'src/app/services/local/local-purchase/local-purchase.service';
 import { IUnit } from 'src/app/models/unit.model';
+import { PrintingService } from 'src/app/services/printing/printing.service';
 
 export interface IProductCart {
   product: IProduct;
@@ -69,7 +70,8 @@ export class CartPage implements OnInit {
     private _alert: AlertsService,
     private _file: FilesService,
     private _purchase: PurchaseService,
-    private _localPurchase: LocalPurchaseService
+    private _localPurchase: LocalPurchaseService,
+    private _printing: PrintingService
   ) {
     addIcons({ trash, camera });
   }
@@ -194,6 +196,7 @@ export class CartPage implements OnInit {
         .then(async () => {
           this._alert.showSuccess('COMPRA REGISTRADA');
           await this._cart.resetCart();
+          await this._printing.printPurchase(purchase);
         })
         .catch((err) => {
           this._file.saveError(err);

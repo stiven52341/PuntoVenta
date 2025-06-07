@@ -28,12 +28,27 @@
         }}</ion-select-option>
         }
       </ion-select>
+      <ion-checkbox formControlName="printWithLogo"
+        >Imprimir con logo</ion-checkbox
+      >
+
       <ion-button type="submit" style="width: 100%">
         <div class="button-content">
           <ion-icon size="large" color="light" name="save"></ion-icon>
           <ion-label color="light">GUARDAR</ion-label>
         </div>
       </ion-button>
+      <ion-button
+        type="button"
+        (click)="this._printing.printTest()"
+        style="width: 100%"
+        >
+          <div class="button-content">
+            <ion-icon size="large" color="light" name="print"></ion-icon>
+            <ion-label color="light">Probar impresora</ion-label>
+          </div>
+        </ion-button
+      >
     </div>
   </form>
 </div>

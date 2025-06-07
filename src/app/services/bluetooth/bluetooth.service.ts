@@ -5,23 +5,36 @@ import {
   ScanMode,
 } from '@capacitor-community/bluetooth-le';
 import { FilesService } from '../files/files.service';
-import { PrinterService } from '../local/printer/printer.service';
+import { LocalPrinterService } from '../local/local-printer/printer.service';
 import { AlertsService } from '../alerts/alerts.service';
-import { ESCPOS_ALIGN } from 'src/app/models/printer.model';
+import { ESCPOS_ALIGN, Printer } from 'src/app/models/printer.model';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { ToastService } from '../toast/toast.service';
+import { GeneralInfoService } from '../local/general-info/general-info.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BluetoothService {
+  private inited: boolean = false;
+
   constructor(
     private _file: FilesService,
-    private _printer: PrinterService,
+    private _printer: LocalPrinterService,
     private _alert: AlertsService,
-    private _http: HttpClient
+    private _http: HttpClient,
+    private _toast: ToastService,
+    private _global: GeneralInfoService
   ) {
-    BleClient.initialize({ androidNeverForLocation: true });
+    BleClient.initialize({ androidNeverForLocation: true })
+      .then(() => {
+        this.inited = true;
+      })
+      .catch((err) => {
+        this._alert.showError('Error inicializando el bluetooth');
+        this.inited = false;
+      });
   }
 
   private async check(): Promise<boolean> {
@@ -232,6 +245,9 @@ export class BluetoothService {
   public async getLogoBase64(
     path: string = 'company_logo.png'
   ): Promise<string | undefined> {
+    const config = await this._global.getGeneralInfo();
+    if(!config?.imprimirConLogo) return undefined;
+
     const fullPath = `assets/${path}`;
     const data = await firstValueFrom(
       this._http.get(fullPath, { responseType: 'blob' })
@@ -262,8 +278,114 @@ export class BluetoothService {
     return 96;
   }
 
-  private async connect(){
-    
+  private async connect(): Promise<Printer | undefined> {
+    const printer = await this._printer.getCurrentPrinter();
+    if (!printer) {
+      this._alert.showError('No hay una impresora configurada');
+      return undefined;
+    }
+    const isLocationEnabled = await BleClient.isLocationEnabled();
+    if (!isLocationEnabled) {
+      this._alert.showError(
+        'Debe activar la localizacion para poder conectar a la impresora'
+      );
+      return undefined;
+    }
+
+    const isEnabled = await BleClient.isEnabled();
+    if (!isEnabled) {
+      const request = await this.check();
+      if (!request) return undefined;
+    }
+
+    const request = await BleClient.isBonded(printer.id);
+    if (!request) {
+      await BleClient.createBond(printer.id, { timeout: 15000 }).catch(() => {
+        return undefined;
+      });
+    }
+
+    await BleClient.connect(printer.id, async (device) => {
+      await this.disconnect(device);
+    })
+      .then(() => {
+        return printer;
+      })
+      .catch((err) => {
+        return undefined;
+      });
+    return undefined;
+  }
+
+  public async sendDataViaBluetooth(intArray: Array<Uint8Array>) {
+    const printer = await this.connect();
+    if (!printer) {
+      return;
+    }
+
+    const toast_ = await this._toast.showToast(
+      'Imprimiendo...'.toUpperCase(),
+      15000,
+      'primary',
+      'bottom'
+    );
+    for (const obt of intArray) {
+      await this.writeData(printer, obt);
+    }
+
+    await this.disconnect(printer.id);
+    toast_.dismiss();
+  }
+
+  private async writeData(
+    printer: Printer,
+    data: Uint8Array,
+    clearBuffer: boolean = false
+  ) {
+    if (clearBuffer) {
+      await BleClient.writeWithoutResponse(
+        printer.id,
+        printer.model.service,
+        printer.model.characteristic,
+        new DataView(new Uint8Array([...printer.getCommands().CLEAR]).buffer),
+        { timeout: 15000 }
+      );
+    }
+
+    await BleClient.writeWithoutResponse(
+      printer.id,
+      printer.model.service,
+      printer.model.characteristic,
+      new DataView(new Uint8Array([...printer.getCommands().INI]).buffer),
+      { timeout: 15000 }
+    );
+
+    await BleClient.writeWithoutResponse(
+      printer.id,
+      printer.model.service,
+      printer.model.characteristic,
+      new DataView(new Uint8Array([...printer.getCommands().LF]).buffer),
+      { timeout: 15000 }
+    );
+
+    await BleClient.writeWithoutResponse(
+      printer.id,
+      printer.model.service,
+      printer.model.characteristic,
+      new DataView(data.buffer),
+      { timeout: 15000 }
+    );
+    await BleClient.writeWithoutResponse(
+      printer.id,
+      printer.model.service,
+      printer.model.characteristic,
+      new DataView(new Uint8Array([...printer.getCommands().CLEAR]).buffer),
+      { timeout: 15000 }
+    );
+  }
+
+  private async disconnect(device: string) {
+    BleClient.disconnect(device);
   }
 
   public async sendImageViaBluetooth(
@@ -271,48 +393,49 @@ export class BluetoothService {
     text?: Array<Uint8Array>
   ) {
     const intArray = !Array.isArray(_intArray) ? [_intArray] : _intArray || [];
-    return await new Promise<boolean>(async (resolve, reject) => {
-      await this.conectar().catch((err) => {
-        console.error('Error al conectar A: ', err);
-        this._file.saveError('Error al conectar A: ' + err);
-        throw new Error('Error al conectar A: ' + err);
-      });
+    const printer = await this.connect();
 
-      if (!this.connectedDevice) {
-        console.log('Objeto de bluetooth: ', this.connectedDevice);
-        this._toastService.presentError('No hay dispositivos configurados.');
-        return;
+    if (!printer) {
+      return;
+    }
+
+    const toast_ = await this._toast.showToast(
+      'Imprimiendo...'.toUpperCase(),
+      15000,
+      'primary',
+      'bottom'
+    );
+
+    for (const obt of intArray) {
+      await this._writeImageData(printer, obt);
+    }
+
+    if (text) {
+      for (const obt of text) {
+        await this.writeData(printer, obt, true);
       }
+    }
 
-      const toast_ = await this._toastService.presentToast(
-        'Imprimiendo...'.toUpperCase(),
-        'bottom',
-        undefined
-      );
-      try {
-        if (intArray && this.canPrint) {
-          this.canPrint = false;
-          if (this.connectedDevice == null) await this.conectar();
+    await this.disconnect(printer.id);
+  }
 
-          for (const obt of intArray) {
-            await this._writeImageData(obt);
-          }
+  private async _writeImageData(printer: Printer, data: Uint8Array) {
+    await BleClient.writeWithoutResponse(
+      printer.id,
+      printer.model.service,
+      printer.model.characteristic,
+      new DataView(data.buffer),
+      { timeout: 15000 }
+    );
+  }
 
-          if (text) {
-            for (const obt of text) {
-              await this.writeData(obt, true);
-            }
-          }
-
-          await this.desconectar(this.device.direccion);
-          this.canPrint = true;
-          resolve(true);
-        }
-      } catch (error) {
-        reject(error);
-      } finally {
-        await toast_.dismiss();
-      }
-    });
+  public async print(intArray: Uint8Array[]) {
+    const base64 = await this.getLogoBase64();
+    if (base64) {
+      await this.renderizeLogo(base64, 'center', intArray);
+    } else {
+      // Envía los datos a la impresora Bluetooth
+      await this.sendDataViaBluetooth(intArray);
+    }
   }
 }

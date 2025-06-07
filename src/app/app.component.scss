@@ -3,3 +3,9 @@
   height: 100%;
   // margin-top: 30%;
 }
+
+ion-menu{
+  ion-content{
+    --background: url('../assets/background11.png') no-repeat center center / cover;
+  }
+}

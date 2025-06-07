@@ -37,7 +37,7 @@ export class PhotosService {
     await Media.savePhoto({
       path: data,
       fileName: name,
-      albumIdentifier: albumn!.identifier,
+      albumIdentifier: albumn!.identifier
     });
   }
 
@@ -103,6 +103,7 @@ export class PhotosService {
       return image.base64String
         ? 'data:image/png;base64,' + image.base64String
         : undefined;
+      // return image.path;
     } catch (error) {
       this._file.saveError(error);
       return undefined;
@@ -123,6 +124,7 @@ export class PhotosService {
       return image.base64String
         ? 'data:image/png;base64,' + image.base64String
         : undefined;
+        // return image.path
     } catch (error) {
       this._file.saveError(error);
       return undefined;

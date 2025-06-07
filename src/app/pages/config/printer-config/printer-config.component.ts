@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import {
   IonButton,
   IonIcon,
@@ -7,9 +12,12 @@ import {
   IonSelect,
   IonSelectOption,
   IonLabel,
+  IonCheckbox,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { save, search } from 'ionicons/icons';
+import { print, save, search } from 'ionicons/icons';
+import { firstValueFrom, forkJoin } from 'rxjs';
+import { IGeneralInfo } from 'src/app/models/general-info.model';
 import {
   IPrinterModel,
   Printer,
@@ -17,7 +25,9 @@ import {
 } from 'src/app/models/printer.model';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { BluetoothService } from 'src/app/services/bluetooth/bluetooth.service';
-import { PrinterService } from 'src/app/services/local/printer/printer.service';
+import { GeneralInfoService } from 'src/app/services/local/general-info/general-info.service';
+import { LocalPrinterService } from 'src/app/services/local/local-printer/printer.service';
+import { PrintingService } from 'src/app/services/printing/printing.service';
 
 @Component({
   selector: 'app-printer-config',
@@ -25,6 +35,7 @@ import { PrinterService } from 'src/app/services/local/printer/printer.service';
   styleUrls: ['./printer-config.component.scss'],
   standalone: true,
   imports: [
+    IonCheckbox,
     IonLabel,
     IonInput,
     IonButton,
@@ -37,27 +48,42 @@ import { PrinterService } from 'src/app/services/local/printer/printer.service';
 export class PrinterConfigComponent implements OnInit {
   protected form: FormGroup;
   protected models: Array<IPrinterModel>;
+  private info?: IGeneralInfo;
 
   constructor(
     private _blue: BluetoothService,
-    private _localPrinter: PrinterService,
-    private _alert: AlertsService
+    private _localPrinter: LocalPrinterService,
+    private _alert: AlertsService,
+    private _generalInfo: GeneralInfoService,
+    protected _printing: PrintingService
   ) {
-    addIcons({ search, save });
+    addIcons({ search, save, print });
 
     this.models = SUPPORTED_PRINTER_MODELS;
 
     this.form = new FormGroup({
       id: new FormControl(null, [Validators.required]),
-      model: new FormControl(null, [Validators.required])
+      model: new FormControl(null, [Validators.required]),
+      printWithLogo: new FormControl(false, [Validators.required]),
     });
   }
 
   async ngOnInit() {
-    const printer = await this._localPrinter.getCurrentPrinter();
-    if(!printer) return;
+    const data = await firstValueFrom(
+      forkJoin([
+        this._localPrinter.getCurrentPrinter(),
+        this._generalInfo.getGeneralInfo(),
+      ])
+    );
+    const printer = data[0];
+    this.info = data[1];
+
+    if (!printer) return;
     this.form.get('id')?.setValue(printer.id);
     this.form.get('model')?.setValue(printer.model.name);
+    this.form
+      .get('printWithLogo')
+      ?.setValue(this.info?.imprimirConLogo || false);
   }
 
   protected async getPrinter() {
@@ -81,14 +107,22 @@ export class PrinterConfigComponent implements OnInit {
   }
 
   protected async onSave() {
-    if(!this.check()) return;
-    const model = this.models.find(model => model.name == this.form.get('model')!.value);
+    if (!this.check()) return;
+    const model = this.models.find(
+      (model) => model.name == this.form.get('model')!.value
+    );
     const printer = new Printer(this.form.get('id')!.value, model!);
-    
-    await this._localPrinter.insert(printer).then(() => {
-      this._alert.showSuccess('Impresora guardada');
-    }).catch(err => {
-      this._alert.showError('Error guardando impresora');
-    });
+    this.info!.imprimirConLogo = this.form.get('printWithLogo')?.value || false;
+
+    this._generalInfo.update(this.info!);
+
+    await this._localPrinter
+      .insert(printer)
+      .then(() => {
+        this._alert.showSuccess('Impresora guardada');
+      })
+      .catch((err) => {
+        this._alert.showError('Error guardando impresora');
+      });
   }
 }
