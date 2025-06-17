@@ -1,8 +1,8 @@
 @import "../../../global.scss";
 
-ion-content {
-  --ion-background-color: rgb(250, 250, 250);
-}
+// ion-content {
+//   --ion-background-color: rgb(250, 250, 250);
+// }
 .content {
   padding: 1em 1em 0 1em;
   display: flex;
@@ -11,7 +11,7 @@ ion-content {
   justify-content: top;
   align-items: center;
   width: 100%;
-  height: 100%;
+  // height: 100%;
 
   ion-searchbar {
     padding: 0;
@@ -61,31 +61,31 @@ ion-content {
     justify-content: center;
     align-items: flex-start;
     flex-wrap: wrap;
-    height: 100%;
-    overflow: auto;
+    // height: 100%;
+    // overflow: auto;
 
     padding: 0.3em;
-    scrollbar-width: thin; /* Para Firefox */
-    scrollbar-color: #888 #f1f1f1; /* Color del scrollbar */
+    // scrollbar-width: thin; /* Para Firefox */
+    // scrollbar-color: #888 #f1f1f1; /* Color del scrollbar */
   }
 
-  .products::-webkit-scrollbar {
-    width: 8px; /* Ancho del scrollbar */
-  }
+  // .products::-webkit-scrollbar {
+  //   width: 8px; /* Ancho del scrollbar */
+  // }
 
-  .products::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Color del fondo del scrollbar */
-    border-radius: 30px;
-  }
+  // .products::-webkit-scrollbar-track {
+  //   background: #f1f1f1; /* Color del fondo del scrollbar */
+  //   border-radius: 30px;
+  // }
 
-  .products::-webkit-scrollbar-thumb {
-    background: #888; /* Color del "thumb" */
-    border-radius: 4px;
-  }
+  // .products::-webkit-scrollbar-thumb {
+  //   background: #888; /* Color del "thumb" */
+  //   border-radius: 4px;
+  // }
 
-  .products::-webkit-scrollbar-thumb:hover {
-    background: #555; /* Color cuando el usuario pasa el mouse */
-  }
+  // .products::-webkit-scrollbar-thumb:hover {
+  //   background: #555; /* Color cuando el usuario pasa el mouse */
+  // }
 
 }
 

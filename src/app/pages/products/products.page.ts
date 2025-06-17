@@ -5,6 +5,9 @@ import {
   IonSearchbar,
   IonLabel,
   IonSpinner,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
+  InfiniteScrollCustomEvent,
 } from '@ionic/angular/standalone';
 import { ProductCardComponent } from 'src/app/components/product-card/product-card.component';
 import { ICategory } from 'src/app/models/category.model';
@@ -43,6 +46,8 @@ interface IProductDetail {
     HeaderBarComponent,
     IonHeader,
     IonSpinner,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent,
   ],
 })
 export class ProductsPage implements OnInit {
@@ -108,19 +113,19 @@ export class ProductsPage implements OnInit {
     const unitProducts = data[2].filter((uni) => uni.state == true);
     const productCategories = data[3].filter((pro) => pro.state == true);
 
-    const getPhotosCategories = async (category: ICategory) => {
-      const image = await this._photo.getPhoto(
-        category.id.toString(),
-        PhotoKeys.CATEGORIES_ALBUM
-      );
+    data[0].forEach((category) => {
       this.categories.push({
         category: category,
-        image: image,
+        image: '../../../assets/icon/loading.gif',
       });
-    };
+    });
 
-    for (const category of data[0]) {
-      await getPhotosCategories(category);
+    for (const category of this.categories) {
+      this._photo
+        .getPhoto(category.category.id.toString(), PhotoKeys.CATEGORIES_ALBUM)
+        .then((image) => {
+          category.image = image || '../../../assets/no-image.png';
+        });
     }
 
     const assignProducts = (product: IProduct) => {
@@ -146,7 +151,8 @@ export class ProductsPage implements OnInit {
     products: Array<IProductDetail>,
     offset: number = 10
   ) {
-    if(this.generating || products.length == 0) return;
+    // debugger;
+    if (this.generating || products.length == 0) return;
 
     this.generating = true;
     const count = this.productsFiltered.length;
@@ -164,33 +170,18 @@ export class ProductsPage implements OnInit {
       }
     }
 
-    const pros = newList.map(async product => {
-      if(!product.image || product.image == ''){
-        product.image = await this.getPhotoProduct(product.product);
+    const pros = newList.map(async (product) => {
+      if (!product.image || product.image == '') {
+        product.image = '../../../assets/icon/loading.gif';
+        this.getPhotoProduct(product.product).then((data) => {
+          product.image = data;
+        });
       }
     });
 
     await firstValueFrom(forkJoin(pros));
     this.productsFiltered.push(...newList);
     this.generating = false;
-  }
-
-  protected async onScroll($event: Event) {
-    if (this.productsFiltered.length >= this.products.length) return;
-
-    this.loadingScroll = true;
-    const target = $event.target as HTMLElement;
-
-    const scrollTop = target.scrollTop;
-    const scrollHeight = target.scrollHeight;
-    const offsetHeight = target.offsetHeight;
-
-    if (scrollTop + offsetHeight >= scrollHeight - 5) {
-      this.loading = true;
-      await this.generateItems(this.products);
-      setTimeout(() => (this.loadingScroll = false), 700);
-      this.loading = false;
-    }
   }
 
   protected async onProductClick(
@@ -221,7 +212,7 @@ export class ProductsPage implements OnInit {
   }
 
   protected async filterByCategory(category: ICategory) {
-    if(this.loading)return;
+    if (this.loading) return;
 
     this.onSelectCategory.emit(category);
     if (this.selectedCategory && +this.selectedCategory.id == +category.id) {
@@ -256,5 +247,12 @@ export class ProductsPage implements OnInit {
       product.id.toString(),
       PhotoKeys.PRODUCTS_ALBUMN
     );
+  }
+
+  async onIonInfinite(event: InfiniteScrollCustomEvent) {
+    await this.generateItems(this.products);
+    setTimeout(() => {
+      event.target.complete();
+    }, 500);
   }
 }

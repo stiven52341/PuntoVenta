@@ -319,6 +319,9 @@ export class BluetoothService {
 
   public async sendDataViaBluetooth(intArray: Array<Uint8Array>) {
     const printer = await this.connect();
+    console.log(printer);
+    
+    // return;
     if (!printer) {
       return;
     }

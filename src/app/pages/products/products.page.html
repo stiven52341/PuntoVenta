@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header>
   <app-header-bar
     [loading]="loading"
     title="PRODUCTOS"
@@ -12,6 +12,7 @@
       animated="true"
       placeholder="Buscar producto"
       (ionInput)="search($event)"
+      [debounce]="300"
     ></ion-searchbar>
     <div class="category-part">
       <div class="title">
@@ -30,7 +31,7 @@
       </div>
     </div>
 
-    <div class="products" (scroll)="onScroll($event)">
+    <div class="products">
       @for(product of productsFiltered; track $index){
       <app-product-card
         [unitProduct]="product.unitProduct"
@@ -44,4 +45,7 @@
       }
     </div>
   </div>
+  <ion-infinite-scroll color="primary" (ionInfinite)="onIonInfinite($event)">
+    <ion-infinite-scroll-content color="primary"></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
