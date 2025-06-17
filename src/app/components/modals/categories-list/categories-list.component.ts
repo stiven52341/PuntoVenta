@@ -26,7 +26,7 @@ import { NgClass } from '@angular/common';
     IonHeader,
     HeaderBarComponent,
     IonSearchbar,
-    NgClass
+    NgClass,
   ],
 })
 export class CategoriesListComponent implements OnInit {
@@ -35,7 +35,8 @@ export class CategoriesListComponent implements OnInit {
   protected categoriesFiltered: Array<{ category: ICategory; image: string }> =
     [];
 
-  private noImage: string;
+  private readonly noImage: string;
+  private readonly imageLoading: string;
 
   constructor(
     private _modalCtrl: ModalController,
@@ -43,6 +44,7 @@ export class CategoriesListComponent implements OnInit {
     private _photo: PhotosService
   ) {
     this.noImage = '../../../../assets/no-image.png';
+    this.imageLoading = '../../../../assets/icon/loading.gif';
   }
 
   async ngOnInit() {
@@ -53,11 +55,11 @@ export class CategoriesListComponent implements OnInit {
 
   private async onInit() {
     this.categories = await this._categories.getAll();
-    await this.generateItems(this.categories);
+    this.generateItems(this.categories);
   }
 
-  public async onClose(info: {category: ICategory, image:string}) {
-    if(this.loading) return;
+  public async onClose(info: { category: ICategory; image: string }) {
+    if (this.loading) return;
     await this._modalCtrl.dismiss(info);
   }
 
@@ -70,24 +72,34 @@ export class CategoriesListComponent implements OnInit {
     const newList: Array<{ category: ICategory; image: string }> = [];
     for (let i = 0; i < offset; i++) {
       if (categories[i + count]) {
-        const image =
-          (await this._photo.getPhoto(
+        this._photo
+          .getPhoto(
             categories[i + count].id.toString(),
             PhotoKeys.CATEGORIES_ALBUM
-          )) || this.noImage;
+          )
+          .then((image) => {
+            const imageStr = image || this.noImage;
+            const index = this.categoriesFiltered.findIndex(
+              (category) => category.category.id == categories[i + count].id
+            );
+            this.categoriesFiltered[index].image = imageStr;
+          });
 
-        newList.push({category: categories[i + count], image: image});
+        newList.push({
+          category: categories[i + count],
+          image: this.imageLoading,
+        });
       }
     }
 
     this.categoriesFiltered.push(...newList);
   }
 
-  protected async onSearch($event: CustomEvent){
+  protected async onSearch($event: CustomEvent) {
     this.loading = true;
     const value = ($event.detail.value as string).trim().toLowerCase();
 
-    const newList = this.categories.filter(category => {
+    const newList = this.categories.filter((category) => {
       return (
         category.id.toString().trim().toLowerCase().includes(value) ||
         category.name.trim().toLowerCase().includes(value)
@@ -95,7 +107,7 @@ export class CategoriesListComponent implements OnInit {
     });
 
     this.categoriesFiltered = [];
-    await this.generateItems(newList);
+    this.generateItems(newList);
     this.loading = true;
   }
 }
