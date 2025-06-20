@@ -223,7 +223,7 @@ export class MantProductsPage implements OnInit {
       if (response && this.image != this.noImage) {
         photoInserted = await this._imageProduct.update({
           id: product.id,
-          image: this.image!.replace('data:image/png;base64,', ''),
+          data: this.image!,
           state: true,
           uploaded: States.SYNC,
         });
@@ -232,7 +232,7 @@ export class MantProductsPage implements OnInit {
       product.uploaded = response;
       const image: IImageProduct = {
         id: product.id,
-        image: this.image!,
+        data: this.image!,
         uploaded: photoInserted ? States.SYNC : States.NOT_UPDATED,
         state: true,
       };
@@ -242,7 +242,7 @@ export class MantProductsPage implements OnInit {
           this._localProducts.update(product),
           this._photo.savePhoto(
             image.id.toString(),
-            image.image,
+            image.data,
             PhotoKeys.PRODUCTS_ALBUMN
           ),
         ])
@@ -267,7 +267,7 @@ export class MantProductsPage implements OnInit {
       if (response && this.image != this.noImage) {
         photoInserted = await this._imageProduct.insert({
           id: response as number,
-          image: this.image!.replace('data:image/png;base64,', ''),
+          data: this.image!.replace('data:image/png;base64,', ''),
           state: true,
           uploaded: States.SYNC,
         });
@@ -276,7 +276,7 @@ export class MantProductsPage implements OnInit {
       product.uploaded = response ? States.SYNC : States.NOT_INSERTED;
       const image: IImageProduct = {
         id: product.id,
-        image: this.image!,
+        data: this.image!,
         uploaded: photoInserted ? States.SYNC : States.NOT_INSERTED,
         state: true,
       };
@@ -286,7 +286,7 @@ export class MantProductsPage implements OnInit {
           this._localProducts.insert(product),
           this._photo.savePhoto(
             image.id.toString(),
-            image.image,
+            image.data,
             PhotoKeys.PRODUCTS_ALBUMN
           ),
         ])

@@ -6,6 +6,7 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import {provideHttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
+import { DecimalPipe } from '@angular/common';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -18,6 +19,7 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(),
     Storage,
-    ModalController
+    ModalController,
+    DecimalPipe
   ],
 });

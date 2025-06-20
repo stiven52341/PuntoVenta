@@ -176,10 +176,11 @@ export class MantCategoriesPage implements OnInit {
 
       newCategory.uploaded = result ? States.SYNC : States.NOT_INSERTED;
 
+      debugger;
       if (this.image != this.noImage) {
         const imageCategory: IImageCategory = {
           id: result as number,
-          image: this.image,
+          data: this.image.replace('data:image/png;base64,',''),
           state: true,
           uploaded: States.NOT_INSERTED,
         };
@@ -188,7 +189,7 @@ export class MantCategoriesPage implements OnInit {
           forkJoin([
             this._photo.savePhoto(
               newCategory.id.toString(),
-              this.image.replace('data:image/png;base64,',''),
+              this.image,
               PhotoKeys.CATEGORIES_ALBUM
             ),
             this._catogoryPhotos.insert(imageCategory),
@@ -222,7 +223,7 @@ export class MantCategoriesPage implements OnInit {
       if (this.image != this.noImage) {
         const imageCategory: IImageCategory = {
           id: this.category.id,
-          image: this.image.replace('data:image/png;base64,',''),
+          data: this.image.replace('data:image/png;base64,',''),
           state: true,
           uploaded: States.NOT_INSERTED
         };

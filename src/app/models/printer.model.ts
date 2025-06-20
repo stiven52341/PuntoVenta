@@ -17,10 +17,11 @@ export class Printer implements Entity {
 export const SUPPORTED_PRINTER_MODELS: Array<IPrinterModel> = [
   {
     name: '2C-POS58-BU',
-    space: 48,
+    space: 32,
     ESC_COMMANDS: 'NORMAL',
     service: '000018f0-0000-1000-8000-00805f9b34fb',
     characteristic: '00002af1-0000-1000-8000-00805f9b34fb',
+    isShort: true
   },
   {
     name: 'MPTIII58B',
@@ -28,6 +29,7 @@ export const SUPPORTED_PRINTER_MODELS: Array<IPrinterModel> = [
     ESC_COMMANDS: 'SPECIAL',
     service: '000018f0-0000-1000-8000-00805f9b34fb',
     characteristic: '00002af1-0000-1000-8000-00805f9b34fb',
+    isShort: true
   },
   {
     name: 'MPTIII80B',
@@ -35,6 +37,7 @@ export const SUPPORTED_PRINTER_MODELS: Array<IPrinterModel> = [
     ESC_COMMANDS: 'SPECIAL',
     service: 'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
     characteristic: 'bef8d6c9-9c21-4c9e-b632-bd58c1009f9f',
+    isShort: false
   },
 ];
 
@@ -44,6 +47,7 @@ export interface IPrinterModel {
   space: number;
   service: string;
   characteristic: string;
+  isShort: boolean;
 }
 
 export interface ESCPOS {

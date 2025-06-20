@@ -11,26 +11,29 @@ import {
   IonCardTitle,
   IonList,
   IonItem,
-  ViewWillEnter,
-} from '@ionic/angular/standalone';
+  ViewWillEnter, IonFooter, IonButton, IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { print } from 'ionicons/icons';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { IProduct } from 'src/app/models/product.model';
 import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';
 import { IPurchase } from 'src/app/models/purchase.model';
 import { IUnit } from 'src/app/models/unit.model';
+import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
 import { LocalPurchaseDetailService } from 'src/app/services/local/local-purchase-detail/local-purchase-detail.service';
 import { LocalPurchaseService } from 'src/app/services/local/local-purchase/local-purchase.service';
 import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
+import { PrintingService } from 'src/app/services/printing/printing.service';
 
 @Component({
   selector: 'app-sells',
   templateUrl: './sells.page.html',
   styleUrls: ['./sells.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonIcon, IonButton, IonFooter, 
     IonItem,
     IonList,
     IonCardTitle,
@@ -55,7 +58,8 @@ export class SellsPage implements OnInit, ViewWillEnter {
   }> = [];
 
   protected loading: boolean = false;
-  private noImage: string = '../../../../assets/no-image.png';
+  private rawDetails: Array<IPurchaseDetail> = [];
+  // private noImage: string = '../../../../assets/no-image.png';
 
   constructor(
     private _route: ActivatedRoute,
@@ -63,9 +67,12 @@ export class SellsPage implements OnInit, ViewWillEnter {
     private _purchasesDetails: LocalPurchaseDetailService,
     private _price: LocalUnitProductsService,
     private _product: LocalProductsService,
-    private _unit: LocalUnitsService
+    private _unit: LocalUnitsService,
+    private _alert: AlertsService,
+    private _print: PrintingService
   ) {
     this.id = Number(this._route.snapshot.params['id']);
+    addIcons({print});
   }
 
   async ngOnInit() {}
@@ -77,7 +84,7 @@ export class SellsPage implements OnInit, ViewWillEnter {
 
   private async onInit() {
     this.purchase = await this._purchase.get(this.id);
-    const details = (await this._purchasesDetails.getAll()).filter(
+    this.rawDetails = (await this._purchasesDetails.getAll()).filter(
       (detail) => +detail.id.idPurchase == +this.id
     );
 
@@ -97,8 +104,17 @@ export class SellsPage implements OnInit, ViewWillEnter {
       });
     };
 
-    for (const detail of details) {
+    for (const detail of this.rawDetails) {
       await setDetail(detail);
     }
+  }
+
+  protected async reprint(){
+    if(!this.purchase){
+      this._alert.showError('No hay compra');
+      return;
+    }
+
+    this._print.printPurchase(this.purchase, this.rawDetails,'¿Está seguro de reimprimir el recibo de compra?');
   }
 }

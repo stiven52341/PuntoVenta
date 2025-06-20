@@ -62,6 +62,8 @@ export class CartPage implements OnInit {
   protected loading: boolean = false;
   protected cart?: ICart;
   protected products: Array<IProductCart> = [];
+  private noImage: string = '../../../assets/no-image.png';
+  private loadingImage: string = '../../../assets/icon/loading.gif';
 
   constructor(
     private _cart: LocalCartService,
@@ -108,12 +110,17 @@ export class CartPage implements OnInit {
 
     this.products = [];
     const setProduct = async (product: IProductCart) => {
-      product.photo = await this._photo.getPhoto(
+      product.photo = this.loadingImage;
+      this._photo.getPhoto(
         product.product.id.toString(),
         PhotoKeys.PRODUCTS_ALBUMN
-      );
+      ).then(photo => {
+        product.photo = photo || this.noImage;
+      });
       this.products.push(product);
     };
+
+
 
     const pros = this.cart.products.map((product) => setProduct(product));
     await firstValueFrom(forkJoin(pros));
@@ -170,6 +177,7 @@ export class CartPage implements OnInit {
 
       total += this.getTotalArticle(product);
     });
+    debugger;
 
     const purchase: IPurchase = {
       date: new Date(),
@@ -196,7 +204,7 @@ export class CartPage implements OnInit {
         .then(async () => {
           this._alert.showSuccess('COMPRA REGISTRADA');
           await this._cart.resetCart();
-          await this._printing.printPurchase(purchase);
+          await this._printing.printPurchase(purchase, purchaseDetails);
         })
         .catch((err) => {
           this._file.saveError(err);

@@ -245,8 +245,9 @@ export class BluetoothService {
   public async getLogoBase64(
     path: string = 'company_logo.png'
   ): Promise<string | undefined> {
+    
     const config = await this._global.getGeneralInfo();
-    if(!config?.imprimirConLogo) return undefined;
+    if (!config?.imprimirConLogo) return undefined;
 
     const fullPath = `assets/${path}`;
     const data = await firstValueFrom(
@@ -275,52 +276,60 @@ export class BluetoothService {
 
   public async getLogoSize() {
     //Improve to add more sizes
-    return 96;
+    return 256;
   }
 
   private async connect(): Promise<Printer | undefined> {
-    const printer = await this._printer.getCurrentPrinter();
-    if (!printer) {
-      this._alert.showError('No hay una impresora configurada');
-      return undefined;
-    }
-    const isLocationEnabled = await BleClient.isLocationEnabled();
-    if (!isLocationEnabled) {
-      this._alert.showError(
-        'Debe activar la localizacion para poder conectar a la impresora'
-      );
-      return undefined;
-    }
-
-    const isEnabled = await BleClient.isEnabled();
-    if (!isEnabled) {
-      const request = await this.check();
-      if (!request) return undefined;
-    }
-
-    const request = await BleClient.isBonded(printer.id);
-    if (!request) {
-      await BleClient.createBond(printer.id, { timeout: 15000 }).catch(() => {
+    return new Promise<Printer | undefined>(async (resolve, reject) => {
+      const printer = await this._printer.getCurrentPrinter();
+      if (!printer) {
+        this._alert.showError('No hay una impresora configurada');
+        reject(undefined)
         return undefined;
-      });
-    }
+      }
+      const isLocationEnabled = await BleClient.isLocationEnabled();
+      if (!isLocationEnabled) {
+        this._alert.showError(
+          'Debe activar la localizacion para poder conectar a la impresora'
+        );
+        reject(undefined)
+        return undefined;
+      }
 
-    await BleClient.connect(printer.id, async (device) => {
-      await this.disconnect(device);
-    })
-      .then(() => {
-        return printer;
+      const isEnabled = await BleClient.isEnabled();
+      if (!isEnabled) {
+        const request = await this.check();
+        if (!request) {
+          reject(undefined);
+          return undefined;
+        };
+      }
+
+      const request = await BleClient.isBonded(printer.id);
+      if (!request) {
+        await BleClient.createBond(printer.id, { timeout: 15000 }).catch(() => {
+          reject(undefined);
+          return undefined;
+        });
+      }
+
+      await BleClient.connect(printer.id, async (device) => {
+        await this.disconnect(device);
       })
-      .catch((err) => {
-        return undefined;
-      });
-    return undefined;
+        .then(() => {
+          resolve(printer);
+        })
+        .catch((err) => {
+          reject(err);
+          return undefined;
+        });
+    });
   }
 
   public async sendDataViaBluetooth(intArray: Array<Uint8Array>) {
     const printer = await this.connect();
     console.log(printer);
-    
+
     // return;
     if (!printer) {
       return;
@@ -433,6 +442,7 @@ export class BluetoothService {
   }
 
   public async print(intArray: Uint8Array[]) {
+    
     const base64 = await this.getLogoBase64();
     if (base64) {
       await this.renderizeLogo(base64, 'center', intArray);
@@ -440,5 +450,12 @@ export class BluetoothService {
       // Envía los datos a la impresora Bluetooth
       await this.sendDataViaBluetooth(intArray);
     }
+  }
+
+  public async getServices() {
+    const printer = await this.connect();
+    if (!printer) return;
+
+    console.log(await BleClient.getServices(printer.id));
   }
 }

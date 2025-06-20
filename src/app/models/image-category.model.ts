@@ -2,7 +2,7 @@ import { States } from "./constants"
 
 export interface IImageCategory {
   id: number,
-  image: string,
+  data: string,
   uploaded: States
   state: boolean
 }

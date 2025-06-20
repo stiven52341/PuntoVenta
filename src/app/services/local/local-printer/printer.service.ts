@@ -26,6 +26,7 @@ export class LocalPrinterService extends InternalStorageCoreService<Printer>{
   public async getCurrentPrinter(): Promise<Printer | undefined>{
     const printers = await this.getAll();
     if(printers.length == 0) return undefined;
-    return printers[0];
+    const info = printers[0];
+    return new Printer(info.id, info.model);
   }
 }

@@ -95,7 +95,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while inserting: ${JSON.stringify(err)}`);
       this._file.saveError(err);
-      throw new Error(err);
+      return undefined;
     });
 
     if (!result) return undefined;
@@ -109,7 +109,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while updating: ${JSON.stringify(err)}`);
       this._file.saveError(err);
-      throw new Error(err);
+      return false;
     });
 
     if (!result) return false;

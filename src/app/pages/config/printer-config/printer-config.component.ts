@@ -49,13 +49,14 @@ export class PrinterConfigComponent implements OnInit {
   protected form: FormGroup;
   protected models: Array<IPrinterModel>;
   private info?: IGeneralInfo;
+  private printer?: Printer;
 
   constructor(
     private _blue: BluetoothService,
     private _localPrinter: LocalPrinterService,
     private _alert: AlertsService,
     private _generalInfo: GeneralInfoService,
-    protected _printing: PrintingService
+    private _printing: PrintingService
   ) {
     addIcons({ search, save, print });
 
@@ -75,12 +76,12 @@ export class PrinterConfigComponent implements OnInit {
         this._generalInfo.getGeneralInfo(),
       ])
     );
-    const printer = data[0];
+    this.printer = data[0];
     this.info = data[1];
 
-    if (!printer) return;
-    this.form.get('id')?.setValue(printer.id);
-    this.form.get('model')?.setValue(printer.model.name);
+    if (!this.printer) return;
+    this.form.get('id')?.setValue(this.printer.id);
+    this.form.get('model')?.setValue(this.printer.model.name);
     this.form
       .get('printWithLogo')
       ?.setValue(this.info?.imprimirConLogo || false);
@@ -116,13 +117,29 @@ export class PrinterConfigComponent implements OnInit {
 
     this._generalInfo.update(this.info!);
 
-    await this._localPrinter
-      .insert(printer)
-      .then(() => {
-        this._alert.showSuccess('Impresora guardada');
-      })
-      .catch((err) => {
-        this._alert.showError('Error guardando impresora');
-      });
+    if (this.printer) {
+      await this._localPrinter
+        .update(printer)
+        .then(() => {
+          this._alert.showSuccess('Impresora guardada');
+        })
+        .catch((err) => {
+          this._alert.showError('Error guardando impresora');
+        });
+    } else {
+      await this._localPrinter
+        .insert(printer)
+        .then(() => {
+          this._alert.showSuccess('Impresora guardada');
+        })
+        .catch((err) => {
+          this._alert.showError('Error guardando impresora');
+        });
+    }
+  }
+
+  protected async test() {
+    this._printing.printTest();
+    // await this._blue.getServices();
   }
 }

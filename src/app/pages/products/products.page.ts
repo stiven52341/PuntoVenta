@@ -151,7 +151,7 @@ export class ProductsPage implements OnInit {
     products: Array<IProductDetail>,
     offset: number = 10
   ) {
-    // debugger;
+    // 
     if (this.generating || products.length == 0) return;
 
     this.generating = true;

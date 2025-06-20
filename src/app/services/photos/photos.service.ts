@@ -37,7 +37,7 @@ export class PhotosService {
     await Media.savePhoto({
       path: data,
       fileName: name,
-      albumIdentifier: albumn!.identifier
+      albumIdentifier: albumn!.identifier,
     });
   }
 
@@ -45,12 +45,12 @@ export class PhotosService {
     if (!(await this.requestGalleryAccess())) return;
 
     try {
-      await this.savePhoto(photos[0].id.toString(), photos[0].image, album);
+      await this.savePhoto(photos[0].id.toString(), photos[0].data, album);
 
       photos.shift();
       const pros: Array<Promise<void>> = [];
       photos.map(async (photo) => {
-        pros.push(this.savePhoto(photo.id.toString(), photo.image, album));
+        pros.push(this.savePhoto(photo.id.toString(), photo.data, album));
       });
       await firstValueFrom(forkJoin(pros)).catch((err) => {
         throw err;
@@ -98,7 +98,7 @@ export class PhotosService {
         allowEditing: false,
         resultType: CameraResultType.Base64,
         source: CameraSource.Camera,
-        width: 480
+        width: 480,
       });
       return image.base64String
         ? 'data:image/png;base64,' + image.base64String
@@ -118,16 +118,37 @@ export class PhotosService {
         allowEditing: false,
         resultType: CameraResultType.Base64,
         source: CameraSource.Photos,
-        width: 480
+        width: 480,
       });
 
       return image.base64String
         ? 'data:image/png;base64,' + image.base64String
         : undefined;
-        // return image.path
+      // return image.path
     } catch (error) {
       this._file.saveError(error);
       return undefined;
     }
+  }
+
+  public base64ToBlob(base64: string, contentType: string): Blob {
+    
+    const byteChars = atob(base64.replace('data:image/png;base64,',''));
+    const byteNumbers = new Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) {
+      byteNumbers[i] = byteChars.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: contentType });
+  }
+
+  public base64ToFile(
+    base64Data: string,
+    contentType: string,
+    fileName: string
+  ): File {
+    const blob = this.base64ToBlob(base64Data, contentType);
+    return new File([blob], fileName, { type: contentType });
   }
 }

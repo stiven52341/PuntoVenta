@@ -10,12 +10,12 @@ export class Report {
   }
 
   public addHeader() {
-    this.intArray.push(...this._stp.renderLines('Natura', 'middle', 'large'));
-    this.intArray.push(...this._stp.renderLines('Frutas & Vegetales'));
-    this.intArray.push(
-      ...this._stp.renderLines('Av. 27 de Febrero, Santiago', 'middle')
-    );
-    this.fillLine(undefined, 3);
+    // this.intArray.push(...this._stp.renderLines('Natura', 'middle', 'large'));
+    // this.intArray.push(...this._stp.renderLines('Frutas & Vegetales'));
+    // this.intArray.push(
+    //   ...this._stp.renderLines('Av. 27 de Febrero, Santiago')
+    // );
+    this.fillLine();
   }
 
   public addFooter() {}

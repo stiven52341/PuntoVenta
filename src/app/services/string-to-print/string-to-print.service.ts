@@ -42,7 +42,7 @@ export class StringToPrintService {
     this.printer = await this._localPrinter.getCurrentPrinter();
     if(!this.printer){
       this.maxLength = 1;
-      return;
+      throw new Error('Undefined printer');
     }
     this.maxLength = this.printer.model.space;
 
@@ -66,6 +66,9 @@ export class StringToPrintService {
     size: 'normal' | 'large' | 'larger' | 'bold' = 'normal'
   ): Uint8Array[] {
     this.getLenght();
+    if(!this.printer){
+      throw new Error('No printer');
+    }
 
     let intArray: Uint8Array[] = [];
     let str: string = '';
@@ -220,12 +223,19 @@ export class StringToPrintService {
             );
             break;
           case 'large':
-            intArray.push(
+            
+            try {
+              intArray.push(
               new Uint8Array([
                 ...this.printer!.getCommands().LARGE,
                 ...this.encoder.encode(_str),
               ])
             );
+            } catch (error) {
+              console.log(error);
+              
+            }
+            
             break;
           case 'larger':
             intArray.push(
