@@ -124,13 +124,14 @@ export class PrinterConfigComponent implements OnInit {
           this._alert.showSuccess('Impresora guardada');
         })
         .catch((err) => {
-          this._alert.showError('Error guardando impresora');
+          this._alert.showError('Error actualizando impresora');
         });
     } else {
       await this._localPrinter
         .insert(printer)
         .then(() => {
           this._alert.showSuccess('Impresora guardada');
+          this.printer = printer;
         })
         .catch((err) => {
           this._alert.showError('Error guardando impresora');
