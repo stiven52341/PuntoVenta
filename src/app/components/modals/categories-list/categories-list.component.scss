@@ -16,4 +16,8 @@
       margin: 0;
     }
   }
+
+  .item-content-big{
+    grid-template-columns: 2fr 1.5em 10fr 1fr;
+  }
 }

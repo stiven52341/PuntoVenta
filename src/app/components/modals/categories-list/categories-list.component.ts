@@ -5,8 +5,7 @@ import {
   ModalController,
   IonSearchbar,
   IonList,
-  IonItem,
-} from '@ionic/angular/standalone';
+  IonItem, IonLabel } from '@ionic/angular/standalone';
 import { HeaderBarComponent } from '../../header-bar/header-bar.component';
 import { ICategory } from 'src/app/models/category.model';
 import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
@@ -19,7 +18,7 @@ import { NgClass } from '@angular/common';
   templateUrl: './categories-list.component.html',
   styleUrls: ['./categories-list.component.scss'],
   standalone: true,
-  imports: [
+  imports: [IonLabel, 
     IonItem,
     IonList,
     IonContent,

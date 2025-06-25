@@ -13,12 +13,12 @@
     <ion-list>
       @for(category of categoriesFiltered; track category.category.id){
         <ion-item (click)="onClose(category)">
-          <div class="item-content" [ngClass]="{'null':! category.category.state}">
+          <div class="item-content" [ngClass]="{'item-content-big':! category.category.state}">
             <img src="{{ category.image }}" alt="" />
             <p>{{ category.category.id }}.</p>
             <p>{{ category.category.name }}</p>
             @if(!category.category.state){
-              <p class="danger-text">(Anulado)</p>
+              <ion-label class="danger-text" color="danger">(Anulado)</ion-label>
             }
           </div>
         </ion-item>

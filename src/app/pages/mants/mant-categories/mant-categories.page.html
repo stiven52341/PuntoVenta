@@ -57,13 +57,21 @@
         <ion-label>GUARDAR</ion-label>
       </div>
     </ion-button>
-    @if(category){
-    <ion-button color="danger">
-      <div class="button-content">
-        <ion-icon name="trash"></ion-icon>
-        <ion-label>DESACTIVAR</ion-label>
-      </div>
-    </ion-button>
-    }
+    @if(category){ 
+      @if(category.state){
+        <ion-button (click)="onDeactivate()" color="danger">
+          <div class="button-content">
+            <ion-icon name="trash"></ion-icon>
+            <ion-label>DESACTIVAR</ion-label>
+          </div>
+        </ion-button>
+    }@else{
+      <ion-button (click)="onActivate()" color="primary">
+        <div class="button-content">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          <ion-label>ACTIVAR</ion-label>
+        </div>
+      </ion-button>
+    } }
   </div>
 </ion-footer>

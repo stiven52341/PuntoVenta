@@ -33,7 +33,6 @@ export class PrintingService {
   ) {
     const printer = await this._printer.getCurrentPrinter();
     if(!printer){
-      this._alert.showError('No hay printer configurada');
       return;
     }
 

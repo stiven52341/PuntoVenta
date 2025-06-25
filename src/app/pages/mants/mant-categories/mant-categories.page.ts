@@ -16,7 +16,7 @@ import {
   IonFooter,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { search, camera, save, trash } from 'ionicons/icons';
+import { search, camera, save, trash, checkmarkCircle } from 'ionicons/icons';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
@@ -71,7 +71,7 @@ export class MantCategoriesPage implements OnInit {
   ) {
     this.noImage = '../../../../assets/no-image.png';
     this.image = this.noImage;
-    addIcons({ search, camera, save, trash });
+    addIcons({ search, camera, save, trash, checkmarkCircle });
 
     this.form = new FormGroup({
       name: new FormControl(null, [
@@ -142,7 +142,7 @@ export class MantCategoriesPage implements OnInit {
     return true;
   }
 
-  public async onSave() {
+  protected async onSave() {
     if (!this.checkForm()) return;
     if (
       !(await this._alert.showConfirm(
@@ -269,5 +269,41 @@ export class MantCategoriesPage implements OnInit {
     this.form.reset();
     this.image = this.noImage;
     this.category = undefined;
+  }
+
+  protected async onDeactivate(){
+    if(!this.category)return;
+
+    const result = await this._alert.showConfirm('CONFIRME', '¿Está seguro de desactivar esta categoría?');
+    if(!result) return;
+
+    const deleted = await this._category.delete(this.category);
+    this.category.uploaded = deleted ? States.SYNC : States.NOT_DELETED;
+    this._localCategory.deactivate(this.category).then(() => {
+      this._alert.showSuccess('CATEGORÍA DESACTIVADA');
+      this.clearForm();
+    }).catch(err => {
+      this._alert.showError('Error desactivando categoría');
+      this._file.saveError(err);
+    });
+  }
+
+  protected async onActivate(){
+    if(!this.category)return;
+
+    const result = await this._alert.showConfirm('CONFIRME', '¿Está seguro de reactivar esta categoría?');
+    if(!result) return;
+
+    this.category.state = true;
+    const activated = await this._category.update(this.category);
+
+    this.category.uploaded = activated ? States.SYNC : States.NOT_UPDATED;
+    this._localCategory.update(this.category).then(() => {
+      this._alert.showSuccess('CATEGORÍA REACTIVADA');
+      this.clearForm();
+    }).catch(err => {
+      this._alert.showError('Error reactivando categoría');
+      this._file.saveError(err);
+    });
   }
 }
