@@ -154,6 +154,11 @@ export class CartPage implements OnInit {
   }
 
   protected async onSave() {
+    if(this.cart?.products == undefined || this.cart.products.length == 0){
+      this._alert.showError('El carrito está vacío');
+      return;
+    }
+
     const resp = await this._alert.showConfirm(
       'CONFIRME',
       '¿Está seguro de registrar la compra?'
