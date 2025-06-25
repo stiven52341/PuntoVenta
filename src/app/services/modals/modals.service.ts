@@ -110,10 +110,10 @@ export class ModalsService {
     return undefined;
   }
 
-  public async showCategoriesList(): Promise<
+  public async showCategoriesList(showNullCategories: boolean = true): Promise<
     { category: ICategory; image: string } | undefined
   > {
-    const result = await this.showModal(CategoriesListComponent, 'sells-list');
+    const result = await this.showModal(CategoriesListComponent, 'sells-list', {showNullCategories: showNullCategories});
     if (result && result.data)
       return result.data as { category: ICategory; image: string };
     return undefined;

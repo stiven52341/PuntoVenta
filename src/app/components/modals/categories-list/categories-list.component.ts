@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   IonHeader,
   IonContent,
   ModalController,
   IonSearchbar,
   IonList,
-  IonItem, IonLabel } from '@ionic/angular/standalone';
+  IonItem,
+  IonLabel,
+} from '@ionic/angular/standalone';
 import { HeaderBarComponent } from '../../header-bar/header-bar.component';
 import { ICategory } from 'src/app/models/category.model';
 import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
@@ -18,7 +20,8 @@ import { NgClass } from '@angular/common';
   templateUrl: './categories-list.component.html',
   styleUrls: ['./categories-list.component.scss'],
   standalone: true,
-  imports: [IonLabel, 
+  imports: [
+    IonLabel,
     IonItem,
     IonList,
     IonContent,
@@ -37,6 +40,8 @@ export class CategoriesListComponent implements OnInit {
   private readonly noImage: string;
   private readonly imageLoading: string;
 
+  @Input() showNullCategories: boolean = true;
+
   constructor(
     private _modalCtrl: ModalController,
     private _categories: LocalCategoriesService,
@@ -53,7 +58,9 @@ export class CategoriesListComponent implements OnInit {
   }
 
   private async onInit() {
-    this.categories = await this._categories.getAll();
+    this.categories = this.showNullCategories
+      ? await this._categories.getAll()
+      : (await this._categories.getAll()).filter((category) => category.state);
     this.generateItems(this.categories);
   }
 

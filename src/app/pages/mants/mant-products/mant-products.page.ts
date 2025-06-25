@@ -383,7 +383,7 @@ export class MantProductsPage implements OnInit {
   }
 
   protected async onSearchCategory() {
-    const result = await this._modal.showCategoriesList();
+    const result = await this._modal.showCategoriesList(false);
     if (result) {
       this.category = result.category;
     }
