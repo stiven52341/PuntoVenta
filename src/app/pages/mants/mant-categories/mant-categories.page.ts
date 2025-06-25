@@ -176,7 +176,7 @@ export class MantCategoriesPage implements OnInit {
 
       newCategory.uploaded = result ? States.SYNC : States.NOT_INSERTED;
 
-      debugger;
+      
       if (this.image != this.noImage) {
         const imageCategory: IImageCategory = {
           id: result as number,

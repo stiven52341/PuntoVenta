@@ -168,7 +168,7 @@ export class FirstOpenedComponent implements OnInit {
     const cashBoxes = result[13] || [];
     const productPurchases = result[14] || [];
 
-    debugger;
+    
     imagesPros.map(
       (image) => (image.data = `data:image/png;base64,${image.data}`)
     );

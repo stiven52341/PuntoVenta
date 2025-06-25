@@ -102,7 +102,7 @@ export class MantProductsPage implements OnInit {
       {
         title: 'LIMPIAR',
         do: async () => {
-          await this.cleanForm();
+          await this.clearForm();
         },
       },
     ];
@@ -237,19 +237,30 @@ export class MantProductsPage implements OnInit {
         state: true,
       };
 
-      await firstValueFrom(
-        forkJoin([
-          this._localProducts.update(product),
-          this._photo.savePhoto(
-            image.id.toString(),
-            image.data,
-            PhotoKeys.PRODUCTS_ALBUMN
-          ),
-        ])
-      )
-        .then(() => {
+      // await firstValueFrom(
+      //   forkJoin([
+      //     this._localProducts.update(product),
+      //     this._photo.savePhoto(
+      //       image.id.toString(),
+      //       image.data,
+      //       PhotoKeys.PRODUCTS_ALBUMN
+      //     ),
+      //   ])
+      // )
+      await this._localProducts
+        .update(product)
+        .then(async () => {
+          if (this.image != this.noImage) {
+            await this._photo.savePhoto(
+              image.id.toString(),
+              image.data,
+              PhotoKeys.PRODUCTS_ALBUMN
+            );
+          }
+
           this._alert.showSuccess('PRODUCTO MODIFICADO');
           this._global.updateData();
+          this.clearForm(false);
         })
         .catch((err) => {
           this._file.saveError(err);
@@ -281,22 +292,30 @@ export class MantProductsPage implements OnInit {
         state: true,
       };
 
-      await firstValueFrom(
-        forkJoin([
-          this._localProducts.insert(product),
-          this._photo.savePhoto(
-            image.id.toString(),
-            image.data,
-            PhotoKeys.PRODUCTS_ALBUMN
-          ),
-        ])
-      )
-        .then(() => {
+      // await firstValueFrom(
+      //   forkJoin([
+      //     ,
+      //     ,
+      //   ])
+      // )
+      this._localProducts
+        .insert(product)
+        .then(async () => {
+          if (this.image != this.noImage) {
+            await this._photo.savePhoto(
+              image.id.toString(),
+              image.data,
+              PhotoKeys.PRODUCTS_ALBUMN
+            );
+          }
+
           this._alert.showSuccess('PRODUCTO CREADO');
           this._global.updateData();
+          this.clearForm(false);
         })
         .catch((err) => {
           this._file.saveError(err);
+          console.log(err);
           this._alert.showError(
             'ERROR CREANDO PRODUCTO. CONTACTE AL SERVICIO TÉCNICO'
           );
@@ -365,14 +384,16 @@ export class MantProductsPage implements OnInit {
     this.loading = false;
   }
 
-  private async cleanForm() {
-    if (
-      !(await this._alert.showConfirm(
-        'CONFIRME',
-        '¿Está seguro de limpiar el formulario?'
-      ))
-    )
-      return;
+  private async clearForm(showConfirm: boolean = true) {
+    if (showConfirm) {
+      if (
+        !(await this._alert.showConfirm(
+          'CONFIRME',
+          '¿Está seguro de limpiar el formulario?'
+        ))
+      )
+        return;
+    }
 
     this.image = this.noImage;
     this.form.reset();

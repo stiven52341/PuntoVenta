@@ -182,7 +182,7 @@ export class CartPage implements OnInit {
 
       total += this.getTotalArticle(product);
     });
-    debugger;
+    
 
     const purchase: IPurchase = {
       date: new Date(),
@@ -209,6 +209,7 @@ export class CartPage implements OnInit {
         .then(async () => {
           this._alert.showSuccess('COMPRA REGISTRADA');
           await this._cart.resetCart();
+
           await this._printing.printPurchase(purchase, purchaseDetails);
         })
         .catch((err) => {

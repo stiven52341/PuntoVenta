@@ -25,6 +25,7 @@ import { LocalProductCategoryService } from 'src/app/services/local/local-produc
 import { IProductCategory } from 'src/app/models/product-category.model';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { GlobalService } from 'src/app/services/global/global.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 interface IProductDetail {
   product: IProduct;
@@ -71,7 +72,7 @@ export class ProductsPage implements OnInit {
   protected onSelectCategory = new EventEmitter<ICategory>();
   protected selectedCategory?: ICategory;
 
-  private generating: boolean = false;
+  // private generating: boolean = false;
 
   constructor(
     private _categories: LocalCategoriesService,
@@ -80,7 +81,8 @@ export class ProductsPage implements OnInit {
     private _modal: ModalsService,
     private _unitProduct: LocalUnitProductsService,
     private _productCategory: LocalProductCategoryService,
-    private _global: GlobalService
+    private _global: GlobalService,
+    private _cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
@@ -97,9 +99,11 @@ export class ProductsPage implements OnInit {
   }
 
   private async loadProducts() {
+    
     this.categories = [];
     this.products = [];
     this.productsFiltered = [];
+    // this._cdr.detectChanges();
 
     const data = await firstValueFrom(
       forkJoin([
@@ -151,10 +155,9 @@ export class ProductsPage implements OnInit {
     products: Array<IProductDetail>,
     offset: number = 10
   ) {
-    // 
-    if (this.generating || products.length == 0) return;
+    //
+    if (products.length == 0) return;
 
-    this.generating = true;
     const count = this.productsFiltered.length;
 
     const newList: Array<IProductDetail> = [];
@@ -170,18 +173,18 @@ export class ProductsPage implements OnInit {
       }
     }
 
-    const pros = newList.map(async (product) => {
+
+    for (const product of newList) {
       if (!product.image || product.image == '') {
         product.image = '../../../assets/icon/loading.gif';
         this.getPhotoProduct(product.product).then((data) => {
           product.image = data;
         });
       }
-    });
+    }
 
-    await firstValueFrom(forkJoin(pros));
+    // await firstValueFrom(forkJoin(pros));
     this.productsFiltered.push(...newList);
-    this.generating = false;
   }
 
   protected async onProductClick(

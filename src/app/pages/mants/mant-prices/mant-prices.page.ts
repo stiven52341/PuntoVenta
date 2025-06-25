@@ -188,6 +188,7 @@ export class MantPricesPage implements OnInit {
         .then(() => {
           this._alert.showSuccess('Precio guardado');
           this.cleanForm(false);
+          this._global.updateData();
         })
         .catch((err) => {
           this._alert.showError('Error al guardar el nuevo precio');

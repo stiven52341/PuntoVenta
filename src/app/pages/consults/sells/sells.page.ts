@@ -16,11 +16,13 @@ import { addIcons } from 'ionicons';
 import { print } from 'ionicons/icons';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { Printer } from 'src/app/models/printer.model';
 import { IProduct } from 'src/app/models/product.model';
 import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';
 import { IPurchase } from 'src/app/models/purchase.model';
 import { IUnit } from 'src/app/models/unit.model';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
+import { LocalPrinterService } from 'src/app/services/local/local-printer/printer.service';
 import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
 import { LocalPurchaseDetailService } from 'src/app/services/local/local-purchase-detail/local-purchase-detail.service';
 import { LocalPurchaseService } from 'src/app/services/local/local-purchase/local-purchase.service';
@@ -56,6 +58,7 @@ export class SellsPage implements OnInit, ViewWillEnter {
     product: IProduct;
     unit: IUnit;
   }> = [];
+  protected printer?: Printer;
 
   protected loading: boolean = false;
   private rawDetails: Array<IPurchaseDetail> = [];
@@ -69,7 +72,8 @@ export class SellsPage implements OnInit, ViewWillEnter {
     private _product: LocalProductsService,
     private _unit: LocalUnitsService,
     private _alert: AlertsService,
-    private _print: PrintingService
+    private _print: PrintingService,
+    private _localPrinter: LocalPrinterService
   ) {
     this.id = Number(this._route.snapshot.params['id']);
     addIcons({print});
@@ -83,7 +87,10 @@ export class SellsPage implements OnInit, ViewWillEnter {
   }
 
   private async onInit() {
-    this.purchase = await this._purchase.get(this.id);
+    const data = await firstValueFrom(forkJoin([this._purchase.get(this.id), this._localPrinter.getCurrentPrinter()]));
+
+    this.purchase = data[0];
+    this.printer = data[1];
     this.rawDetails = (await this._purchasesDetails.getAll()).filter(
       (detail) => +detail.id.idPurchase == +this.id
     );
@@ -110,6 +117,8 @@ export class SellsPage implements OnInit, ViewWillEnter {
   }
 
   protected async reprint(){
+
+
     if(!this.purchase){
       this._alert.showError('No hay compra');
       return;
