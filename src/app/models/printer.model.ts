@@ -1,7 +1,7 @@
-import { Entity } from '../services/api/api-core/api-core.service';
+import { IEntity } from '../services/api/api-core/api-core.service';
 import { States } from './constants';
 
-export class Printer implements Entity {
+export class Printer implements IEntity {
   public state: boolean;
   public uploaded: States;
   constructor(public id: string, public model: IPrinterModel) {

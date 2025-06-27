@@ -63,7 +63,7 @@ export class PrinterConfigComponent implements OnInit {
     this.models = SUPPORTED_PRINTER_MODELS;
 
     this.form = new FormGroup({
-      id: new FormControl(null, [Validators.required]),
+      id: new FormControl({disabled: true, value: null}, [Validators.required]),
       model: new FormControl(null, [Validators.required]),
       printWithLogo: new FormControl(false, [Validators.required]),
     });

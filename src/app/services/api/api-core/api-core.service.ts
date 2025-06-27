@@ -3,8 +3,9 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ApiKeys, States } from 'src/app/models/constants';
 import { FilesService } from '../../files/files.service';
+import { ErrorsService } from '../errors/errors.service';
 
-export interface Entity {
+export interface IEntity {
   id: string | number | Object;
   state: boolean;
   uploaded: States;
@@ -13,9 +14,10 @@ export interface Entity {
 @Injectable({
   providedIn: 'root',
 })
-export abstract class ApiCoreService<T extends Entity> {
+export abstract class ApiCoreService<T extends IEntity> {
   protected _http = inject(HttpClient);
   protected _file = inject(FilesService);
+  protected _errors = inject(ErrorsService);
 
   constructor(protected path: ApiKeys) {}
 
@@ -25,6 +27,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while getting all: ${JSON.stringify(err)}`);
       this._file.saveError(err);
+      this._errors.saveErrors(err);
       throw new Error(err);
     });
 
@@ -45,6 +48,7 @@ export abstract class ApiCoreService<T extends Entity> {
       ).catch((err) => {
         console.log(`Error while getting: ${JSON.stringify(err)}`);
         this._file.saveError(err);
+        this._errors.saveErrors(err);
         throw new Error(err);
       });
     } else {
@@ -53,6 +57,7 @@ export abstract class ApiCoreService<T extends Entity> {
       ).catch((err) => {
         console.log(`Error while getting: ${JSON.stringify(err)}`);
         this._file.saveError(err);
+        this._errors.saveErrors(err);
         throw new Error(err);
       });
     }
@@ -77,6 +82,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while getting by param: ${JSON.stringify(err)}`);
       this._file.saveError(err);
+      this._errors.saveErrors(err);
       throw new Error(err);
     });
 
@@ -95,6 +101,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while inserting: ${JSON.stringify(err)}`);
       this._file.saveError(err);
+      this._errors.saveErrors(err);
       return undefined;
     });
 
@@ -109,6 +116,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while updating: ${JSON.stringify(err)}`);
       this._file.saveError(err);
+      this._errors.saveErrors(err);
       return false;
     });
 
@@ -123,6 +131,7 @@ export abstract class ApiCoreService<T extends Entity> {
     ).catch((err) => {
       console.log(`Error while deleting: ${JSON.stringify(err)}`);
       this._file.saveError(err);
+      this._errors.saveErrors(err);
       throw new Error(err);
     });
 

@@ -1,6 +1,6 @@
 export enum ApiKeys {
-  // PATH = 'http://157.230.224.218:16000/',//Production
-  PATH = 'http://192.168.83.75:8080/',
+  PATH = 'http://157.230.224.218:16000/',//Production
+  // PATH = 'http://192.168.70.221:8080/',
   PRODUCTS = PATH + 'products',
   CATEGORIES = PATH + 'categories',
   CURRENCIES = PATH + 'currencies',
@@ -15,7 +15,8 @@ export enum ApiKeys {
   PRODUCT_CATEGORIES = PATH + 'product-categories',
   PURCHASE = PATH + 'purchases',
   CASH_BOX = PATH + 'cash-boxes',
-  PRODUCT_PURCHASE = PATH + 'product-purchase'
+  PRODUCT_PURCHASE = PATH + 'product-purchase',
+  ERRORS = PATH + 'errors'
 }
 
 export enum StorageKeys {

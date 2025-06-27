@@ -27,6 +27,7 @@ export class ImageProductService extends ApiCoreService<IImageProduct> {
       observe: 'events'
     })).catch(err => {
       this._file.saveError(err);
+      this._errors.saveErrors(err);
       throw err;
     });
 

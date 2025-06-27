@@ -33,6 +33,7 @@ export class ImageCategoryService extends ApiCoreService<IImageCategory> {
       })
     ).catch((err) => {
       this._file.saveError(err);
+      this._errors.saveErrors(err);
       throw err;
     });
 

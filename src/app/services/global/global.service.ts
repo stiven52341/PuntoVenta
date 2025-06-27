@@ -12,7 +12,7 @@ import { LocalPurchaseService } from '../local/local-purchase/local-purchase.ser
 import { LocalUnitsService } from '../local/local-units/local-units.service';
 import { LocalUnitProductsService } from '../local/local-unit-products/local-unit-products.service';
 import { States } from 'src/app/models/constants';
-import { ApiCoreService, Entity } from '../api/api-core/api-core.service';
+import { ApiCoreService, IEntity } from '../api/api-core/api-core.service';
 import { CategoryService } from '../api/category/category.service';
 import { CurrencyService } from '../api/currency/currency.service';
 import { InventoryCheckService } from '../api/inventory-check/inventory-check.service';
@@ -168,8 +168,8 @@ export class GlobalService {
   }
 
   private async syncValues(
-    values: Array<Entity>,
-    service: ApiCoreService<Entity>
+    values: Array<IEntity>,
+    service: ApiCoreService<IEntity>
   ) {
     if (values.length == 0) return;
 

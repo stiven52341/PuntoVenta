@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 import { StorageKeys } from 'src/app/models/constants';
-import { Entity } from '../../api/api-core/api-core.service';
+import { IEntity } from '../../api/api-core/api-core.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export abstract class InternalStorageCoreService<T extends Entity> {
+export abstract class InternalStorageCoreService<T extends IEntity> {
   protected _storage = inject(Storage);
 
   constructor(protected key: StorageKeys) {
