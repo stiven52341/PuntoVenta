@@ -6,7 +6,7 @@ import { IEntity } from '../../api/api-core/api-core.service';
 @Injectable({
   providedIn: 'root'
 })
-export abstract class InternalStorageCoreService<T extends IEntity> {
+export abstract class InternalStorageCoreService<T extends IEntity<U>,  U = T extends IEntity<infer X> ? X : never> {
   protected _storage = inject(Storage);
 
   constructor(protected key: StorageKeys) {

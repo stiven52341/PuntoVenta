@@ -1,10 +1,7 @@
-import { States } from "./constants";
+import { IEntity } from "../services/api/api-core/api-core.service";
 
-export interface IGeneralInfo{
-  id: number;
+export interface IGeneralInfo extends IEntity<Number>{
   isFirstTime: boolean;
   settedSuccesfully?: boolean;
   imprimirConLogo?: boolean;
-  state: boolean,
-  uploaded: States
 }

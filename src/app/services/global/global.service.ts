@@ -168,8 +168,8 @@ export class GlobalService {
   }
 
   private async syncValues(
-    values: Array<IEntity>,
-    service: ApiCoreService<IEntity>
+    values: Array<IEntity<any>>,
+    service: ApiCoreService<IEntity<any>>
   ) {
     if (values.length == 0) return;
 

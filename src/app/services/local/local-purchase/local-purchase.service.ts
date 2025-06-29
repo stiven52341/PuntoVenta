@@ -26,7 +26,7 @@ export class LocalPurchaseService extends InternalStorageCoreService<IPurchase> 
     await this._storage.set(this.key, values);
 
     const insertDetails = async (detail: IPurchaseDetail) => {
-      detail.id.idPurchase = obj.id;
+      detail.id.idPurchase = obj.id as number;
       await this._details.insert(detail);
     };
 

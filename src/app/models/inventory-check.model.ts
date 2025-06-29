@@ -1,8 +1,5 @@
-import { States } from "./constants";
+import { IEntity } from "../services/api/api-core/api-core.service";
 
-export interface IInventoryCheck{
-  id: number,
+export interface IInventoryCheck extends IEntity<Number>{
   date: Date,
-  state: boolean,
-  uploaded: States
 }

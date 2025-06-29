@@ -16,7 +16,7 @@ import { LocalProductsService } from 'src/app/services/local/local-products/loca
 import { IProduct } from 'src/app/models/product.model';
 import { PhotosService } from 'src/app/services/photos/photos.service';
 import { PhotoKeys } from 'src/app/models/constants';
-import { firstValueFrom, forkJoin, Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -66,8 +66,8 @@ export class ProductListComponent implements OnInit {
     const products = this.showOnlyActiveProducts
       ? (await this._products.getAll())
           .filter((pro) => pro.state)
-          .sort((a, b) => a.id - b.id)
-      : (await this._products.getAll()).sort((a, b) => a.id - b.id);
+          .sort((a, b) => Number(a.id) - Number(b.id))
+      : (await this._products.getAll()).sort((a, b) => Number(a.id) - Number(b.id));
 
     this.products = products;
     this.productsFiltered = [];

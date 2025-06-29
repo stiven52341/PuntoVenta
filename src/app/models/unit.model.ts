@@ -1,10 +1,6 @@
-import { States } from "./constants";
-
-export interface IUnit{
-  id: number,
+import { IEntity } from "../services/api/api-core/api-core.service";
+export interface IUnit extends IEntity<Number>{
   name: string,
   shortcut?: string,
-  state: boolean,
-  uploaded: States,
   allowDecimals: boolean
 }

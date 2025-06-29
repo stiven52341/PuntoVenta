@@ -1,7 +1,6 @@
-import { States } from "./constants";
+import { IEntity } from "../services/api/api-core/api-core.service";
 
-export interface IUnitProduct {
-  id: number;
+export interface IUnitProduct extends IEntity<Number>{
   idUnit: number;
   idProduct: number;
   idCurrency: number;
@@ -11,7 +10,5 @@ export interface IUnitProduct {
   cost: number;
   unit?: string;
   currency?: string;
-  label?: string,
-  state: boolean;
-  uploaded: States
+  label?: string
 }

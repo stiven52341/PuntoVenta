@@ -415,8 +415,8 @@ export class MantProductsPage implements OnInit {
 
     const productCategory: IProductCategory = {
       id: {
-        idCategory: this.category.id,
-        idProduct: product.id,
+        idCategory: this.category.id as number,
+        idProduct: product.id as number,
       },
       state: true,
       uploaded: States.NOT_INSERTED,

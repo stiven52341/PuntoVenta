@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { ApiKeys, States } from 'src/app/models/constants';
 import { FilesService } from '../../files/files.service';
 import { ErrorsService } from '../errors/errors.service';
 
-export interface IEntity {
-  id: string | number | Object;
+export interface IEntity<T> {
+  id: T;
   state: boolean;
   uploaded: States;
 }
@@ -14,10 +14,12 @@ export interface IEntity {
 @Injectable({
   providedIn: 'root',
 })
-export abstract class ApiCoreService<T extends IEntity> {
+export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity<infer X> ? X : never> {
   protected _http = inject(HttpClient);
   protected _file = inject(FilesService);
   protected _errors = inject(ErrorsService);
+  
+  protected readonly timeout = 10000;
 
   constructor(protected path: ApiKeys) {}
 
@@ -97,7 +99,7 @@ export abstract class ApiCoreService<T extends IEntity> {
     object: T
   ): Promise<number | string | Object | undefined> {
     const result = await firstValueFrom(
-      this._http.post(`${this.path}/insert`, object)
+      this._http.post(`${this.path}/insert`, object).pipe(timeout(this.timeout))
     ).catch((err) => {
       console.log(`Error while inserting: ${JSON.stringify(err)}`);
       this._file.saveError(err);
@@ -112,7 +114,7 @@ export abstract class ApiCoreService<T extends IEntity> {
 
   public async update(object: T): Promise<boolean> {
     const result = await firstValueFrom(
-      this._http.post(`${this.path}/update`, object)
+      this._http.post(`${this.path}/update`, object).pipe(timeout(this.timeout))
     ).catch((err) => {
       console.log(`Error while updating: ${JSON.stringify(err)}`);
       this._file.saveError(err);
@@ -127,7 +129,7 @@ export abstract class ApiCoreService<T extends IEntity> {
 
   public async delete(object: T): Promise<boolean> {
     const result = await firstValueFrom(
-      this._http.post(`${this.path}/delete`, object)
+      this._http.post(`${this.path}/delete`, object).pipe(timeout(this.timeout))
     ).catch((err) => {
       console.log(`Error while deleting: ${JSON.stringify(err)}`);
       this._file.saveError(err);

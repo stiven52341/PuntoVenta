@@ -1,11 +1,8 @@
-import { States } from "./constants";
+import { IEntity } from "../services/api/api-core/api-core.service";
 import { IPurchaseDetail } from "./purchase-detail.model";
 
-export interface IPurchase{
-  id: number,
+export interface IPurchase extends IEntity<Number>{
   date: Date,
   total: number,
-  state: boolean,
   details?: Array<IPurchaseDetail>,
-  uploaded: States,
 }

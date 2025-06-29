@@ -3,7 +3,7 @@ import { ApiCoreService } from '../api-core/api-core.service';
 import { IImageProduct } from 'src/app/models/image-product.model';
 import { ApiKeys } from 'src/app/models/constants';
 import { PhotosService } from '../../photos/photos.service';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, timeout } from 'rxjs';
 import { HttpEvent } from '@angular/common/http';
 
 @Injectable({
@@ -25,7 +25,7 @@ export class ImageProductService extends ApiCoreService<IImageProduct> {
     const result = await lastValueFrom(this._http.post<HttpEvent<any>>(this.path + '/insert', formData, {
       reportProgress: true,
       observe: 'events'
-    })).catch(err => {
+    }).pipe(timeout(this.timeout))).catch(err => {
       this._file.saveError(err);
       this._errors.saveErrors(err);
       throw err;

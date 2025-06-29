@@ -172,7 +172,7 @@ export class CartPage implements OnInit {
       purchaseDetails.push({
         id: {
           idPurchase: 0,
-          idUnitProductCurrency: product.price.id,
+          idUnitProductCurrency: product.price.id as number,
         },
         amount: product.amount,
         state: true,

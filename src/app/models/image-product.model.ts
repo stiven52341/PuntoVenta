@@ -1,8 +1,5 @@
-import { States } from "./constants"
+import { IEntity } from "../services/api/api-core/api-core.service"
 
-export interface IImageProduct{
-  id: number,
+export interface IImageProduct extends IEntity<Number>{
   data: string
-  uploaded: States,
-  state: boolean
 }

@@ -1,9 +1,7 @@
 import { IProductCart } from "../pages/cart/cart.page";
-import { States } from "./constants";
+import { IEntity } from "../services/api/api-core/api-core.service";
 
-export interface ICart{
+export interface ICart extends IEntity<Number>{
   id: number,
-  products: Array<IProductCart>,
-  state: boolean,
-  uploaded: States
+  products: Array<IProductCart>
 }

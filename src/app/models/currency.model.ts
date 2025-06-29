@@ -1,10 +1,7 @@
-import { States } from "./constants";
+import { IEntity } from "../services/api/api-core/api-core.service";
 
-export interface ICurrency{
-  id: number,
+export interface ICurrency extends IEntity<Number>{
   name: string,
   shortcut: string,
-  state: boolean,
   isDefault: boolean,
-  uploaded: States
 }

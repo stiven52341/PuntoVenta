@@ -99,8 +99,8 @@ export class ProductComponent implements OnInit {
       }
     });
     this.selectedPrice =
-      this.prices.find((price) => price.unitPro.isDefault)?.unitPro.id ||
-      this.prices[0].unitPro.id;
+      this.prices.find((price) => price.unitPro.isDefault)?.unitPro.id as number ||
+      this.prices[0].unitPro.id as number;
   }
 
   protected getTotal() {
