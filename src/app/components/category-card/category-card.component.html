@@ -4,7 +4,9 @@
   </div>
 
   <ion-icon *ngIf="icon" name="{{ icon }}"></ion-icon>
-  <span>{{ category.name }}</span>
+  <div class="text">
+    <span>{{ category.name }}</span>
+  </div>
   @if(selected){
     <img src="../../../assets/icon/error.png" alt="" id="remove">
   }

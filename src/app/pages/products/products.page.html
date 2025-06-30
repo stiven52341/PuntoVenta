@@ -40,8 +40,12 @@
         [product]="product.product"
         [image]="product.image"
       ></app-product-card>
-      } @if(loadingScroll){
-      <ion-spinner color="primary" size="large" name="crescent"></ion-spinner>
+      }@empty{
+        @if(loading){
+          <ion-label color="danger">Cargando...</ion-label>
+        }@else{
+          <ion-label color="danger">Sin productos</ion-label>
+        }
       }
     </div>
   </div>
