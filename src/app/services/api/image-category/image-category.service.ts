@@ -16,7 +16,7 @@ export class ImageCategoryService extends ApiCoreService<IImageCategory> {
 
   public override async insert(
     object: IImageCategory
-  ): Promise<number | string | Object | undefined> {
+  ): Promise<Number | undefined> {
     const photo = this._photo.base64ToFile(
       object.data,
       'image/png',
@@ -26,7 +26,7 @@ export class ImageCategoryService extends ApiCoreService<IImageCategory> {
     formData.append('id', object.id.toString());
     formData.append('file', photo);
 
-    const result = await lastValueFrom(
+    await lastValueFrom(
       this._http.post<HttpEvent<any>>(this.path + '/insert', formData, {
         reportProgress: true,
         observe: 'events',
@@ -37,7 +37,7 @@ export class ImageCategoryService extends ApiCoreService<IImageCategory> {
       throw err;
     });
 
-    return result;
+    return object.id;
   }
 
   public override async update(object: IImageCategory): Promise<boolean> {

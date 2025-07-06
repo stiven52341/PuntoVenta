@@ -16,13 +16,13 @@ export class ImageProductService extends ApiCoreService<IImageProduct> {
 
   public override async insert(
     object: IImageProduct
-  ): Promise<number | string | Object | undefined> {
+  ): Promise<Number | undefined> {
     const photo = this._photo.base64ToFile(object.data, 'image/png', object.id.toString());
     const formData = new FormData();
     formData.append('id', object.id.toString());
     formData.append('file', photo);
 
-    const result = await lastValueFrom(this._http.post<HttpEvent<any>>(this.path + '/insert', formData, {
+    await lastValueFrom(this._http.post<HttpEvent<any>>(this.path + '/insert', formData, {
       reportProgress: true,
       observe: 'events'
     }).pipe(timeout(this.timeout))).catch(err => {
@@ -31,7 +31,7 @@ export class ImageProductService extends ApiCoreService<IImageProduct> {
       throw err;
     });
 
-    return result;
+    return object.id;
   }
 
   public override async update(object: IImageProduct): Promise<boolean> {

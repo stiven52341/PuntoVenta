@@ -15,10 +15,9 @@ export interface IEntity<T> {
   providedIn: 'root',
 })
 export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity<infer X> ? X : never> {
-  protected _http = inject(HttpClient);
-  protected _file = inject(FilesService);
-  protected _errors = inject(ErrorsService);
-  
+  protected readonly _http = inject(HttpClient);
+  protected readonly _file = inject(FilesService);
+  protected readonly _errors = inject(ErrorsService);
   protected readonly timeout = 10000;
 
   constructor(protected path: ApiKeys) {}
@@ -40,13 +39,13 @@ export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity
     return data;
   }
 
-  public async get(id: string | number | Object): Promise<T | null> {
+  public async get(id: U): Promise<T | null> {
     let result: Object | void | undefined = undefined;
     if (id instanceof Object) {
-      id = JSON.stringify(id);
+      const newId = JSON.stringify(id);
 
       result = await firstValueFrom(
-        this._http.post(`${this.path}/get`, id)
+        this._http.post(`${this.path}/get`, newId)
       ).catch((err) => {
         console.log(`Error while getting: ${JSON.stringify(err)}`);
         this._file.saveError(err);
@@ -97,7 +96,7 @@ export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity
 
   public async insert(
     object: T
-  ): Promise<number | string | Object | undefined> {
+  ): Promise<U | undefined> {
     const result = await firstValueFrom(
       this._http.post(`${this.path}/insert`, object).pipe(timeout(this.timeout))
     ).catch((err) => {
@@ -109,7 +108,7 @@ export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity
 
     if (!result) return undefined;
 
-    return result;
+    return result as U;
   }
 
   public async update(object: T): Promise<boolean> {
