@@ -69,7 +69,7 @@ export class PhotosService {
     const path = `/Android/media/${
       (await App.getInfo()).id
     }/${album}/${name}.png`;
-    const image = await this._file.read(path, Directory.ExternalStorage);
+    const image = await this._file.readImages(path, Directory.ExternalStorage);
     if (!image) return undefined;
     return 'data:image/png;base64,' + image.toString();
   }

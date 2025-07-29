@@ -22,7 +22,7 @@ export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity
 
   constructor(protected path: ApiKeys) {}
 
-  public async getAll(): Promise<Array<T> | null> {
+  public async getAll(): Promise<Array<T> | undefined> {
     const result = await firstValueFrom(
       this._http.get(this.path, { responseType: 'text' })
     ).catch((err) => {
@@ -32,14 +32,14 @@ export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity
       throw new Error(err);
     });
 
-    if (!result) return null;
+    if (!result) return undefined;
 
     const data = JSON.parse(result) as Array<T>;
     data.map((value) => (value.uploaded = States.DOWNLOADED));
     return data;
   }
 
-  public async get(id: U): Promise<T | null> {
+  public async get(id: U): Promise<T | undefined> {
     let result: Object | void | undefined = undefined;
     if (id instanceof Object) {
       const newId = JSON.stringify(id);
@@ -63,7 +63,7 @@ export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity
       });
     }
 
-    if (!result) return null;
+    if (!result) return undefined;
 
     const data = result as T;
     data.uploaded = States.DOWNLOADED;
@@ -73,7 +73,7 @@ export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity
   public async getByParam(
     param: string,
     value: string | number | Object
-  ): Promise<Array<T> | null> {
+  ): Promise<Array<T> | undefined> {
     if (value instanceof Object) {
       value = JSON.stringify(value);
     }
@@ -87,7 +87,7 @@ export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity
       throw new Error(err);
     });
 
-    if (!result) return null;
+    if (!result) return undefined;
 
     const data = result as Array<T>;
     data.map((val) => (val.uploaded = States.DOWNLOADED));

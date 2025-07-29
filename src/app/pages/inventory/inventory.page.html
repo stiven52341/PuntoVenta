@@ -1,11 +1,9 @@
 <ion-header [translucent]="true">
-  <app-header-bar title="INVENTARIO" [showCart]="false"></app-header-bar>
+  <app-header-bar title="INVENTARIO" [showCart]="false" [isModal]="false"></app-header-bar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">inventory</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="content">
+    <app-button-list [buttons]="buttons" [whiteColor]="true"></app-button-list>
+  </div>
 </ion-content>

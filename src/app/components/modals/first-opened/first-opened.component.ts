@@ -19,8 +19,6 @@ import { CategoryService } from 'src/app/services/api/category/category.service'
 import { CurrencyService } from 'src/app/services/api/currency/currency.service';
 import { ImageCategoryService } from 'src/app/services/api/image-category/image-category.service';
 import { ImageProductService } from 'src/app/services/api/image-product/image-product.service';
-import { InventoryCheckDetailService } from 'src/app/services/api/inventory-check-detail/inventory-check-detail.service';
-import { InventoryIncomeDetailService } from 'src/app/services/api/inventory-income-detail/inventory-income-detail.service';
 import { InventoryIncomeService } from 'src/app/services/api/inventory-income/inventory-income.service';
 import { ProductCategoryService } from 'src/app/services/api/product-category/product-category.service';
 import { ProductService } from 'src/app/services/api/product/product.service';
@@ -49,6 +47,12 @@ import { CashBoxService } from 'src/app/services/api/cash-box/cash-box.service';
 import { LocalCashBoxService } from 'src/app/services/local/local-cash-box/local-cash-box.service';
 import { ProductPurchaseService } from 'src/app/services/api/product-purchase/product-purchase.service';
 import { LocalProductPurchaseService } from 'src/app/services/local/local-product-purchase/local-product-purchase.service';
+import { IInventoryCheck } from 'src/app/models/inventory-check.model';
+import { IInventoryCheckDetail } from 'src/app/models/inventory-check-detail.model';
+import { IInventoryIncomeDetail } from 'src/app/models/inventory-income-detail.model';
+import { IInventoryIncome } from 'src/app/models/inventory-income.model';
+import { UnitBaseService } from 'src/app/services/api/unit-base/unit-base.service';
+import { LocalUnitBaseService } from 'src/app/services/local/local-unit-base/local-unit-base.service';
 
 @Component({
   selector: 'app-first-opened',
@@ -81,17 +85,16 @@ export class FirstOpenedComponent implements OnInit {
   private _currencyApi = inject(CurrencyService);
   private _imageApi = inject(ImageProductService);
   private _inventoryCheckApi = inject(InventoryCheckService);
-  private _inventoryCheckDetailApi = inject(InventoryCheckDetailService);
   private _productsApi = inject(ProductService);
   private _unitApi = inject(UnitService);
   private _unitProductApi = inject(UnitProductService);
   private _inventoryIncomeApi = inject(InventoryIncomeService);
-  private _inventoryIncomeDetailApi = inject(InventoryIncomeDetailService);
   private _imageCategoriesApi = inject(ImageCategoryService);
   private _productCategoryApi = inject(ProductCategoryService);
   private _purchaseApi = inject(PurchaseService);
   private _cashBoxApi = inject(CashBoxService);
   private _productPurhchase = inject(ProductPurchaseService);
+  private _unitBase = inject(UnitBaseService);
 
   //Local
   private _categorySto = inject(LocalCategoriesService);
@@ -109,6 +112,7 @@ export class FirstOpenedComponent implements OnInit {
   private _purchaseDetailSto = inject(LocalPurchaseDetailService);
   private _cashBoxSto = inject(LocalCashBoxService);
   private _productPurchaseSto = inject(LocalProductPurchaseService);
+  private _unitBaseSto = inject(LocalUnitBaseService);
 
   constructor() {}
 
@@ -128,21 +132,21 @@ export class FirstOpenedComponent implements OnInit {
         this._currencyApi.getAll(),
         this._imageApi.getAll(),
         this._inventoryCheckApi.getAll(),
-        this._inventoryCheckDetailApi.getAll(),
         this._productsApi.getAll(),
         this._unitApi.getAll(),
         this._unitProductApi.getAll(),
         this._inventoryIncomeApi.getAll(),
-        this._inventoryIncomeDetailApi.getAll(),
         this._imageCategoriesApi.getAll(),
         this._productCategoryApi.getAll(),
         this._purchaseApi.getAll(),
         this._cashBoxApi.getAll(),
-        this._productPurhchase.getAll()
+        this._productPurhchase.getAll(),
+        this._unitBase.getAll()
       ])
     ).catch(async (err) => {
       this._alert.showError('Error descargando los datos');
       this._info.setNotSuccessful();
+      // this._file.saveError(err);
       console.error(err);
     });
 
@@ -156,18 +160,16 @@ export class FirstOpenedComponent implements OnInit {
     const currencies = result[1] || [];
     const imagesPros = result[2] || [];
     const inventoryChecks = result[3] || [];
-    const inventoryCheckDetails = result[4] || [];
-    const products = result[5] || [];
-    const units = result[6] || [];
-    const unitProducts = result[7] || [];
-    const incomes = result[8] || [];
-    const incomeDetails = result[9] || [];
-    const imagesCategories = result[10] || [];
-    const productCategories = result[11] || [];
-    const purchases = result[12] || [];
-    const cashBoxes = result[13] || [];
-    const productPurchases = result[14] || [];
-
+    const products = result[4] || [];
+    const units = result[5] || [];
+    const unitProducts = result[6] || [];
+    const incomes = result[7] || [];
+    const imagesCategories = result[8] || [];
+    const productCategories = result[9] || [];
+    const purchases = result[10] || [];
+    const cashBoxes = result[11] || [];
+    const productPurchases = result[12] || [];
+    const unitBases = result[13] || [];
     
     imagesPros.map(
       (image) => (image.data = `data:image/png;base64,${image.data}`)
@@ -178,9 +180,9 @@ export class FirstOpenedComponent implements OnInit {
 
     const setPurchases = async (purchases: Array<IPurchase>) => {
       const details: Array<IPurchaseDetail> = [];
-      purchases.forEach((purchase) => {
+      purchases.forEach((purchase,index) => {
         details.push(...(purchase.details || []));
-        purchase.details = undefined;
+        purchases[index].details = [];
       });
 
       await firstValueFrom(
@@ -191,21 +193,48 @@ export class FirstOpenedComponent implements OnInit {
       );
     };
 
+    const setInventoryCheckDetails = async(checks: Array<IInventoryCheck>) => {
+      const details: Array<IInventoryCheckDetail> = [];
+      checks.forEach((check,index) => {
+        details.push(...(check.details || []));
+        checks[index].details = [];
+      });
+
+      await firstValueFrom(
+        forkJoin([
+          this._inventoryCheckSto.set(checks),
+          this._inventoryCheckDetailsSto.set(details)
+        ])
+      );
+    }
+
+    const setInventoryIncomeDetails = async(ins: Array<IInventoryIncome>) => {
+      const details: Array<IInventoryIncomeDetail> = [];
+      for(const income of ins){
+        details.push(...(income.details));
+        income.details = [];
+      }
+
+      await firstValueFrom(forkJoin([
+        this._inventoryIncomeSto.set(ins),
+        this._inventoryIncomeDetailSto.set(details)
+      ]));
+    }
+
     const result2 = await firstValueFrom(
       forkJoin([
         this._categorySto.set(categories),
         this._currenciesSto.set(currencies),
-        this._inventoryCheckSto.set(inventoryChecks),
-        this._inventoryCheckDetailsSto.set(inventoryCheckDetails),
+        setInventoryCheckDetails(inventoryChecks),
         this._productsSto.set(products),
         this._unitSto.set(units),
         this._unitProductsSto.set(unitProducts),
-        this._inventoryIncomeSto.set(incomes),
-        this._inventoryIncomeDetailSto.set(incomeDetails),
+        setInventoryIncomeDetails(incomes),
         this._proCategoriesSto.set(productCategories),
         setPurchases(purchases),
         this._cashBoxSto.set(cashBoxes),
-        this._productPurchaseSto.set(productPurchases)
+        this._productPurchaseSto.set(productPurchases),
+        this._unitBaseSto.set(unitBases)
       ])
     ).catch((err) => {
       this._alert.showError('Error guardando los datos');

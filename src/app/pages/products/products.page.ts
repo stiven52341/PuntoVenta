@@ -7,8 +7,7 @@ import {
   IonSpinner,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  InfiniteScrollCustomEvent,
-} from '@ionic/angular/standalone';
+  InfiniteScrollCustomEvent, IonToolbar } from '@ionic/angular/standalone';
 import { ProductCardComponent } from 'src/app/components/product-card/product-card.component';
 import { ICategory } from 'src/app/models/category.model';
 import { CategoryCardComponent } from 'src/app/components/category-card/category-card.component';
@@ -38,7 +37,7 @@ interface IProductDetail {
   templateUrl: './products.page.html',
   styleUrls: ['./products.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonToolbar, 
     IonLabel,
     CategoryCardComponent,
     IonSearchbar,

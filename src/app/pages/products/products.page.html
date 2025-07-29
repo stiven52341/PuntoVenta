@@ -4,16 +4,19 @@
     title="PRODUCTOS"
     [showCart]="true"
   ></app-header-bar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <div class="content">
+  <ion-toolbar color="primary">
     <ion-searchbar
       animated="true"
       placeholder="Buscar producto"
       (ionInput)="search($event)"
       [debounce]="300"
     ></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content">
+    
     <div class="category-part">
       <div class="title">
         <ion-label>Categorías</ion-label>

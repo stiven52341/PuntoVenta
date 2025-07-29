@@ -30,6 +30,7 @@
           fill="outline"
           label="Nombre"
           placeholder="Ingrese un nombre de unidad"
+          [clearInput]="true"
         ></ion-input>
 
         <ion-input
@@ -38,13 +39,12 @@
           label="Abreviatura"
           placeholder="Ingrese una abreviatura"
           formControlName="short"
+          [clearInput]="true"
         ></ion-input>
 
         <ion-checkbox formControlName="allowDecimals" labelPlacement="start"
           >Permitir decimales</ion-checkbox
         >
-
-
       </div>
     </form>
   </div>

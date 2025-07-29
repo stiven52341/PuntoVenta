@@ -1,0 +1,103 @@
+<ion-header [translucent]="true">
+  <app-header-bar
+    title="Compra de mercancía"
+    [isModal]="false"
+    [arrowBack]="true"
+  ></app-header-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content">
+    <form [formGroup]="form">
+      <div class="complex-input">
+        <ion-input
+          [disabled]="true"
+          labelPlacement="stacked"
+          placeholder="Seleccione un producto"
+          fill="outline"
+          label="PRODUCTO"
+          [value]="product?.name || ''"
+        ></ion-input>
+        <ion-button (click)="searchProduct()">
+          <ion-icon name="search"></ion-icon>
+        </ion-button>
+      </div>
+      <div class="complex-input">
+        <ion-input
+          [disabled]="true"
+          labelPlacement="stacked"
+          placeholder="Seleccione una unidad"
+          fill="outline"
+          label="UNIDAD"
+          [value]="unit?.name || ''"
+        ></ion-input>
+        <ion-button (click)="searchUnit()">
+          <ion-icon name="search"></ion-icon>
+        </ion-button>
+      </div>
+      <ion-input
+        labelPlacement="stacked"
+        placeholder="Ingrese la cantidad"
+        fill="outline"
+        label="CANTIDAD"
+        [clearInput]="true"
+        type="number"
+        formControlName="amount"
+      ></ion-input>
+      <ion-input
+        labelPlacement="stacked"
+        placeholder="Ingrese el costo"
+        fill="outline"
+        label="COSTO"
+        [clearInput]="true"
+        type="number"
+        formControlName="cost"
+      ></ion-input>
+      @if(showEquivalency){
+      <hr />
+      <ion-label>Equivalencia</ion-label>
+      <ion-input
+        labelPlacement="stacked"
+        fill="outline"
+        label="UNIDAD BASE"
+        [disabled]="true"
+        type="text"
+        [value]="baseUnit?.name || 0"
+      ></ion-input>
+      <ion-input
+        labelPlacement="stacked"
+        fill="outline"
+        label="CANTIDAD"
+        type="number"
+        [clearInput]="true"
+        formControlName="equivalency"
+        placeholder="Cuanto equivale la unidad con la unidad base"
+      ></ion-input>
+      <ion-input
+        labelPlacement="stacked"
+        fill="outline"
+        label="CANTIDAD EN UNIDAD BASE"
+        type="number"
+        formControlName="baseAmount"
+      ></ion-input>
+      }
+    </form>
+  </div>
+</ion-content>
+<ion-footer>
+  <div class="footer-content">
+    <ion-button (click)="onList()">
+      <ion-icon color="light" name="list"></ion-icon>
+      <ion-label color="light">Lista</ion-label>
+      <ion-badge color="danger">{{details.length}}</ion-badge>
+    </ion-button>
+    <ion-button (click)="onAdd()">
+      <ion-icon color="light" name="bookmark"></ion-icon>
+      <ion-label color="light">Agregar</ion-label>
+    </ion-button>
+    <ion-button (click)="onFinish()">
+      <ion-icon color="light" name="save"></ion-icon>
+      <ion-label color="light">Finalizar</ion-label>
+    </ion-button>
+  </div>
+</ion-footer>

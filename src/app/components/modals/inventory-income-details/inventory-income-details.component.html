@@ -1,0 +1,63 @@
+<ion-header>
+  <app-header-bar
+    title="LISTA DE PRODUCTOS AGREGADOS"
+    [isModal]="true"
+    [arrowBack]="true"
+    [loading]="loading"
+  ></app-header-bar>
+</ion-header>
+<ion-content>
+  <div class="content">
+    <ion-list lines="none">
+      @for(detail of detailsInfo; track $index){
+      <ion-item (click)="onClick(detail.detail)">
+        <ion-card>
+          <div class="item-content">
+            <img src="{{ detail.image }}" alt="Not found" />
+            <div class="divition">
+              <div class="duo">
+                <ion-label class="title"><b>Producto:</b></ion-label>
+                <ion-label>{{ detail.product.name }}</ion-label>
+              </div>
+              <div class="duo">
+                <ion-label class="title"><b>Unidad:</b></ion-label>
+                <ion-label>{{ detail.unit.name }}</ion-label>
+              </div>
+              <div class="duo">
+                <ion-label class="title"><b>Cantidad:</b></ion-label>
+                <ion-label>{{
+                  detail.detail.amount | number : "1.2-2"
+                }}</ion-label>
+              </div>
+            </div>
+            <div class="divition">
+              <div class="duo">
+                <ion-label class="title"><b>Costo:</b></ion-label>
+                <ion-label
+                  >${{ detail.detail.cost | number : "1.2-2" }}</ion-label
+                >
+              </div>
+              @if(detail.unit.id != detail.unitBase.id){
+              <div class="duo">
+                <ion-label class="title"><b>Unidad base:</b></ion-label>
+                <ion-label>{{ detail.unitBase.name }}</ion-label>
+              </div>
+              <div class="duo">
+                <ion-label class="title"><b>Equivalencia:</b></ion-label>
+                <ion-label>{{
+                  detail.detail.amountBaseUnit | number : "1.2-2"
+                }}</ion-label>
+              </div>
+              }
+            </div>
+          </div>
+        </ion-card>
+      </ion-item>
+      }@empty{ @if(loading){
+      <ion-label>Cargando...</ion-label>
+      }@else{
+      <ion-label>Sin elementos</ion-label>
+      } }
+    </ion-list>
+  </div>
+</ion-content>

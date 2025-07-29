@@ -94,6 +94,9 @@ export class MantPricesPage implements OnInit {
       this.prices.length > 0
         ? (this.showPrices = true)
         : (this.showPrices = false);
+
+      this._localPrices.get
+      
       this.loading = false;
     });
   }

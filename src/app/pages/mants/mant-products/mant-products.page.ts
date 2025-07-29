@@ -1,3 +1,4 @@
+import { IUnit } from './../../../models/unit.model';
 import { ProductCategoryService } from 'src/app/services/api/product-category/product-category.service';
 import { Component, OnInit } from '@angular/core';
 import {
@@ -14,7 +15,6 @@ import { IProduct } from 'src/app/models/product.model';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 import { PhotosService } from 'src/app/services/photos/photos.service';
-import { IUnit } from 'src/app/models/unit.model';
 import {
   FormControl,
   FormGroup,
@@ -26,7 +26,6 @@ import { ProductService } from 'src/app/services/api/product/product.service';
 import { FilesService } from 'src/app/services/files/files.service';
 import { ImageProductService } from 'src/app/services/api/image-product/image-product.service';
 import { IImageProduct } from 'src/app/models/image-product.model';
-import { firstValueFrom, forkJoin } from 'rxjs';
 import { PhotoKeys, States } from 'src/app/models/constants';
 import { TitleCasePipe } from '@angular/common';
 import { IButton } from 'src/app/models/button.model';
@@ -38,6 +37,7 @@ import { ICategory } from 'src/app/models/category.model';
 import { IProductCategory } from 'src/app/models/product-category.model';
 import { LocalProductCategoryService } from 'src/app/services/local/local-product-category/local-product-category.service';
 import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
+import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 
 @Component({
   selector: 'app-mant-products',
@@ -63,6 +63,7 @@ export class MantProductsPage implements OnInit {
   protected title: string = 'NUEVO PRODUCTO';
   protected state: boolean = true;
   protected category?: ICategory;
+  protected baseUnit?: IUnit;
 
   private readonly noImage = '../../../../assets/no-image.png';
 
@@ -85,7 +86,8 @@ export class MantProductsPage implements OnInit {
     private _global: GlobalService,
     private _localProductCategory: LocalProductCategoryService,
     private _productCategory: ProductCategoryService,
-    private _localCategories: LocalCategoriesService
+    private _localCategories: LocalCategoriesService,
+    private _localUnit: LocalUnitsService
   ) {
     addIcons({ search });
 
@@ -95,7 +97,6 @@ export class MantProductsPage implements OnInit {
         Validators.maxLength(50),
       ]),
       desc: new FormControl(null, [Validators.maxLength(150)]),
-      active: new FormControl(true, []),
     });
 
     this.headerButtons = [
@@ -161,6 +162,7 @@ export class MantProductsPage implements OnInit {
     this.form.get('desc')?.setValue(product.description || '');
 
     this.state = product.state;
+    this.baseUnit = await this._localUnit.get(product.baseUnit);
 
     const productCategory = (await this._localProductCategory.getAll()).find(
       (proCa) => proCa.id.idProduct == product!.id
@@ -183,6 +185,12 @@ export class MantProductsPage implements OnInit {
       this._alert.showError('DESCRIPCIÓN INVÁLIDO');
       return false;
     }
+
+    if(!this.baseUnit){
+      this._alert.showError('DEBE ELEGIR UNA UNIDAD BASE');
+      return false;
+    }
+
     return true;
   }
 
@@ -205,8 +213,9 @@ export class MantProductsPage implements OnInit {
         (this.form.get('name')!.value as string).trim()
       ),
       description: (this.form.get('desc')?.value || ('' as string)).trim(),
-      state: Boolean(this.form.get('active')!.value),
+      state: true,
       uploaded: States.NOT_INSERTED,
+      baseUnit: this.baseUnit!.id as number
     };
 
     if (this.product) {
@@ -237,16 +246,6 @@ export class MantProductsPage implements OnInit {
         state: true,
       };
 
-      // await firstValueFrom(
-      //   forkJoin([
-      //     this._localProducts.update(product),
-      //     this._photo.savePhoto(
-      //       image.id.toString(),
-      //       image.data,
-      //       PhotoKeys.PRODUCTS_ALBUMN
-      //     ),
-      //   ])
-      // )
       await this._localProducts
         .update(product)
         .then(async () => {
@@ -292,12 +291,6 @@ export class MantProductsPage implements OnInit {
         state: true,
       };
 
-      // await firstValueFrom(
-      //   forkJoin([
-      //     ,
-      //     ,
-      //   ])
-      // )
       this._localProducts
         .insert(product)
         .then(async () => {
@@ -399,6 +392,8 @@ export class MantProductsPage implements OnInit {
     this.form.reset();
     this.title = 'NUEVO PRODUCTO';
     this.product = undefined;
+    this.baseUnit = undefined;
+    this.category = undefined;
 
     this._toast.showToast('Formulario limpiado', 2000, 'primary', 'top');
   }
@@ -430,5 +425,10 @@ export class MantProductsPage implements OnInit {
     await this._localProductCategory.insert(productCategory).catch((err) => {
       throw err;
     });
+  }
+
+  protected async searchUnit(){
+    const result = await this._modal.showUnitsList();
+    if(result) this.baseUnit = result;
   }
 }

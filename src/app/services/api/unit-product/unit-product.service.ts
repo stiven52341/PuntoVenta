@@ -15,4 +15,8 @@ export class UnitProductService extends ApiCoreService<IUnitProduct>{
   public async getByProduct(idProduct: number){
     return await this.getByParam('product', idProduct);
   }
+
+  public async getDefaultUnit(){
+    
+  }
 }

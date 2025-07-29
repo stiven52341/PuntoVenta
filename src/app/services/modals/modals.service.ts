@@ -14,6 +14,8 @@ import { IUnit } from 'src/app/models/unit.model';
 import { CategoriesListComponent } from 'src/app/components/modals/categories-list/categories-list.component';
 import { ICategory } from 'src/app/models/category.model';
 import { CashBoxComponent } from 'src/app/components/modals/cash-box/cash-box.component';
+import { IInventoryIncomeDetail } from 'src/app/models/inventory-income-detail.model';
+import { InventoryIncomeDetailsComponent } from 'src/app/components/modals/inventory-income-details/inventory-income-details.component';
 
 @Injectable({
   providedIn: 'root',
@@ -57,7 +59,10 @@ export class ModalsService {
   }
 
   public async showFirstOpenedModal(): Promise<boolean> {
-    const result = await this.showModal(FirstOpenedComponent, 'first-time-modal');
+    const result = await this.showModal(
+      FirstOpenedComponent,
+      'first-time-modal'
+    );
     if (result && result.data) return result.data as boolean;
     return false;
   }
@@ -110,17 +115,20 @@ export class ModalsService {
     return undefined;
   }
 
-  public async showCategoriesList(showNullCategories: boolean = true): Promise<
-    { category: ICategory; image: string } | undefined
-  > {
-    const result = await this.showModal(CategoriesListComponent, 'sells-list', {showNullCategories: showNullCategories});
+  public async showCategoriesList(
+    showNullCategories: boolean = true
+  ): Promise<{ category: ICategory; image: string } | undefined> {
+    const result = await this.showModal(CategoriesListComponent, 'sells-list', {
+      showNullCategories: showNullCategories,
+    });
     if (result && result.data)
       return result.data as { category: ICategory; image: string };
     return undefined;
   }
 
   public async showCashbox(
-    type: 'open' | 'close', balance: number = 0
+    type: 'open' | 'close',
+    balance: number = 0
   ): Promise<number | undefined> {
     const result = await this.showModal(
       CashBoxComponent,
@@ -131,6 +139,20 @@ export class ModalsService {
       true
     );
     if (result && result.data) return result.data as number;
+    return undefined;
+  }
+
+  public async showInventoryIncomeDetailsList(
+    details: Array<IInventoryIncomeDetail>,
+    showWarningBeforeSelect: boolean = false
+  ): Promise<IInventoryIncomeDetail | undefined> {
+    const result = await this.showModal(
+      InventoryIncomeDetailsComponent,
+      'inventory-income-details-list',
+      {details: details, showWarningBeforeSelect: showWarningBeforeSelect},
+    );
+
+    if(result && result.data) return result.data as IInventoryIncomeDetail;
     return undefined;
   }
 

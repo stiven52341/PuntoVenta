@@ -1,9 +1,11 @@
 import { IEntity } from "../services/api/api-core/api-core.service"
 
 export interface IInventoryIncomeDetail extends IEntity<{
-    id_inventory_income: number,
-    id_product: number,
-    id_unit: number
+    idInventoryIncome: number,
+    idProduct: number,
+    idUnit: number
   }>{
-  amount: number
+  amount: number,
+  cost: number,
+  amountBaseUnit: number
 }

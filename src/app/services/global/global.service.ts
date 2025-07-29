@@ -16,9 +16,7 @@ import { ApiCoreService, IEntity } from '../api/api-core/api-core.service';
 import { CategoryService } from '../api/category/category.service';
 import { CurrencyService } from '../api/currency/currency.service';
 import { InventoryCheckService } from '../api/inventory-check/inventory-check.service';
-import { InventoryCheckDetailService } from '../api/inventory-check-detail/inventory-check-detail.service';
 import { InventoryIncomeService } from '../api/inventory-income/inventory-income.service';
-import { InventoryIncomeDetailService } from '../api/inventory-income-detail/inventory-income-detail.service';
 import { ProductService } from '../api/product/product.service';
 import { ProductCategoryService } from '../api/product-category/product-category.service';
 import { PurchaseService } from '../api/purchase/purchase.service';
@@ -27,6 +25,8 @@ import { UnitProductService } from '../api/unit-product/unit-product.service';
 import { FilesService } from '../files/files.service';
 import { LocalCashBoxService } from '../local/local-cash-box/local-cash-box.service';
 import { CashBoxService } from '../api/cash-box/cash-box.service';
+import { LocalUnitBaseService } from '../local/local-unit-base/local-unit-base.service';
+import { UnitBaseService } from '../api/unit-base/unit-base.service';
 
 @Injectable({
   providedIn: 'root',
@@ -49,20 +49,20 @@ export class GlobalService {
   private _localUnit = inject(LocalUnitsService);
   private _localUnitProduct = inject(LocalUnitProductsService);
   private _localCashbox = inject(LocalCashBoxService);
+  private _localUnitBase = inject(LocalUnitBaseService);
 
   //Api
   private _categories = inject(CategoryService);
   private _currencies = inject(CurrencyService);
   private _inventoryCheck = inject(InventoryCheckService);
-  private _inventoryCheckDetail = inject(InventoryCheckDetailService);
   private _inventoryIncomes = inject(InventoryIncomeService);
-  private _inventoyIncomeDetail = inject(InventoryIncomeDetailService);
   private _products = inject(ProductService);
   private _productCategories = inject(ProductCategoryService);
   private _purchases = inject(PurchaseService);
   private _unit = inject(UnitService);
   private _unitProduct = inject(UnitProductService);
   private _cashbox = inject(CashBoxService);
+  private _unitBase = inject(UnitBaseService);
 
   //Other
   private _files = inject(FilesService);
@@ -85,6 +85,7 @@ export class GlobalService {
         this._localUnit.getAll(),
         this._localUnitProduct.getAll(),
         this._localCashbox.getAll(),
+        this._localUnitBase.getAll()
       ])
     );
 
@@ -138,33 +139,52 @@ export class GlobalService {
         value.uploaded != States.SYNC && value.uploaded != States.DOWNLOADED
     );
 
-    const promises: Array<Promise<any>> = [
+    const unitBases = results[12].filter((value) => {
+      return value.uploaded != States.SYNC && value.uploaded != States.DOWNLOADED
+    });
+
+    for(const check of inventoryChecks){
+      check.details = inventoryCheckDetails.filter(detail => {
+        return detail.id.idInventoryCheck == check.id
+      });
+    }
+
+    for(const income of inventoryIncomes){
+      income.details = inventoryIncomeDetails.filter(detail => {
+        return detail.id.idInventoryIncome == income.id
+      });
+    }
+
+    //Most important values are synced first...
+    await firstValueFrom(forkJoin([
       this.syncValues(categories, this._categories),
       this.syncValues(currencies, this._currencies),
-      this.syncValues(inventoryChecks, this._inventoryCheck),
-      this.syncValues(inventoryCheckDetails, this._inventoryCheckDetail),
-      this.syncValues(inventoryIncomes, this._inventoryIncomes),
-      this.syncValues(inventoryIncomeDetails, this._inventoyIncomeDetail),
       this.syncValues(products, this._products),
+      this.syncValues(units, this._unit),
+    ])).catch(err => {
+      this._files.saveError(err);
+      return false;
+    });
+
+    //Then, 2nd dependencial data is synced
+    await firstValueFrom(forkJoin([
+      this.syncValues(unitProducts, this._unitProduct),
+      this.syncValues(unitBases, this._unitBase)
+    ]));
+
+    //At the end, most dependencional data is synced
+    await firstValueFrom(forkJoin([
+      this.syncValues(inventoryChecks, this._inventoryCheck),
+      this.syncValues(inventoryIncomes, this._inventoryIncomes),
       this.syncValues(productCategories, this._productCategories),
       this.syncValues(purchases, this._purchases),
-      this.syncValues(units, this._unit),
-      this.syncValues(unitProducts, this._unitProduct),
       this.syncValues(cashboxes, this._cashbox),
-    ];
+    ])).catch(err => {
+      this._files.saveError(err);
+      return false;
+    });
 
-    const result = await firstValueFrom(forkJoin(promises)).catch(
-      async (err) => {
-        const error = new Error(
-          `Error resyncing the data: ${JSON.stringify(err)}`
-        );
-        console.log(error);
-        await this._files.saveError(error, false);
-        return undefined;
-      }
-    );
-
-    return result ? true : false;
+    return true;
   }
 
   private async syncValues(

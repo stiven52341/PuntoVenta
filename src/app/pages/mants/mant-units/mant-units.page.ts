@@ -21,11 +21,14 @@ import { search } from 'ionicons/icons';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
 import { States } from 'src/app/models/constants';
+import { IUnitBaseProduct } from 'src/app/models/unit-base-product.model';
 import { IUnit } from 'src/app/models/unit.model';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
+import { UnitBaseService } from 'src/app/services/api/unit-base/unit-base.service';
 import { UnitService } from 'src/app/services/api/unit/unit.service';
 import { FilesService } from 'src/app/services/files/files.service';
 import { GlobalService } from 'src/app/services/global/global.service';
+import { LocalUnitBaseService } from 'src/app/services/local/local-unit-base/local-unit-base.service';
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 
@@ -44,7 +47,7 @@ import { ModalsService } from 'src/app/services/modals/modals.service';
     HeaderBarComponent,
     ReactiveFormsModule,
     IonCheckbox,
-    IonFooter
+    IonFooter,
   ],
   providers: [TitleCasePipe],
 })
@@ -61,7 +64,7 @@ export class MantUnitsPage implements OnInit {
     private _unit: UnitService,
     private _file: FilesService,
     private _title: TitleCasePipe,
-    private _global: GlobalService
+    private _global: GlobalService,
   ) {
     addIcons({ search });
 
@@ -108,6 +111,11 @@ export class MantUnitsPage implements OnInit {
       return false;
     }
 
+    if (this.form.get('equivalency')?.invalid) {
+      this._alert.showError('Equivalencia inválida');
+      return false;
+    }
+
     return true;
   }
 
@@ -123,14 +131,17 @@ export class MantUnitsPage implements OnInit {
     const unit: IUnit = {
       id: await this._localUnit.getNextID(),
       name: this._title.transform(this.form.get('name')!.value as string),
-      shortcut:  this.form.get('short')?.value ? (this.form.get('short')?.value as string).toUpperCase() : undefined,
+      shortcut: this.form.get('short')?.value
+        ? (this.form.get('short')?.value as string).toUpperCase()
+        : undefined,
       state: true,
       uploaded: States.NOT_INSERTED,
-      allowDecimals: this.form.get('allowDecimals')?.value || false
+      allowDecimals: this.form.get('allowDecimals')?.value || false,
     };
 
     if (!this.unit) {
-      const updated = (await this._unit.insert(unit)) ? States.SYNC : States.NOT_INSERTED;
+      const newUnit = await this._unit.insert(unit);
+      const updated = newUnit ? States.SYNC : States.NOT_INSERTED;
 
       unit.uploaded = updated;
       await this._localUnit
@@ -146,7 +157,9 @@ export class MantUnitsPage implements OnInit {
         });
     } else {
       unit.id = this.unit.id;
-      const updated = (await this._unit.update(unit)) ? States.SYNC : States.NOT_UPDATED;
+      const updated = (await this._unit.update(unit))
+        ? States.SYNC
+        : States.NOT_UPDATED;
       unit.uploaded = updated;
       await this._localUnit
         .update(unit)
@@ -190,7 +203,9 @@ export class MantUnitsPage implements OnInit {
       return;
 
     const disable = async (unit: IUnit) => {
-      const result = (await this._unit.delete(unit)) ? States.SYNC : States.NOT_DELETED;
+      const result = (await this._unit.delete(unit))
+        ? States.SYNC
+        : States.NOT_DELETED;
 
       unit.uploaded = result;
       await this._localUnit
@@ -207,7 +222,9 @@ export class MantUnitsPage implements OnInit {
 
     const activate = async (unit: IUnit) => {
       unit.state = true;
-      const result = (await this._unit.update(unit)) ? States.SYNC : States.NOT_UPDATED;
+      const result = (await this._unit.update(unit))
+        ? States.SYNC
+        : States.NOT_UPDATED;
 
       unit.uploaded = result;
       await this._localUnit

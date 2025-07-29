@@ -45,7 +45,8 @@ export const routes: Routes = [
   {
     path: 'consults/sells/:id',
     loadComponent: () => import('./pages/consults/sells/sells.page').then( m => m.SellsPage)
-  },  {
+  },
+  {
     path: 'cash-box',
     loadComponent: () => import('./pages/cash-box/cash-box.page').then( m => m.CashBoxPage)
   },
@@ -53,10 +54,9 @@ export const routes: Routes = [
     path: 'config',
     loadComponent: () => import('./pages/config/config.page').then( m => m.ConfigPage)
   },
-
-
-
-
-
+  {
+    path: 'inventory/products-purchase',
+    loadComponent: () => import('./pages/inventory/products-purchase/products-purchase.page').then( m => m.ProductsPurchasePage)
+  },
 
 ];

@@ -14,7 +14,7 @@ export class LocalInventoryCheckDetailsService extends InternalStorageCoreServic
 
   public async getByInventory(id: number){
     return (await this.getAll()).filter(detail => {
-      return detail.id.id_inventory_check == id
+      return detail.id.idInventoryCheck == id
     });
   }
 }

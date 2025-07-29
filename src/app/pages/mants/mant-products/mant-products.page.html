@@ -46,6 +46,19 @@
             <ion-icon name="search"></ion-icon>
           </ion-button>
         </div>
+        <div class="complex-input">
+          <ion-input
+            [disabled]="true"
+            labelPlacement="stacked"
+            placeholder="Seleccione una unidad base"
+            fill="outline"
+            label="UNIDAD BASE"
+            [value]="baseUnit?.name"
+          ></ion-input>
+          <ion-button (click)="searchUnit()">
+            <ion-icon name="search"></ion-icon>
+          </ion-button>
+        </div>
         @if(this.product){
         <ion-label
           >Estado: {{ this.product.state ? 'Activo' : 'Inactivo' }}</ion-label

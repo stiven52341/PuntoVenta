@@ -46,7 +46,7 @@ export class MantsPage implements OnInit {
           await this._router.navigate(['/mant/categories']);
         },
         image: '../../../assets/icon/category.png'
-      }
+      },
     ];
   }
 
