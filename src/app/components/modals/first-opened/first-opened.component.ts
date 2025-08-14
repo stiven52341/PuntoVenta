@@ -53,6 +53,8 @@ import { IInventoryIncomeDetail } from 'src/app/models/inventory-income-detail.m
 import { IInventoryIncome } from 'src/app/models/inventory-income.model';
 import { UnitBaseService } from 'src/app/services/api/unit-base/unit-base.service';
 import { LocalUnitBaseService } from 'src/app/services/local/local-unit-base/local-unit-base.service';
+import { InventoryService } from 'src/app/services/api/inventory/inventory.service';
+import { LocalInventoryService } from 'src/app/services/local/local-inventory/local-inventory.service';
 
 @Component({
   selector: 'app-first-opened',
@@ -95,6 +97,7 @@ export class FirstOpenedComponent implements OnInit {
   private _cashBoxApi = inject(CashBoxService);
   private _productPurhchase = inject(ProductPurchaseService);
   private _unitBase = inject(UnitBaseService);
+  private _inventory = inject(InventoryService);
 
   //Local
   private _categorySto = inject(LocalCategoriesService);
@@ -113,6 +116,7 @@ export class FirstOpenedComponent implements OnInit {
   private _cashBoxSto = inject(LocalCashBoxService);
   private _productPurchaseSto = inject(LocalProductPurchaseService);
   private _unitBaseSto = inject(LocalUnitBaseService);
+  private _inventorySto = inject(LocalInventoryService);
 
   constructor() {}
 
@@ -141,7 +145,8 @@ export class FirstOpenedComponent implements OnInit {
         this._purchaseApi.getAll(),
         this._cashBoxApi.getAll(),
         this._productPurhchase.getAll(),
-        this._unitBase.getAll()
+        this._unitBase.getAll(),
+        this._inventory.getAll()
       ])
     ).catch(async (err) => {
       this._alert.showError('Error descargando los datos');
@@ -170,6 +175,7 @@ export class FirstOpenedComponent implements OnInit {
     const cashBoxes = result[11] || [];
     const productPurchases = result[12] || [];
     const unitBases = result[13] || [];
+    const inventory = result[14] || [];
     
     imagesPros.map(
       (image) => (image.data = `data:image/png;base64,${image.data}`)
@@ -234,7 +240,8 @@ export class FirstOpenedComponent implements OnInit {
         setPurchases(purchases),
         this._cashBoxSto.set(cashBoxes),
         this._productPurchaseSto.set(productPurchases),
-        this._unitBaseSto.set(unitBases)
+        this._unitBaseSto.set(unitBases),
+        this._inventorySto.set(inventory)
       ])
     ).catch((err) => {
       this._alert.showError('Error guardando los datos');
