@@ -1,28 +1,21 @@
 <ion-header>
-  <app-header-bar
-    [loading]="loading"
-    [arrowBack]="true"
-    title="LISTA DE PRODUCTOS"
-    [isModal]="true"
-  ></app-header-bar>
+  <app-header-bar [loading]="loading" [arrowBack]="true" title="LISTA DE PRODUCTOS" [isModal]="true"></app-header-bar>
+  <ion-toolbar color="primary">
+    <ion-searchbar (ionInput)="onSearch($event)" animated="true" [debounce]="200"
+      placeholder="Puede buscar por código o nombre"></ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 <ion-content>
   <div class="content">
-    <ion-searchbar
-      (ionInput)="onSearch($event)"
-      animated="true"
-      [debounce]="200"
-      placeholder="Puede buscar por código o nombre"
-    ></ion-searchbar>
+
     <div class="products">
       <ion-list>
         @for(product of this.productsFiltered; track product.product.id){
         <ion-item (click)="onClick(product)">
-          <div
-            class="item-content"
-            [ngClass]="{ null: !product.product.state }"
-          >
-            <img src="{{ product.image }}" alt="" />
+          <div class="item-content" [ngClass]="{ null: !product.product.state }">
+            <div class="image">
+              <img src="{{ product.image }}" alt="" />
+            </div>
             <p>{{ product.product.id }}.</p>
             <p>{{ product.product.name }}</p>
             @if(!product.product.state){

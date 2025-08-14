@@ -21,7 +21,7 @@ import { search } from 'ionicons/icons';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
 import { States } from 'src/app/models/constants';
-import { IUnitBaseProduct } from 'src/app/models/unit-base-product.model';
+import { IUnitBase } from 'src/app/models/unit-base-product.model';
 import { IUnit } from 'src/app/models/unit.model';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { UnitBaseService } from 'src/app/services/api/unit-base/unit-base.service';
@@ -191,7 +191,7 @@ export class MantUnitsPage implements OnInit {
     this.unit = undefined;
   }
 
-  protected async deactivate() {
+  protected async setUnitState(action: 'enable' | 'disable' = 'disable') {
     if (!this.unit) return;
 
     if (
@@ -239,10 +239,13 @@ export class MantUnitsPage implements OnInit {
         });
     };
 
-    if (this.unit.state) {
-      await disable(this.unit);
-    } else {
-      await activate(this.unit);
+    switch(action){
+      case 'enable':
+        await activate(this.unit);
+        break;
+      case 'disable':
+        await disable(this.unit);
+        break;
     }
   }
 }

@@ -1,85 +1,51 @@
 <ion-header [translucent]="true">
-  <app-header-bar
-    title="PRECIOS"
-    [arrowBack]="true"
-    [isModal]="false"
-    [loading]="loading"
-    [buttons]="headerButtons"
-  ></app-header-bar>
+  <app-header-bar title="PRECIOS" [arrowBack]="true" [isModal]="false" [loading]="loading"
+    [buttons]="headerButtons"></app-header-bar>
 </ion-header>
 <ion-content [fullscreen]="true">
   <div class="content">
     <form>
       <div class="form-content">
         <div class="complex-input">
-          <ion-input
-            [disabled]="true"
-            labelPlacement="stacked"
-            placeholder="Seleccione un producto"
-            fill="outline"
-            name="product"
-            label="PRODUCTO"
-            [value]="product?.name || ''"
-          ></ion-input>
+          <ion-input [disabled]="true" labelPlacement="stacked" placeholder="Seleccione un producto" fill="outline"
+            name="product" label="PRODUCTO" [value]="product?.name || ''"></ion-input>
           <ion-button (click)="onSearchProduct()">
             <ion-icon name="search"></ion-icon>
           </ion-button>
         </div>
         <div class="complex-input">
-          <ion-input
-            [disabled]="true"
-            labelPlacement="stacked"
-            placeholder="Seleccione una unidad"
-            fill="outline"
-            name="unit"
-            label="UNIDAD"
-            [value]="unit?.name || ''"
-          ></ion-input>
+          <ion-input [disabled]="true" labelPlacement="stacked" placeholder="Seleccione una unidad" fill="outline"
+            name="unit" label="UNIDAD" [value]="unit?.name || ''"></ion-input>
           <ion-button (click)="onSearchUnit()">
             <ion-icon name="search"></ion-icon>
           </ion-button>
         </div>
         @if(showPrices){
         <div class="complex-input">
-          <ion-input
-            [disabled]="true"
-            labelPlacement="stacked"
-            placeholder="Seleccione un precio"
-            fill="outline"
-            name="unit"
-            label="MODIFICAR PRECIO"
-            [value]="selectedPrice?.id || ''"
-          ></ion-input>
+          <ion-input [disabled]="true" labelPlacement="stacked" placeholder="Seleccione un precio" fill="outline"
+            name="unit" label="MODIFICAR PRECIO" [value]="selectedPrice?.id || ''"></ion-input>
           <ion-button (click)="onSearchPrice()">
             <ion-icon name="search"></ion-icon>
           </ion-button>
         </div>
         }
-        <ion-input
-          #price
-          labelPlacement="stacked"
-          placeholder="Ingrese un precio"
-          fill="outline"
-          name="price"
-          label="PRECIO"
-          [value]="0"
-          type="number"
-          [min]="1"
-          [clearInput]="true"
-        ></ion-input>
-        <ion-input
-          labelPlacement="stacked"
-          placeholder="Ingrese una etiqueta"
-          fill="outline"
-          name="label"
-          label="ETIQUETA"
-          [(ngModel)]="label"
-          [counter]="true"
-          [maxlength]="50"
-        ></ion-input>
-        <ion-checkbox name="default-price" [(ngModel)]="defaultPrice" justify="start"
-          >Precio por defecto?</ion-checkbox
-        >
+        <ion-input #price labelPlacement="stacked" placeholder="Ingrese un precio" fill="outline" name="price"
+          label="PRECIO" [value]="0" type="number" [min]="1" [clearInput]="true"></ion-input>
+        <ion-input labelPlacement="stacked" placeholder="Ingrese una etiqueta" fill="outline" name="label"
+          label="ETIQUETA" [(ngModel)]="label" [counter]="true" [maxlength]="50"></ion-input>
+        <ion-checkbox name="default-price" [(ngModel)]="defaultPrice" justify="start">Precio por defecto?</ion-checkbox>
+
+        @if(unitBase){
+        <div class="equivalency">
+          <hr>
+          <ion-label><b>EQUIVALENCIA</b></ion-label>
+          <ion-input [disabled]="true" labelPlacement="stacked" fill="outline" name="unit-base" label="UNIDAD BASE"
+            [(ngModel)]="unitBase.name"></ion-input>
+          <ion-input #equivalency labelPlacement="stacked" label="EQUIVALENCIA" type="number" fill="outline"
+            name="equivalency" [value]="unitBaseRelation?.equivalency || 0" [min]="1" [clearInput]="true"></ion-input>
+        </div>
+        }
+
       </div>
     </form>
   </div>
@@ -87,16 +53,14 @@
 <ion-footer [translucent]="true">
   <div class="footer-content">
     @if(this.selectedPrice){
-      <ion-button (click)="onDeactivate()" color="danger">
-        @if(this.selectedPrice.state){
-          DESACTIVAR
-        }@else {
-          ACTIVAR
-        }
-      </ion-button>
+    <ion-button (click)="onDeactivate()" color="danger">
+      @if(this.selectedPrice.state){
+      DESACTIVAR
+      }@else {
+      ACTIVAR
+      }
+    </ion-button>
     }
-    <ion-button [disabled]="loading" (click)="onSave()"
-      ><ion-label>GUARDAR</ion-label></ion-button
-    >
+    <ion-button [disabled]="loading" (click)="onSave()"><ion-label>GUARDAR</ion-label></ion-button>
   </div>
 </ion-footer>

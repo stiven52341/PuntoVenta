@@ -71,11 +71,11 @@
 <ion-footer>
   <div class="footer-content">
     @if(this.product){
-    <ion-button (click)="onDeactivateProduct()" color="danger">
+    <ion-button [disabled]="loading" (click)="onDeactivateProduct()" color="danger">
       @if(this.product.state){ DESACTIVAR }@else { ACTIVAR }
     </ion-button>
     }
-    <ion-button (click)="onSave()">GUARDAR</ion-button>
+    <ion-button [disabled]="loading" (click)="onSave()">GUARDAR</ion-button>
   </div>
   <!-- <ion-toolbar color="primary">
     <ion-buttons slot="start">

@@ -17,11 +17,14 @@
     <ion-list>
       @for(unit of filteredUnits; track unit.id){
       <ion-item (click)="onClick(unit)">
-        <div class="item-content" [ngClass]="{'short': !unit.shortcut}">
-          <p>{{ unit.id }}.</p>
-          <p>{{ unit.name }}</p>
+        <div class="item-content">
+          <ion-label>{{ unit.id }}.</ion-label>
+          <ion-label>{{ unit.name }}</ion-label>
           @if(unit.shortcut){
-            <p>({{ unit.shortcut }})</p>
+            <ion-label>({{ unit.shortcut }})</ion-label>
+          }
+          @if(!unit.state){
+            <ion-label color="danger">(Anulado)</ion-label>
           }
 
         </div>

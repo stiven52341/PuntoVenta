@@ -162,7 +162,7 @@ export class MantProductsPage implements OnInit {
     this.form.get('desc')?.setValue(product.description || '');
 
     this.state = product.state;
-    this.baseUnit = await this._localUnit.get(product.baseUnit);
+    this.baseUnit = await this._localUnit.get(product.idBaseUnit);
 
     const productCategory = (await this._localProductCategory.getAll()).find(
       (proCa) => proCa.id.idProduct == product!.id
@@ -186,7 +186,7 @@ export class MantProductsPage implements OnInit {
       return false;
     }
 
-    if(!this.baseUnit){
+    if (!this.baseUnit) {
       this._alert.showError('DEBE ELEGIR UNA UNIDAD BASE');
       return false;
     }
@@ -215,14 +215,17 @@ export class MantProductsPage implements OnInit {
       description: (this.form.get('desc')?.value || ('' as string)).trim(),
       state: true,
       uploaded: States.NOT_INSERTED,
-      baseUnit: this.baseUnit!.id as number
+      idBaseUnit: this.baseUnit!.id as number
     };
 
     if (this.product) {
       //MODIFYING
       product.id = this.product.id;
+      
 
-      await this.syncCategory(product);
+      this.syncCategory(product).catch(() => {
+        console.log("Error while saving product-category");
+      });
 
       const response = (await this._products.update(product))
         ? States.SYNC
@@ -271,7 +274,13 @@ export class MantProductsPage implements OnInit {
       //NEW
       product.id = await this._localProducts.getNextID();
       const response = await this._products.insert(product);
-      await this.syncCategory(product);
+
+      try {
+        await this.syncCategory(product);
+      } catch (error) {
+        console.log("Error while saving product-category");
+      }
+
       let photoInserted: string | number | Object | undefined;
 
       if (response && this.image != this.noImage) {
@@ -408,6 +417,33 @@ export class MantProductsPage implements OnInit {
   private async syncCategory(product: IProduct) {
     if (!this.category) return;
 
+    const insertFunc = async (relation: IProductCategory) => {
+      const result = (await this._productCategory.insert(relation))
+        ? States.SYNC
+        : States.NOT_INSERTED;
+      productCategory.uploaded = result;
+
+      await this._localProductCategory.insert(relation).catch((err) => {
+        throw err;
+      });
+    }
+
+    const updateFunc = async (relation: IProductCategory) => {
+      const result = (await this._productCategory.update(relation))
+        ? States.SYNC
+        : States.NOT_UPDATED;
+      productCategory.uploaded = result;
+
+      await this._localProductCategory.update(relation).catch((err) => {
+        throw err;
+      });
+    }
+
+    const old = await this._localProductCategory.get({
+      idProduct: product.id as number,
+      idCategory: this.category.id as number
+    });
+
     const productCategory: IProductCategory = {
       id: {
         idCategory: this.category.id as number,
@@ -417,18 +453,15 @@ export class MantProductsPage implements OnInit {
       uploaded: States.NOT_INSERTED,
     };
 
-    const result = (await this._productCategory.insert(productCategory))
-      ? States.SYNC
-      : States.NOT_INSERTED;
-    productCategory.uploaded = result;
-
-    await this._localProductCategory.insert(productCategory).catch((err) => {
-      throw err;
-    });
+    if (!old) {
+      await insertFunc(productCategory);
+    } else {
+      await updateFunc(productCategory);
+    }
   }
 
-  protected async searchUnit(){
+  protected async searchUnit() {
     const result = await this._modal.showUnitsList();
-    if(result) this.baseUnit = result;
+    if (result) this.baseUnit = result;
   }
 }

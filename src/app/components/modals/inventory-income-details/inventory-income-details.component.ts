@@ -81,7 +81,7 @@ export class InventoryIncomeDetailsComponent implements OnInit {
       );
       const unit = data[0];
       const product = data[1];
-      const baseUnit = await this._unit.get(product!.baseUnit);
+      const baseUnit = await this._unit.get(product!.idBaseUnit);
       this.detailsInfo.push({
         detail: detail,
         image: '../../../../assets/icon/loading.gif',

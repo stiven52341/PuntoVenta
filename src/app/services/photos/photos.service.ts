@@ -13,7 +13,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
   providedIn: 'root',
 })
 export class PhotosService {
-  constructor(private _alert: AlertsService, private _file: FilesService) {}
+  constructor(private _alert: AlertsService, private _file: FilesService) { }
 
   public async createAlbumn(albumn: PhotoKeys) {
     if (!(await this.requestGalleryAccess())) return;
@@ -64,14 +64,17 @@ export class PhotosService {
     name: string,
     album: PhotoKeys
   ): Promise<string | undefined> {
-    if (!(await this.requestGalleryAccess())) return;
+    try {
+      if (!(await this.requestGalleryAccess())) return;
 
-    const path = `/Android/media/${
-      (await App.getInfo()).id
-    }/${album}/${name}.png`;
-    const image = await this._file.readImages(path, Directory.ExternalStorage);
-    if (!image) return undefined;
-    return 'data:image/png;base64,' + image.toString();
+      const path = `/Android/media/${(await App.getInfo()).id
+        }/${album}/${name}.png`;
+      const image = await this._file.readImages(path, Directory.ExternalStorage);
+      if (!image) return undefined;
+      return 'data:image/png;base64,' + image.toString();
+    } catch (error) {
+      return undefined;
+    }
   }
 
   public async requestGalleryAccess(): Promise<boolean> {
@@ -132,8 +135,8 @@ export class PhotosService {
   }
 
   public base64ToBlob(base64: string, contentType: string): Blob {
-    
-    const byteChars = atob(base64.replace('data:image/png;base64,',''));
+
+    const byteChars = atob(base64.replace('data:image/png;base64,', ''));
     const byteNumbers = new Array(byteChars.length);
     for (let i = 0; i < byteChars.length; i++) {
       byteNumbers[i] = byteChars.charCodeAt(i);

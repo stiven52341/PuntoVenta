@@ -1,13 +1,16 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import {
   IonContent,
   IonHeader,
   IonSearchbar,
   IonLabel,
-  IonSpinner,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  InfiniteScrollCustomEvent, IonToolbar } from '@ionic/angular/standalone';
+  InfiniteScrollCustomEvent, IonToolbar,
+  IonRefresher,
+  IonRefresherContent,
+  RefresherCustomEvent
+} from '@ionic/angular/standalone';
 import { ProductCardComponent } from 'src/app/components/product-card/product-card.component';
 import { ICategory } from 'src/app/models/category.model';
 import { CategoryCardComponent } from 'src/app/components/category-card/category-card.component';
@@ -24,7 +27,6 @@ import { LocalProductCategoryService } from 'src/app/services/local/local-produc
 import { IProductCategory } from 'src/app/models/product-category.model';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { GlobalService } from 'src/app/services/global/global.service';
-import { ChangeDetectorRef } from '@angular/core';
 
 interface IProductDetail {
   product: IProduct;
@@ -37,7 +39,7 @@ interface IProductDetail {
   templateUrl: './products.page.html',
   styleUrls: ['./products.page.scss'],
   standalone: true,
-  imports: [IonToolbar, 
+  imports: [IonToolbar,
     IonLabel,
     CategoryCardComponent,
     IonSearchbar,
@@ -45,9 +47,10 @@ interface IProductDetail {
     IonContent,
     HeaderBarComponent,
     IonHeader,
-    IonSpinner,
     IonInfiniteScroll,
     IonInfiniteScrollContent,
+    IonRefresher,
+    IonRefresherContent
   ],
 })
 export class ProductsPage implements OnInit {
@@ -70,6 +73,8 @@ export class ProductsPage implements OnInit {
 
   protected onSelectCategory = new EventEmitter<ICategory>();
   protected selectedCategory?: ICategory;
+  private readonly noImage: string = '../../../assets/no-image.png';
+  @ViewChild('searchBar', {static: false}) searchBar!: IonSearchbar;
 
   // private generating: boolean = false;
 
@@ -81,14 +86,11 @@ export class ProductsPage implements OnInit {
     private _unitProduct: LocalUnitProductsService,
     private _productCategory: LocalProductCategoryService,
     private _global: GlobalService,
-    private _cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this._global.listenToChanges().subscribe(async () => {
-      this.loading = true;
-      await this.onInit();
-      this.loading = false;
+      await this.onReset();
     });
   }
 
@@ -98,7 +100,7 @@ export class ProductsPage implements OnInit {
   }
 
   private async loadProducts() {
-    
+
     this.categories = [];
     this.products = [];
     this.productsFiltered = [];
@@ -127,7 +129,7 @@ export class ProductsPage implements OnInit {
       this._photo
         .getPhoto(category.category.id.toString(), PhotoKeys.CATEGORIES_ALBUM)
         .then((image) => {
-          category.image = image || '../../../assets/no-image.png';
+          category.image = image || this.noImage;
         });
     }
 
@@ -177,7 +179,7 @@ export class ProductsPage implements OnInit {
       if (!product.image || product.image == '') {
         product.image = '../../../assets/icon/loading.gif';
         this.getPhotoProduct(product.product).then((data) => {
-          product.image = data;
+          product.image = data || this.noImage;
         });
       }
     }
@@ -256,5 +258,13 @@ export class ProductsPage implements OnInit {
     setTimeout(() => {
       event.target.complete();
     }, 500);
+  }
+
+  protected async onReset($event?: RefresherCustomEvent) {
+    this.loading = true;
+    this.searchBar.value = '';
+    await this.onInit();
+    this.loading = false;
+    $event?.target.complete();
   }
 }

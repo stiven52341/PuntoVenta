@@ -7,5 +7,7 @@ export interface IInventoryIncomeDetail extends IEntity<{
   }>{
   amount: number,
   cost: number,
-  amountBaseUnit: number
+  amountBaseUnit?: number,
+  idBaseUnit?: number,
+  equivalencyUsed?: number
 }

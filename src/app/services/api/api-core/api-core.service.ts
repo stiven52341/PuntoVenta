@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom, timeout } from 'rxjs';
 import { ApiKeys, States } from 'src/app/models/constants';
@@ -20,11 +20,12 @@ export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity
   protected readonly _errors = inject(ErrorsService);
   protected readonly timeout = 10000;
 
-  constructor(protected path: ApiKeys) {}
+  constructor(protected path: ApiKeys) {
+  }
 
   public async getAll(): Promise<Array<T> | undefined> {
     const result = await firstValueFrom(
-      this._http.get(this.path, { responseType: 'text' })
+      this._http.get(this.path, { responseType: 'json' })
     ).catch((err) => {
       console.log(`Error while getting all: ${JSON.stringify(err)}`);
       this._file.saveError(err);
@@ -34,24 +35,22 @@ export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity
 
     if (!result) return undefined;
 
-    const data = JSON.parse(result) as Array<T>;
+    const data = result as Array<T>;
     data.map((value) => (value.uploaded = States.DOWNLOADED));
     return data;
   }
 
   public async get(id: U): Promise<T | undefined> {
-    let result: Object | void | undefined = undefined;
+    let result: T | undefined = undefined;
     if (id instanceof Object) {
-      const newId = JSON.stringify(id);
-
       result = await firstValueFrom(
-        this._http.post(`${this.path}/get`, newId)
+        this._http.post(`${this.path}/get`, id)
       ).catch((err) => {
         console.log(`Error while getting: ${JSON.stringify(err)}`);
         this._file.saveError(err);
         this._errors.saveErrors(err);
         throw new Error(err);
-      });
+      }) as T;
     } else {
       result = await firstValueFrom(
         this._http.get(`${this.path}/get?id=${id}`)
@@ -60,7 +59,7 @@ export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity
         this._file.saveError(err);
         this._errors.saveErrors(err);
         throw new Error(err);
-      });
+      }) as T;
     }
 
     if (!result) return undefined;

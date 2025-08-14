@@ -13,16 +13,14 @@
       width: 100%;
       display: grid;
       gap: 1em;
-      grid-template-columns: 1em 5fr 2fr;
+      grid-template-columns: 1em 5fr 2fr 2fr;
       padding: 1em 0;
+      justify-content: center;
+      align-items: center;
 
-      p{
+      ion-label{
         margin: 0;
       }
-    }
-
-    .short{
-      grid-template-columns: 1em 5fr;
     }
   }
 }

@@ -5,7 +5,6 @@ import { IonContent, IonHeader } from '@ionic/angular/standalone';
 import { ButtonListComponent } from 'src/app/components/button-list/button-list.component';
 import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
-import { ModalsService } from 'src/app/services/modals/modals.service';
 
 @Component({
   selector: 'app-mants',
@@ -17,7 +16,7 @@ import { ModalsService } from 'src/app/services/modals/modals.service';
 export class MantsPage implements OnInit {
   protected readonly buttons: Array<IButton>;
 
-  constructor(private _router: Router, private _modal: ModalsService) {
+  constructor(private _router: Router) {
     this.buttons = [
       {
         title: 'PRODUCTOS',

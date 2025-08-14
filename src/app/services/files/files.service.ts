@@ -103,12 +103,14 @@ export class FilesService {
         path: fileName,
         directory: directory,
         // encoding: Encoding.UTF8
+      }).catch(err => {
+        throw err;
       });
 
       return result.data;
     } catch (error) {
       if (
-        String(error).toLocaleLowerCase().trim().includes('file does not exist')
+        String(error).toLocaleLowerCase().trim().includes('does not exist')
       ) {
         await this.write('', FilesKeys.ERRORS);
       }

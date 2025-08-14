@@ -25,6 +25,12 @@ import { IButton } from 'src/app/models/button.model';
 import { States } from 'src/app/models/constants';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { TitleCasePipe } from '@angular/common';
+import { IUnitBase } from 'src/app/models/unit-base-product.model';
+import { LocalUnitBaseService } from 'src/app/services/local/local-unit-base/local-unit-base.service';
+import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
+import { firstValueFrom, forkJoin } from 'rxjs';
+import { UnitBaseService } from 'src/app/services/api/unit-base/unit-base.service';
+import { ToastService } from 'src/app/services/toast/toast.service';
 
 @Component({
   selector: 'app-mant-prices',
@@ -55,10 +61,13 @@ export class MantPricesPage implements OnInit {
   protected defaultPrice: boolean = false;
   protected headerButtons: Array<IButton>;
   protected label?: string;
+  protected unitBaseRelation?: IUnitBase;
+  protected unitBase?: IUnit;
 
   private fieldsFullfilled: EventEmitter<void>;
 
-  @ViewChild('price', { static: true }) priceInput!: IonInput;
+  @ViewChild('price', { static: false }) priceInput!: IonInput;
+  @ViewChild('equivalency', { static: false }) equivalencyInput!: IonInput;
 
   constructor(
     private _modal: ModalsService,
@@ -67,7 +76,11 @@ export class MantPricesPage implements OnInit {
     private _prices: UnitProductService,
     private _file: FilesService,
     private _global: GlobalService,
-    private _title: TitleCasePipe
+    private _title: TitleCasePipe,
+    private _localUnitBase: LocalUnitBaseService,
+    private _localUnit: LocalUnitsService,
+    private _unitBase: UnitBaseService,
+    private _toast: ToastService
   ) {
     addIcons({ search });
 
@@ -85,18 +98,30 @@ export class MantPricesPage implements OnInit {
 
   ngOnInit() {
     this.fieldsFullfilled.subscribe(async () => {
+      if (!this.product || !this.unit) return;
       this.loading = true;
       this.prices = (await this._localPrices.getAll()).filter(
         (price) =>
           +price.idProduct == +this.product!.id &&
           +price.idUnit == +this.unit!.id
       );
-      this.prices.length > 0
-        ? (this.showPrices = true)
-        : (this.showPrices = false);
+      this.showPrices = this.prices.length > 0;
 
-      this._localPrices.get
-      
+      if (this.product.idBaseUnit && +this.unit.id != +this.product.idBaseUnit) {
+        const unitBaseData = await firstValueFrom(forkJoin([
+          this._localUnit.get(this.product.idBaseUnit),
+          this._localUnitBase.get({
+            idUnit: this.unit.id as number,
+            idUnitBase: this.product.idBaseUnit
+          })
+        ]));
+        this.unitBase = unitBaseData[0]
+        this.unitBaseRelation = unitBaseData[1];
+      }else{
+        this.unitBase = undefined;
+        this.unitBaseRelation = undefined;
+      }
+
       this.loading = false;
     });
   }
@@ -104,17 +129,26 @@ export class MantPricesPage implements OnInit {
   protected async onSearchProduct() {
     const result = (await this._modal.showProductListModal())?.product;
     if (!result) return;
+    if (!result.state) {
+      this._alert.showError('No puede seleccionar un producto anulado');
+      return;
+    }
 
     this.product = result;
     if (this.unit) this.fieldsFullfilled.emit();
     this.priceInput.value = '0';
     this.label = '';
     this.selectedPrice = undefined;
+    this.verifyProductPrices();
   }
 
   protected async onSearchUnit() {
     const result = await this._modal.showUnitsList();
     if (!result) return;
+    if (!result.state) {
+      this._alert.showError('No puede seleccionar una unidad anulada');
+      return;
+    }
 
     this.unit = result;
     if (this.product) this.fieldsFullfilled.emit();
@@ -132,7 +166,7 @@ export class MantPricesPage implements OnInit {
     this.defaultPrice = result.isDefault;
   }
 
-  protected checkForm(): boolean {
+  private checkForm(): boolean {
     if (!this.product) {
       this._alert.showError('Debe seleccionar un producto');
       return false;
@@ -151,6 +185,15 @@ export class MantPricesPage implements OnInit {
     if (this.label && this.label.length > 50) {
       this._alert.showError('Etiqueta inválida');
       return false;
+    }
+
+
+    if (this.product.idBaseUnit != this.unit.id) {
+      const equivalency = this.equivalencyInput.value as number;
+      if (equivalency <= 0) {
+        this._alert.showError('Equivalencia inválida');
+        return false;
+      }
     }
 
     return true;
@@ -184,6 +227,7 @@ export class MantPricesPage implements OnInit {
 
       this.loading = true;
       const updated = (await this._prices.insert(newPrice)) ? true : false;
+      await this.syncEquivalency();
 
       newPrice.uploaded = updated ? States.SYNC : States.NOT_INSERTED;
       await this._localPrices
@@ -210,6 +254,7 @@ export class MantPricesPage implements OnInit {
       this.loading = true;
       newPrice.id = this.selectedPrice.id;
       const updated = (await this._prices.update(newPrice)) ? true : false;
+      await this.syncEquivalency();
       newPrice.uploaded = updated ? States.SYNC : States.NOT_UPDATED;
       await this._localPrices
         .update(newPrice)
@@ -311,5 +356,81 @@ export class MantPricesPage implements OnInit {
     this.selectedPrice = undefined;
     this.showPrices = false;
     this.prices = [];
+    this.unitBase = undefined;
+    this.unitBaseRelation = undefined;
+  }
+
+  private async syncEquivalency() {
+    if (!this.product || !this.unit || +this.product.idBaseUnit == +this.unit.id) return;
+
+    const equivalency: IUnitBase = {
+      id: {
+        idUnit: this.unit.id as number,
+        idUnitBase: this.product.idBaseUnit
+      },
+      equivalency: this.equivalencyInput!.value as number,
+      state: true,
+      uploaded: States.NOT_INSERTED
+    };
+
+    const save = async (equivalency: IUnitBase, action: 'insert' | 'update') => {
+      let result: States = States.NOT_INSERTED;
+      switch (action) {
+        case 'insert':
+          result = await this._unitBase.insert(equivalency) ?
+            States.SYNC : States.NOT_INSERTED;
+
+          equivalency.uploaded = result;
+          await this._localUnitBase.insert(equivalency);
+          break;
+        case 'update':
+          result = await this._unitBase.update(equivalency) ?
+            States.SYNC : States.NOT_UPDATED;
+
+          equivalency.uploaded = result;
+          await this._localUnitBase.update(equivalency);
+          break;
+      }
+    }
+
+    if (this.unitBaseRelation) {
+      await save(equivalency, 'update');
+    } else {
+      await save(equivalency, 'insert');
+    }
+  }
+
+  private async verifyProductPrices() {
+
+    if (!this.product) return false;
+    const result = await this._localPrices.getBaseProductPrice(this.product.id as number);
+
+    if (result == undefined) {
+      this._alert.showWarning(
+        `El product <b>${this.product!.name}</b> no tiene unidad base definida.
+              Es recomendable que vaya a mantenimiento de productos y
+              defina la unidad base para el producto en cuestión.
+              `
+      );
+      return false;
+    }
+    if (result.length == 0) {
+      const unitBase = await this._localUnit.get(this.product.idBaseUnit);
+      const resultQuestion = await this._alert.showConfirm(
+        'ADVERTENCIA',
+        `El producto <b>${this.product!.name}</b> no tiene precios definidos para
+          la unidad base (<b>${unitBase!.name}</b>).
+          Es recomendable que cree al menos un precio en unidad base para el producto.<br>
+          <b>¿Quiere hacerlo ahora?</b>
+        `, 'warning'
+      );
+      if(!resultQuestion) return false;
+      this.unit = unitBase;
+      this.fieldsFullfilled.emit();
+      this._toast.showToast(`Unidad '${this.unit!.name}' seleccionada`);
+
+      return false;
+    }
+    return true;
   }
 }

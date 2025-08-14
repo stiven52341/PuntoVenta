@@ -12,33 +12,6 @@ export class InventoryService extends ApiCoreService<IInventory> {
     super(ApiKeys.INVENTORY);
   }
 
-  public async getExistence(idProduct: number): Promise<IInventory | undefined>{
-    const result = await firstValueFrom(this._http.get(this.path + '/getExistence', {
-      params: {
-        'idProduct': idProduct
-      }
-    })).catch(err => {
-      throw err;
-    });
-
-    return result as IInventory;
-  }
-
-  public override async getAll(): Promise<Array<IInventory> | undefined> {
-    throw new Error('Not implemented');
-  }
-
-  public override async get(id: number): Promise<IInventory | undefined> {
-    throw new Error('Not implemented');
-  }
-
-  public override async getByParam(
-    param: string,
-    value: string | number | Object
-  ): Promise<Array<IInventory> | undefined> {
-    throw new Error("Not implemented");
-  }
-
   public override async insert(
     object: IInventory
   ): Promise<number | undefined> {

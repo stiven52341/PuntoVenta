@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
-import { IUnitBase } from 'src/app/models/unit-base-product.model';
+import { IInventory } from 'src/app/models/inventory.model';
 import { StorageKeys } from 'src/app/models/constants';
 
 @Injectable({
   providedIn: 'root'
 })
-export class LocalUnitBaseService extends InternalStorageCoreService<IUnitBase>{
+export class LocalInventoryService extends InternalStorageCoreService<IInventory> {
 
   constructor() {
-    super(StorageKeys.UNIT_BASE);
+    super(StorageKeys.INVENTORY);
   }
 }

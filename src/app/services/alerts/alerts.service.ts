@@ -48,14 +48,14 @@ export class AlertsService {
   }
 
   public async showError(message: string) {
-    await this.showAlert('ERROR', message, '../../../assets/icon/error.png');
+    await this.showAlert('ERROR', message, IMAGES.ERROR);
   }
 
   public async showWarning(message: string) {
     await this.showAlert(
       'ADVERTENCIA',
       message,
-      '../../../assets/icon/warning.png'
+      IMAGES.WARNING
     );
   }
 
@@ -63,23 +63,37 @@ export class AlertsService {
     await this.showAlert(
       'INFORMACIÓN',
       message,
-      '../../../assets/icon/info.png'
+      IMAGES.WARNING
     );
   }
 
   public async showSuccess(message: string) {
-    await this.showAlert('ÉXITO', message, '../../../assets/icon/success.png');
+    await this.showAlert('ÉXITO', message, IMAGES.SUCCESS);
   }
 
   public async showConfirm(
     title: string = 'CONFIRME',
-    body: string
+    body: string,
+    image: 'ask' | 'warning' = 'ask'
   ): Promise<boolean> {
     const close = async (val: boolean) => {
       this.alert!.dismiss(val);
     };
 
-    return await this.showAlert(title, body, '../../../assets/icon/ask.png', [
+    let imageChosen = '';
+    switch(image){
+      case 'ask':
+        imageChosen = IMAGES.ASK;
+        break;
+      case 'warning':
+        imageChosen = IMAGES.WARNING;
+        break;
+      default:
+        imageChosen = IMAGES.ASK;
+        break;
+    }
+
+    return await this.showAlert(title, body, imageChosen, [
       {
         text: 'SÍ',
         handler() {
@@ -112,4 +126,12 @@ export class AlertsService {
 
     return await this.showAlert(title, info, undefined, buttons);
   }
+}
+
+enum IMAGES {
+  ERROR = '../../../assets/icon/error.png',
+  WARNING = '../../../assets/icon/warning.png',
+  INFO = '../../../assets/icon/info.png',
+  SUCCESS = '../../../assets/icon/success.png',
+  ASK = '../../../assets/icon/ask.png'
 }

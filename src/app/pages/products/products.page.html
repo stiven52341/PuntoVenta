@@ -6,6 +6,7 @@
   ></app-header-bar>
   <ion-toolbar color="primary">
     <ion-searchbar
+      #searchBar
       animated="true"
       placeholder="Buscar producto"
       (ionInput)="search($event)"
@@ -15,6 +16,9 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="onReset($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <div class="content">
     
     <div class="category-part">

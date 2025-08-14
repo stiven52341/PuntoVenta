@@ -27,6 +27,8 @@ import { LocalCashBoxService } from '../local/local-cash-box/local-cash-box.serv
 import { CashBoxService } from '../api/cash-box/cash-box.service';
 import { LocalUnitBaseService } from '../local/local-unit-base/local-unit-base.service';
 import { UnitBaseService } from '../api/unit-base/unit-base.service';
+import { LocalPurchaseDetailService } from '../local/local-purchase-detail/local-purchase-detail.service';
+import { InternalStorageCoreService } from '../local/internal-storage-core/internal-storage-core.service';
 
 @Injectable({
   providedIn: 'root',
@@ -50,6 +52,7 @@ export class GlobalService {
   private _localUnitProduct = inject(LocalUnitProductsService);
   private _localCashbox = inject(LocalCashBoxService);
   private _localUnitBase = inject(LocalUnitBaseService);
+  private _localPurchaseDetails = inject(LocalPurchaseDetailService);
 
   //Api
   private _categories = inject(CategoryService);
@@ -68,7 +71,7 @@ export class GlobalService {
   private _files = inject(FilesService);
   private update = new EventEmitter<void>();
 
-  constructor() {}
+  constructor() { }
 
   public async SyncData(): Promise<boolean> {
     const results = await firstValueFrom(
@@ -85,7 +88,8 @@ export class GlobalService {
         this._localUnit.getAll(),
         this._localUnitProduct.getAll(),
         this._localCashbox.getAll(),
-        this._localUnitBase.getAll()
+        this._localUnitBase.getAll(),
+        this._localPurchaseDetails.getAll()
       ])
     );
 
@@ -143,13 +147,23 @@ export class GlobalService {
       return value.uploaded != States.SYNC && value.uploaded != States.DOWNLOADED
     });
 
-    for(const check of inventoryChecks){
+    const purchasesDetails = results[13].filter((value) => {
+      return value.uploaded != States.SYNC && value.uploaded != States.DOWNLOADED;
+    });
+
+    for (const purchase of purchases) {
+      purchase.details = purchasesDetails.filter(detail => {
+        return +detail.id.idPurchase == +purchase.id
+      });
+    }
+
+    for (const check of inventoryChecks) {
       check.details = inventoryCheckDetails.filter(detail => {
         return detail.id.idInventoryCheck == check.id
       });
     }
 
-    for(const income of inventoryIncomes){
+    for (const income of inventoryIncomes) {
       income.details = inventoryIncomeDetails.filter(detail => {
         return detail.id.idInventoryIncome == income.id
       });
@@ -157,10 +171,10 @@ export class GlobalService {
 
     //Most important values are synced first...
     await firstValueFrom(forkJoin([
-      this.syncValues(categories, this._categories),
-      this.syncValues(currencies, this._currencies),
-      this.syncValues(products, this._products),
-      this.syncValues(units, this._unit),
+      this.syncValues(categories, this._categories, this._localCategories),
+      this.syncValues(currencies, this._currencies, this._localCurrencies),
+      this.syncValues(products, this._products, this._localProducts),
+      this.syncValues(units, this._unit, this._localUnit),
     ])).catch(err => {
       this._files.saveError(err);
       return false;
@@ -168,17 +182,17 @@ export class GlobalService {
 
     //Then, 2nd dependencial data is synced
     await firstValueFrom(forkJoin([
-      this.syncValues(unitProducts, this._unitProduct),
-      this.syncValues(unitBases, this._unitBase)
+      this.syncValues(unitProducts, this._unitProduct, this._localUnitProduct),
+      this.syncValues(unitBases, this._unitBase, this._localUnitBase)
     ]));
 
     //At the end, most dependencional data is synced
     await firstValueFrom(forkJoin([
-      this.syncValues(inventoryChecks, this._inventoryCheck),
-      this.syncValues(inventoryIncomes, this._inventoryIncomes),
-      this.syncValues(productCategories, this._productCategories),
-      this.syncValues(purchases, this._purchases),
-      this.syncValues(cashboxes, this._cashbox),
+      this.syncValues(inventoryChecks, this._inventoryCheck, this._localInventoryCheck),
+      this.syncValues(inventoryIncomes, this._inventoryIncomes, this._localInventoryIncome),
+      this.syncValues(productCategories, this._productCategories, this._localProductCategories),
+      this.syncValues(purchases, this._purchases, this._localPurchase),
+      this.syncValues(cashboxes, this._cashbox, this._localCashbox),
     ])).catch(err => {
       this._files.saveError(err);
       return false;
@@ -189,24 +203,27 @@ export class GlobalService {
 
   private async syncValues(
     values: Array<IEntity<any>>,
-    service: ApiCoreService<IEntity<any>>
+    apiService: ApiCoreService<IEntity<any>>,
+    localService: InternalStorageCoreService<IEntity<any>>
   ) {
     if (values.length == 0) return;
 
     for (const value of values) {
       switch (value.uploaded) {
         case States.NOT_INSERTED:
-          await service.insert(value);
+          await apiService.insert(value);
           break;
         case States.NOT_UPDATED:
-          service.update(value);
+          await apiService.update(value);
           break;
         case States.NOT_DELETED:
-          service.delete(value);
+          await apiService.delete(value);
           break;
         default:
           throw new Error('State not valid');
       }
+      value.uploaded = States.SYNC
+      await localService.update(value);
     }
   }
 

@@ -1,13 +1,16 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { StorageKeys } from 'src/app/models/constants';
 import { firstValueFrom, forkJoin } from 'rxjs';
+import { LocalProductsService } from '../local-products/local-products.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocalUnitProductsService extends InternalStorageCoreService<IUnitProduct> {
+  private _localProduct = inject(LocalProductsService);
+
   constructor() {
     super(StorageKeys.UNIT_PRODUCTS);
   }
@@ -47,5 +50,27 @@ export class LocalUnitProductsService extends InternalStorageCoreService<IUnitPr
     if(index == -1) throw new Error("Not found");
     data[index] = obj;
     await this._storage.set(this.key, data);
+  }
+
+  public async getBaseProductPrice(id: number): Promise<Array<IUnitProduct> | undefined> {
+    const data = await firstValueFrom(forkJoin([
+      this.getAll(),
+      this._localProduct.get(id)
+    ]));
+
+    const localprices = data[0];
+    const product = data[1];
+
+    if(!product?.idBaseUnit){
+      return undefined;
+    }
+
+    const prices: Array<IUnitProduct> = [];
+    localprices.forEach(price => {
+      if(+price.idProduct == id && +price.idUnit == +product.idBaseUnit){
+        prices.push(price);
+      }
+    });
+    return prices;
   }
 }
