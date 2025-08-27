@@ -11,25 +11,27 @@ export abstract class InternalStorageCoreService<
   T extends IEntity<U>,
   U = T extends IEntity<infer X> ? X : never
 > {
-  protected _storage = inject(Storage);
+  protected static _storage: Storage;
   protected _file = inject(FilesService);
 
   constructor(protected key: StorageKeys) {
+    InternalStorageCoreService._storage = inject(Storage);
     this.initStorage();
   }
 
   public async initStorage() {
-    await this._storage.create();
+
+    await InternalStorageCoreService._storage.create();
   }
 
   public async getAll(): Promise<Array<T>> {
-    return ((await this._storage.get(this.key)) as Array<T>) || [];
+    return ((await InternalStorageCoreService._storage.get(this.key)) as Array<T>) || [];
   }
 
   public async insert(obj: T) {
     const valores = await this.getAll();
     valores.push(obj);
-    await this._storage.set(this.key, valores);
+    await InternalStorageCoreService._storage.set(this.key, valores);
   }
 
   public async get(id: U) {
@@ -64,7 +66,7 @@ export abstract class InternalStorageCoreService<
     if (index == -1) throw new Error('Not found');
     valores[index] = obj;
 
-    await this._storage.set(this.key, valores);
+    await InternalStorageCoreService._storage.set(this.key, valores);
   }
 
   public async delete(obj: T) {
@@ -83,11 +85,11 @@ export abstract class InternalStorageCoreService<
     });
     if (index == -1) throw new Error('Not found');
     valores.splice(index, 1);
-    await this._storage.set(this.key, valores);
+    await InternalStorageCoreService._storage.set(this.key, valores);
   }
 
   public async set(objs: Array<T>) {
-    await this._storage.set(this.key, JSON.parse(JSON.stringify(objs)));
+    await InternalStorageCoreService._storage.set(this.key, JSON.parse(JSON.stringify(objs)));
   }
 
   public async getNextID(): Promise<number> {
@@ -102,5 +104,14 @@ export abstract class InternalStorageCoreService<
   public async deactivate(obj: T) {
     obj.state = false;
     await this.update(obj);
+  }
+
+  public static async getAllSavedData(): Promise<string>{
+    const all: Record<string, any> = {};
+    // storage.forEach returns a Promise<void>
+    await InternalStorageCoreService._storage.forEach((value, key) => {
+      all[key] = value;
+    });
+    return JSON.stringify(all);
   }
 }

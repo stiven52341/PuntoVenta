@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
-import { StorageKeys } from 'src/app/models/constants';
+import { States, StorageKeys } from 'src/app/models/constants';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { LocalProductsService } from '../local-products/local-products.service';
 
@@ -16,6 +16,7 @@ export class LocalUnitProductsService extends InternalStorageCoreService<IUnitPr
   }
 
   public override async insert(obj: IUnitProduct) {
+
     if (obj.isDefault) {
 
       const prices = (await this.getAll()).filter(
@@ -31,7 +32,7 @@ export class LocalUnitProductsService extends InternalStorageCoreService<IUnitPr
 
     const oldValues = await this.getAll();
     oldValues.push(obj);
-    await this._storage.set(this.key, oldValues);
+    await InternalStorageCoreService._storage.set(this.key, oldValues);
   }
 
   public override async update(obj: IUnitProduct) {
@@ -49,7 +50,7 @@ export class LocalUnitProductsService extends InternalStorageCoreService<IUnitPr
     const index = data.findIndex(val => val.id == obj.id);
     if(index == -1) throw new Error("Not found");
     data[index] = obj;
-    await this._storage.set(this.key, data);
+    await InternalStorageCoreService._storage.set(this.key, data);
   }
 
   public async getBaseProductPrice(id: number): Promise<Array<IUnitProduct> | undefined> {
@@ -67,10 +68,58 @@ export class LocalUnitProductsService extends InternalStorageCoreService<IUnitPr
 
     const prices: Array<IUnitProduct> = [];
     localprices.forEach(price => {
-      if(+price.idProduct == id && +price.idUnit == +product.idBaseUnit){
+      if(product?.idBaseUnit && +price.idProduct == id && +price.idUnit == +product.idBaseUnit){
         prices.push(price);
       }
     });
     return prices;
+  }
+
+  public async checkProductPriceExistence(
+    idProduct: number, idUnit: number, price: number
+  ): Promise<boolean>{
+    const data = await this.getAll();
+    for(const value of data){
+      if(
+        +value.idProduct == +idProduct &&
+        +value.idUnit == +idUnit &&
+        +value.price == +price
+      ){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public async fixUnitProducts(){
+
+    const prices = (await this.getAll()).sort((a,b) => +a.id - +b.id);
+
+    const dataGroup: Set<{idProduct: number, idUnit: number, price: number}> = new Set();
+
+    prices.forEach(price => {
+      const element = {
+        idProduct: price.idProduct, idUnit: price.idProduct, price: price.price
+      };
+      dataGroup.add(element);
+    });
+
+    const newPrices: Array<IUnitProduct> = [];
+    dataGroup.forEach((element,index) => {
+      const newPrice: IUnitProduct = {
+        id: Number(index),
+        amount: 0,
+        cost: element.price,
+        idCurrency: 1,
+        idProduct: element.idProduct,
+        idUnit: element.idUnit,
+        isDefault: false,
+        price: element.price,
+        state: true,
+        uploaded: States.NOT_INSERTED
+      };
+      newPrices.push(newPrice);
+    });
+    await this.set(newPrices);
   }
 }

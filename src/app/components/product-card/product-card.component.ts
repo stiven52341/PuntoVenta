@@ -5,6 +5,7 @@ import { cartOutline } from 'ionicons/icons';
 import { IProduct } from 'src/app/models/product.model';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
+import { LocalInventoryService } from 'src/app/services/local/local-inventory/local-inventory.service';
 import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
 
 @Component({
@@ -23,7 +24,8 @@ export class ProductCardComponent implements OnInit {
 
   constructor(
     private _unitProducts: LocalUnitProductsService,
-    private _cats: LocalCategoriesService
+    private _cats: LocalCategoriesService,
+    private _invetory: LocalInventoryService
   ) {
     addIcons({ cartOutline });
   }

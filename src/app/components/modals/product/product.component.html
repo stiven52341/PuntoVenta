@@ -1,9 +1,5 @@
 <ion-header>
-  <app-header-bar
-    [showCart]="true"
-    [arrowBack]="true"
-    title="producto"
-  ></app-header-bar>
+  <app-header-bar [showCart]="true" [arrowBack]="true" title="producto"></app-header-bar>
 </ion-header>
 <ion-content fullscreen="true">
   <div class="content">
@@ -18,28 +14,18 @@
           <ion-icon slot="icon-only" name="heart" size="large"></ion-icon>
         </ion-button>
         <ion-button shape="round" size="large">
-          <ion-icon
-            slot="icon-only"
-            name="share-social"
-            size="large"
-          ></ion-icon>
+          <ion-icon slot="icon-only" name="share-social" size="large"></ion-icon>
         </ion-button>
       </div>
     </div>
     <div class="details">
       <div class="header">
-        <ion-select
-          label="Precio"
-          labelPlacement="stacked"
-          placeholder="Seleccione un precio"
-          [(ngModel)]="this.selectedPrice"
-          name="price"
-          id="price"
-        >
+        <ion-select label="Precio" labelPlacement="stacked" placeholder="Seleccione un precio"
+          [(ngModel)]="this.selectedPrice" name="price" id="price">
           @for(price of this.prices; track price.unitPro.id){
           <ion-select-option [value]="price.unitPro.id">
             {{ price.unit.name }} - ${{
-              price.unitPro.price | number : "1.2-2"
+            price.unitPro.price | number : "1.2-2"
             }}
             @if(price.unitPro.label){
             <b style="color: red">({{ price.unitPro.label }})</b>
@@ -52,21 +38,17 @@
         }
       </div>
 
-      <ion-label id="title">{{
-        product?.name || "Sin nombre" | uppercase
-      }}</ion-label>
-      <ion-input
-        label="Cantidad"
-        name="cantidad"
-        id="cantidad"
-        min="1"
-        [(ngModel)]="cantidad"
-        clearInput="true"
-        label-placement="stacked"
-        type="number"
-        fill="outline"
-        placeholder="Ingrese una cantidad"
-      ></ion-input>
+      <div id="title">
+        <ion-label id="title">{{
+          product?.name || "Sin nombre" | uppercase
+          }}</ion-label>
+        @if(existence != 0 && baseUnit){
+          <ion-label color="danger">({{this.existence}} {{this.baseUnit.name}})</ion-label>
+        }
+      </div>
+
+      <ion-input label="Cantidad" name="cantidad" id="cantidad" min="1" [(ngModel)]="cantidad" clearInput="true"
+        label-placement="stacked" type="number" fill="outline" placeholder="Ingrese una cantidad"></ion-input>
       <span>Total: ${{ getTotal() | number : "1.2-2" }}</span>
       <ion-button color="primary" (click)="this.onAddProduct()">
         <ion-label> Añadir al carrito </ion-label>

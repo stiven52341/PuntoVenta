@@ -37,7 +37,7 @@
                   >${{ detail.detail.cost | number : "1.2-2" }}</ion-label
                 >
               </div>
-              @if(detail.unit.id != detail.unitBase.id){
+              @if(detail.unitBase && detail.unit.id != detail.unitBase.id){
               <div class="duo">
                 <ion-label class="title"><b>Unidad base:</b></ion-label>
                 <ion-label>{{ detail.unitBase.name }}</ion-label>

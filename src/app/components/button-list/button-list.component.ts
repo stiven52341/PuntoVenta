@@ -14,6 +14,7 @@ import { IButton } from 'src/app/models/button.model';
 export class ButtonListComponent  implements OnInit {
   @Input({required: true}) buttons: Array<IButton> = [];
   @Input() whiteColor: boolean = false;
+  @Input() disabled: boolean = false;
 
   constructor() {
     addIcons({});

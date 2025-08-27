@@ -31,6 +31,7 @@ import { InventoryIncomeService } from 'src/app/services/api/inventory-income/in
 import { UnitBaseService } from 'src/app/services/api/unit-base/unit-base.service';
 import { LocalInventoryIncomeDetailService } from 'src/app/services/local/local-inventory-income-detail/local-inventory-income-detail.service';
 import { LocalInventoryIncomeService } from 'src/app/services/local/local-inventory-income/local-inventory-income.service';
+import { LocalInventoryService } from 'src/app/services/local/local-inventory/local-inventory.service';
 import { LocalUnitBaseService } from 'src/app/services/local/local-unit-base/local-unit-base.service';
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
@@ -75,7 +76,8 @@ export class ProductsPurchasePage implements OnInit {
     private _localInventoryIncome: LocalInventoryIncomeService,
     private _localInventoryIncomeDetails: LocalInventoryIncomeDetailService,
     private _unitBase: UnitBaseService,
-    private _localUnitBase: LocalUnitBaseService
+    private _localUnitBase: LocalUnitBaseService,
+    private _localInventory: LocalInventoryService
   ) {
     addIcons({ search, list, bookmark, save });
 
@@ -114,7 +116,9 @@ export class ProductsPurchasePage implements OnInit {
     if (!result) return;
     this.product = result.product;
 
-    this.baseUnit = await this._unit.get(this.product.idBaseUnit);
+    if(this.product.idBaseUnit){
+      this.baseUnit = await this._unit.get(this.product.idBaseUnit);
+    }
 
     this.checkUnits();
   }
@@ -307,13 +311,15 @@ export class ProductsPurchasePage implements OnInit {
 
     const result = await this._inventoryIncome.insert(inventoryIncome) ? States.SYNC : States.NOT_INSERTED;
     inventoryIncome.uploaded = result;
+    this.details.map(detail => detail.uploaded = result);
 
     inventoryIncome.details = [];
     await firstValueFrom(
       forkJoin([
         this._localInventoryIncome.insert(inventoryIncome),
         this._localInventoryIncomeDetails.insertDetails(this.details),
-        this.syncUnitBase(this.details)
+        this.syncUnitBase(this.details),
+        this.syncLocalInventory(this.details)
       ])
     )
       .then(() => {
@@ -380,6 +386,13 @@ export class ProductsPurchasePage implements OnInit {
       return sync(detail);
     });
 
+    await firstValueFrom(forkJoin(pros));
+  }
+
+  private async syncLocalInventory(details: Array<IInventoryIncomeDetail>) {
+    const pros = details.map(async detail => {
+      this._localInventory.increaseExistence(detail.id.idProduct, detail.amountBaseUnit!);
+    });
     await firstValueFrom(forkJoin(pros));
   }
 }

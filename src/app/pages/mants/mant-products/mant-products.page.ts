@@ -162,7 +162,9 @@ export class MantProductsPage implements OnInit {
     this.form.get('desc')?.setValue(product.description || '');
 
     this.state = product.state;
-    this.baseUnit = await this._localUnit.get(product.idBaseUnit);
+    if(product.idBaseUnit){
+      this.baseUnit = await this._localUnit.get(product.idBaseUnit);
+    }
 
     const productCategory = (await this._localProductCategory.getAll()).find(
       (proCa) => proCa.id.idProduct == product!.id

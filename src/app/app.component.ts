@@ -185,6 +185,7 @@ export class AppComponent implements OnInit {
     await this._modal.showFirstOpenedModal();
     // AppComponent.loadingData.emit(false);
     this._global.updateData();
+    this._file.deleteTempData();
   }
 
   private async goTo(path: string) {

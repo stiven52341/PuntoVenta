@@ -16,6 +16,8 @@ import { ICategory } from 'src/app/models/category.model';
 import { CashBoxComponent } from 'src/app/components/modals/cash-box/cash-box.component';
 import { IInventoryIncomeDetail } from 'src/app/models/inventory-income-detail.model';
 import { InventoryIncomeDetailsComponent } from 'src/app/components/modals/inventory-income-details/inventory-income-details.component';
+import { IInventoryCheckDetail } from 'src/app/models/inventory-check-detail.model';
+import { InventoryCheckDetailsComponent } from 'src/app/components/modals/inventory-check-details/inventory-check-details.component';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +25,7 @@ import { InventoryIncomeDetailsComponent } from 'src/app/components/modals/inven
 export class ModalsService {
   private modals: Array<HTMLIonModalElement> = [];
 
-  constructor(private _modalCtrl: ModalController) {}
+  constructor(private _modalCtrl: ModalController) { }
 
   public async showModal(
     component: any,
@@ -149,10 +151,22 @@ export class ModalsService {
     const result = await this.showModal(
       InventoryIncomeDetailsComponent,
       'inventory-income-details-list',
-      {details: details, showWarningBeforeSelect: showWarningBeforeSelect},
+      { details: details, showWarningBeforeSelect: showWarningBeforeSelect },
     );
 
-    if(result && result.data) return result.data as IInventoryIncomeDetail;
+    if (result && result.data) return result.data as IInventoryIncomeDetail;
+    return undefined;
+  }
+
+  public async showInventoryCheckDetailsList(
+    details: Array<IInventoryCheckDetail>, showWarning: boolean = false
+  ) {
+    const result = await this.showModal(
+      InventoryCheckDetailsComponent,
+      'inventory-check-details-list',
+      { details: details, showWarning: showWarning }
+    );
+    if(result && result.data) return result.data as IInventoryCheckDetail;
     return undefined;
   }
 

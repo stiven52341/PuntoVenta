@@ -58,5 +58,15 @@ export const routes: Routes = [
     path: 'inventory/products-purchase',
     loadComponent: () => import('./pages/inventory/products-purchase/products-purchase.page').then( m => m.ProductsPurchasePage)
   },
+  {
+    path: 'inventory/check',
+    loadComponent: () => import('./pages/inventory/inventory-check/inventory-check.page').then( m => m.InventoryCheckPage)
+  },
+  {
+    path: 'config/printer',
+    loadComponent: () => import('./pages/config/printer-config/printer-config-page.page').then( m => m.PrinterConfigPage)
+  },
+
+
 
 ];

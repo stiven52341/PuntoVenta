@@ -46,6 +46,13 @@ export class MantsPage implements OnInit {
         },
         image: '../../../assets/icon/category.png'
       },
+      {
+        title: 'Establecer unidad base para todos los productos',
+        image: '../../../assets/icon/box-income.png',
+        do: async() => {
+          
+        }
+      }
     ];
   }
 

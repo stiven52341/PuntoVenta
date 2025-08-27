@@ -15,12 +15,16 @@ export interface IEntity<T> {
   providedIn: 'root',
 })
 export abstract class ApiCoreService<T extends IEntity<U>, U = T extends IEntity<infer X> ? X : never> {
-  protected readonly _http = inject(HttpClient);
-  protected readonly _file = inject(FilesService);
-  protected readonly _errors = inject(ErrorsService);
-  protected readonly timeout = 10000;
+  protected readonly _http;
+  protected readonly _file;
+  protected readonly _errors;
+  protected readonly timeout;
 
   constructor(protected path: ApiKeys) {
+    this._http = inject(HttpClient);
+    this._file = inject(FilesService);
+    this._errors = inject(ErrorsService);
+    this.timeout = 10000;
   }
 
   public async getAll(): Promise<Array<T> | undefined> {

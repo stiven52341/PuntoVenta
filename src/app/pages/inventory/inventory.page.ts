@@ -23,6 +23,13 @@ export class InventoryPage implements OnInit {
         do: () => {
           this._router.navigate(['/inventory/products-purchase']);
         }
+      },
+      {
+        title: 'Pase de inventario'.toUpperCase(),
+        image: '../../../assets/icon/list.png',
+        do: () => {
+          this._router.navigate(['/inventory/check']);
+        }
       }
     ];
   }

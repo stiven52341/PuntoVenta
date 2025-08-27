@@ -8,26 +8,30 @@ import { DirectoryKeys, FilesKeys } from 'src/app/models/constants';
   providedIn: 'root',
 })
 export class FilesService {
-  constructor(private _toast: ToastService) {}
+  constructor(private _toast: ToastService) { }
 
-  public async write(data: string, fileName: FilesKeys) {
+  public async write(
+    data: string, fileName: FilesKeys, directory: Directory = Directory.Documents
+  ): Promise<string | undefined> {
     try {
-      if (!(await this.requestStoragePermission())) return;
+      if (!(await this.requestStoragePermission())) return undefined;
 
-      if (!(await this.checkDirectory(DirectoryKeys.ROOT))) {
-        await Filesystem.mkdir({
-          path: DirectoryKeys.ROOT,
-          directory: Directory.Documents,
-          recursive: true,
-        });
-      }
+      // if (!(await this.checkDirectory(DirectoryKeys.ROOT))) {
+      //   await Filesystem.mkdir({
+      //     path: DirectoryKeys.ROOT,
+      //     directory: directory,
+      //     recursive: true,
+      //   });
+      // }
 
-      await Filesystem.writeFile({
+      const result = await Filesystem.writeFile({
         path: `${DirectoryKeys.ROOT}/${fileName}`,
         data: data,
-        directory: Directory.Documents,
+        directory: directory,
         encoding: Encoding.UTF8,
+        recursive: true
       });
+      return result.uri;
     } catch (error) {
       throw new Error(`Error while writing file: ${error}`);
     }
@@ -118,5 +122,17 @@ export class FilesService {
       // throw new Error(`Error reading file: ${error}`);
       return undefined;
     }
+  }
+
+  public async saveTempData(filename: FilesKeys, data: string) {
+    return await this.write(data, filename, Directory.Cache);
+  }
+
+  public async deleteTempData(){
+    await Filesystem.rmdir({
+      path: DirectoryKeys.TEMP_DIR,
+      directory: Directory.Cache,
+      recursive: true
+    });
   }
 }

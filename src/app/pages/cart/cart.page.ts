@@ -30,6 +30,10 @@ import { PurchaseService } from 'src/app/services/api/purchase/purchase.service'
 import { LocalPurchaseService } from 'src/app/services/local/local-purchase/local-purchase.service';
 import { IUnit } from 'src/app/models/unit.model';
 import { PrintingService } from 'src/app/services/printing/printing.service';
+import { LocalInventoryService } from 'src/app/services/local/local-inventory/local-inventory.service';
+import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
+import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
+import { LocalUnitBaseService } from 'src/app/services/local/local-unit-base/local-unit-base.service';
 
 export interface IProductCart {
   product: IProduct;
@@ -73,7 +77,11 @@ export class CartPage implements OnInit {
     private _file: FilesService,
     private _purchase: PurchaseService,
     private _localPurchase: LocalPurchaseService,
-    private _printing: PrintingService
+    private _printing: PrintingService,
+    private _inventory: LocalInventoryService,
+    private _unitProduct: LocalUnitProductsService,
+    private _product: LocalProductsService,
+    private _unitBase: LocalUnitBaseService
   ) {
     addIcons({ trash, camera });
   }
@@ -146,7 +154,7 @@ export class CartPage implements OnInit {
       return;
     }
 
-    if(!await this._alert.showConfirm('CONFIRME','¿Está seguro de remover este artículo del carrito?'))return;
+    if (!await this._alert.showConfirm('CONFIRME', '¿Está seguro de remover este artículo del carrito?')) return;
 
     this.loading = true;
     await this._cart.removeProduct(product.product);
@@ -154,7 +162,7 @@ export class CartPage implements OnInit {
   }
 
   protected async onSave() {
-    if(this.cart?.products == undefined || this.cart.products.length == 0){
+    if (this.cart?.products == undefined || this.cart.products.length == 0) {
       this._alert.showError('El carrito está vacío');
       return;
     }
@@ -182,7 +190,7 @@ export class CartPage implements OnInit {
 
       total += this.getTotalArticle(product);
     });
-    
+
 
     const purchase: IPurchase = {
       date: new Date(),
@@ -204,22 +212,44 @@ export class CartPage implements OnInit {
 
       purchase.uploaded = result ? States.SYNC : States.NOT_INSERTED;
 
-      await this._localPurchase
-        .insert(purchase)
-        .then(async () => {
-          this._alert.showSuccess('COMPRA REGISTRADA');
-          await this._cart.resetCart();
-
-          await this._printing.printPurchase(purchase, purchaseDetails);
-        })
-        .catch((err) => {
-          this._file.saveError(err);
-          this._toast.showToast('ERROR AL REGISTRAR LA COMPRA DE FORMA LOCAL');
-        });
+      await firstValueFrom(forkJoin([
+        this._localPurchase.insert(purchase),
+        this.updateInventory(purchaseDetails)
+      ])).then(async () => {
+        this._alert.showSuccess('COMPRA REGISTRADA');
+        this._cart.resetCart();
+        this._printing.printPurchase(purchase, purchaseDetails);
+      }).catch((err) => {
+        this._file.saveError(err);
+        this._toast.showToast('ERROR AL REGISTRAR LA COMPRA DE FORMA LOCAL');
+      });
     };
 
     this.loading = true;
     await save(purchase);
     this.loading = false;
+  }
+
+  private async updateInventory(details: Array<IPurchaseDetail>) {
+    
+    const sync = async (detail: IPurchaseDetail) => {
+      const price = await this._unitProduct.get(detail.id.idUnitProductCurrency);
+      const product = await this._product.get(price!.idProduct);
+
+      let amount = detail.amount;
+      if (product?.idBaseUnit && price!.idUnit != product.idBaseUnit) {
+        const equivalency = await this._unitBase.get(
+          { idUnit: price!.idUnit, idUnitBase: product.idBaseUnit }
+        );
+        if (!equivalency) return undefined;
+        amount = equivalency.equivalency * detail.amount;
+      }
+      return { idProduct: product!.id, amount: amount };
+    }
+    const pros = details.map(async detail => {
+      const existence = await sync(detail);
+      this._inventory.reduceExistence(existence!.idProduct as number, existence!.amount);
+    });
+    await firstValueFrom(forkJoin(pros));
   }
 }

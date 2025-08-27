@@ -23,7 +23,7 @@ export class LocalPurchaseService extends InternalStorageCoreService<IPurchase> 
     const details = new Array<IPurchaseDetail>(...obj.details) || [];
     obj.details = undefined;
     values.push(obj);
-    await this._storage.set(this.key, values);
+    await InternalStorageCoreService._storage.set(this.key, values);
 
     const insertDetails = async (detail: IPurchaseDetail) => {
       detail.id.idPurchase = obj.id as number;
@@ -56,5 +56,8 @@ export class LocalPurchaseService extends InternalStorageCoreService<IPurchase> 
         purchase.date.getTime() <= endDate.getTime()
       );
     });
+  }
+
+  public async fixPurchases(){
   }
 }

@@ -7,4 +7,7 @@ export interface IInventoryCheckDetail
     idUnit: number;
   }> {
   amount: number;
+  idBaseUnit: number,
+  amountBaseUnit?: number,
+  equivalencyUsed?: number
 }

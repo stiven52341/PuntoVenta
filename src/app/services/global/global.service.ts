@@ -159,13 +159,13 @@ export class GlobalService {
 
     for (const check of inventoryChecks) {
       check.details = inventoryCheckDetails.filter(detail => {
-        return detail.id.idInventoryCheck == check.id
+        return +detail.id.idInventoryCheck == +check.id
       });
     }
 
     for (const income of inventoryIncomes) {
       income.details = inventoryIncomeDetails.filter(detail => {
-        return detail.id.idInventoryIncome == income.id
+        return +detail.id.idInventoryIncome == +income.id
       });
     }
 
@@ -184,7 +184,10 @@ export class GlobalService {
     await firstValueFrom(forkJoin([
       this.syncValues(unitProducts, this._unitProduct, this._localUnitProduct),
       this.syncValues(unitBases, this._unitBase, this._localUnitBase)
-    ]));
+    ])).catch(err => {
+      this._files.saveError(err);
+      return false;
+    });
 
     //At the end, most dependencional data is synced
     await firstValueFrom(forkJoin([
@@ -233,5 +236,68 @@ export class GlobalService {
 
   public listenToChanges() {
     return this.update.asObservable();
+  }
+
+  public async syncDataWithAPI() {
+    try {
+      await firstValueFrom(forkJoin([
+        this._localUnitProduct.fixUnitProducts(),
+        this._localPurchase.set([]),
+        this._localPurchaseDetails.set([])
+      ]));
+
+      const oldData = await firstValueFrom(forkJoin([
+        this._localCashbox.getAll(),
+        this._localCategories.getAll(),
+        this._localCurrencies.getAll(),
+        this._localInventoryCheck.getAll(),
+        this._localInventoryCheckDetails.getAll(),
+        this._localInventoryIncome.getAll(),
+        this._localInventoryIncomeDetails.getAll(),
+        this._localProductCategories.getAll(),
+        this._localProducts.getAll(),
+        this._localPurchase.getAll(),
+        this._localPurchaseDetails.getAll(),
+        this._localUnit.getAll(),
+        this._localUnitBase.getAll(),
+        this._localUnitProduct.getAll()
+      ]));
+
+      const cashboxes = oldData[0].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const categories = oldData[1].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const currencies = oldData[2].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const inventoryChecks = oldData[3].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const inventoryChecksDs = oldData[4].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const inventoryIncome = oldData[5].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const inventoryIncomeDetails = oldData[6].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const productCategories = oldData[7].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const products = oldData[8].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const purchases = oldData[9].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const purchasesDs = oldData[10].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const units = oldData[11].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const unitBases = oldData[12].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+      const unitProductsDs = oldData[13].map(e => { e.uploaded = States.NOT_INSERTED; return e });
+
+      await firstValueFrom(forkJoin([
+        this._localCashbox.set(cashboxes),
+        this._localCategories.set(categories),
+        this._localCurrencies.set(currencies),
+        this._localInventoryCheck.set(inventoryChecks),
+        this._localInventoryCheckDetails.set(inventoryChecksDs),
+        this._localInventoryIncome.set(inventoryIncome),
+        this._localInventoryIncomeDetails.set(inventoryIncomeDetails),
+        this._localProductCategories.set(productCategories),
+        this._localProducts.set(products),
+        this._localPurchase.set(purchases),
+        this._localPurchaseDetails.set(purchasesDs),
+        this._localUnit.set(units),
+        this._localUnitBase.set(unitBases),
+        this._localUnitProduct.set(unitProductsDs)
+      ]));
+
+      await this.SyncData();
+    } catch (error) {
+      throw error;
+    }
   }
 }

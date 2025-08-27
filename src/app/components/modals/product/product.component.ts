@@ -26,6 +26,7 @@ import { IUnit } from 'src/app/models/unit.model';
 import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.service';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
+import { LocalInventoryService } from 'src/app/services/local/local-inventory/local-inventory.service';
 
 @Component({
   selector: 'app-product',
@@ -56,8 +57,9 @@ export class ProductComponent implements OnInit {
   protected selectedPrice?: number;
 
   protected cantidad?: number;
-
   protected categories: Array<ICategory> = [];
+  protected existence: number = 0;
+  protected baseUnit?: IUnit;
 
   constructor(
     private _categories: LocalCategoriesService,
@@ -65,7 +67,8 @@ export class ProductComponent implements OnInit {
     private _unit: LocalUnitsService,
     private _cart: LocalCartService,
     private _alert: AlertsService,
-    private _toast: ToastService
+    private _toast: ToastService,
+    private _invetory: LocalInventoryService
   ) {
     addIcons({ heart, shareSocial, camera });
   }
@@ -76,6 +79,7 @@ export class ProductComponent implements OnInit {
         this._categories.getAll(),
         this._prices.getAll(),
         this._unit.getAll(),
+        this._invetory.get(this.product!.id as number)
       ])
     );
 
@@ -101,6 +105,12 @@ export class ProductComponent implements OnInit {
     this.selectedPrice =
       this.prices.find((price) => price.unitPro.isDefault)?.unitPro.id as number ||
       this.prices[0].unitPro.id as number;
+
+    if (data[3]) {
+      this.existence = (data[3].existence) || 0;
+      this.baseUnit = await this._unit.get(data[3].idUnit);
+    }
+
   }
 
   protected getTotal() {
@@ -124,7 +134,7 @@ export class ProductComponent implements OnInit {
     }
 
     if (!unit.allowDecimals) {
-      if(!Number.isInteger(this.cantidad)){
+      if (!Number.isInteger(this.cantidad)) {
         await this._alert.showError('LA UNIDAD SELECCIONADA NO PERMITE DECIMALES');
         return false;
       }
@@ -134,7 +144,7 @@ export class ProductComponent implements OnInit {
   }
 
   protected async onAddProduct() {
-    if(this.prices.length == 0){
+    if (this.prices.length == 0) {
       await this._alert.showError('NO HAY PRECIOS REGISTRADOS PARA ESTE PRODUCTO');
       return;
     }

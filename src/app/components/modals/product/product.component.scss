@@ -68,6 +68,11 @@
     #title{
       font-weight: bold;
       font-size: larger;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: .5em;
     }
 
     span{

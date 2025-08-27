@@ -1,6 +1,6 @@
 <ion-list>
   <ion-item *ngFor="let option of buttons">
-    <ion-button [disabled]="option.disable == true" (click)="option.do()">
+    <ion-button [disabled]="option.disable == true || disabled" (click)="option.do()">
       <div class="button-content">
         <ion-icon
           *ngIf="option.icon"

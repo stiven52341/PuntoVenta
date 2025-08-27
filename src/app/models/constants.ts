@@ -1,6 +1,6 @@
 export enum ApiKeys {
   // PATH = 'http://157.230.224.218:16000/',//Production
-  PATH = 'http://10.180.16.15:8080/',
+  PATH = 'http://192.168.0.110:8080/',
   PRODUCTS = PATH + 'products',
   CATEGORIES = PATH + 'categories',
   CURRENCIES = PATH + 'currencies',
@@ -58,9 +58,11 @@ export enum States {
 }
 
 export enum DirectoryKeys{
-  ROOT = '/SellsPoint'
+  ROOT = '/SellsPoint',
+  TEMP_DIR = ROOT + '/temp'
 }
 
 export enum FilesKeys{
-  ERRORS = DirectoryKeys.ROOT + '/errors.txt'
+  ERRORS = DirectoryKeys.ROOT + '/errors.txt',
+  APP_DATA = DirectoryKeys.TEMP_DIR + '/data.json'
 }

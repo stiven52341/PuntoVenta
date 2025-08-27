@@ -255,9 +255,7 @@ export class ProductsPage implements OnInit {
 
   async onIonInfinite(event: InfiniteScrollCustomEvent) {
     await this.generateItems(this.products);
-    setTimeout(() => {
-      event.target.complete();
-    }, 500);
+    event.target.complete();
   }
 
   protected async onReset($event?: RefresherCustomEvent) {

@@ -43,7 +43,7 @@ export class InventoryIncomeDetailsComponent implements OnInit {
     detail: IInventoryIncomeDetail;
     product: IProduct;
     unit: IUnit;
-    unitBase: IUnit;
+    unitBase?: IUnit;
     image: string;
   }> = [];
   protected loading: boolean = false;
@@ -81,13 +81,13 @@ export class InventoryIncomeDetailsComponent implements OnInit {
       );
       const unit = data[0];
       const product = data[1];
-      const baseUnit = await this._unit.get(product!.idBaseUnit);
+      const baseUnit = product?.idBaseUnit ? await this._unit.get(product!.idBaseUnit) : undefined;
       this.detailsInfo.push({
         detail: detail,
         image: '../../../../assets/icon/loading.gif',
         product: product!,
         unit: unit!,
-        unitBase: baseUnit!,
+        unitBase: baseUnit,
       });
     }
   }

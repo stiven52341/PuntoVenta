@@ -188,7 +188,7 @@ export class MantPricesPage implements OnInit {
     }
 
 
-    if (this.product.idBaseUnit != this.unit.id) {
+    if (this.product.idBaseUnit && this.product.idBaseUnit != this.unit.id) {
       const equivalency = this.equivalencyInput.value as number;
       if (equivalency <= 0) {
         this._alert.showError('Equivalencia inválida');
@@ -215,6 +215,18 @@ export class MantPricesPage implements OnInit {
       uploaded: States.NOT_INSERTED,
       label: this._title.transform(this.label ? this.label : ''),
     };
+
+    if(
+      await this._localPrices.checkProductPriceExistence(
+        newPrice.idProduct, newPrice.idUnit, newPrice.price
+      )
+    ){
+      this._alert.showError(
+        `Precio duplicado.<br>El precio $${newPrice.price} ya está definido para
+        el producto <b>${this.product?.name}</b> y la unidad <b>${this.unit?.name}</b>`
+      );
+      return;
+    }
 
     if (!this.selectedPrice) {
       if (
@@ -361,7 +373,7 @@ export class MantPricesPage implements OnInit {
   }
 
   private async syncEquivalency() {
-    if (!this.product || !this.unit || +this.product.idBaseUnit == +this.unit.id) return;
+    if (!this.product || !this.product?.idBaseUnit || !this.unit || +this.product.idBaseUnit == +this.unit.id) return;
 
     const equivalency: IUnitBase = {
       id: {
@@ -415,7 +427,7 @@ export class MantPricesPage implements OnInit {
       return false;
     }
     if (result.length == 0) {
-      const unitBase = await this._localUnit.get(this.product.idBaseUnit);
+      const unitBase = await this._localUnit.get(Number(this.product!.idBaseUnit));
       const resultQuestion = await this._alert.showConfirm(
         'ADVERTENCIA',
         `El producto <b>${this.product!.name}</b> no tiene precios definidos para
