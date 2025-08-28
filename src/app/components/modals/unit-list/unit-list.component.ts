@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IonContent, IonHeader, IonSearchbar, IonList, IonItem, IonInfiniteScroll, IonInfiniteScrollContent, InfiniteScrollCustomEvent, ModalController, IonLabel } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from '../../header-bar/header-bar.component';
+import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
 import { IUnit } from 'src/app/models/unit.model';
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { NgClass } from '@angular/common';

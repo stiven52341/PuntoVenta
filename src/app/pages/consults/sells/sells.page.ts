@@ -15,7 +15,7 @@ import {
 import { addIcons } from 'ionicons';
 import { print } from 'ionicons/icons';
 import { firstValueFrom, forkJoin } from 'rxjs';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { Printer } from 'src/app/models/printer.model';
 import { IProduct } from 'src/app/models/product.model';
 import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';

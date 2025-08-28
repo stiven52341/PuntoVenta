@@ -18,6 +18,8 @@ import { IInventoryIncomeDetail } from 'src/app/models/inventory-income-detail.m
 import { InventoryIncomeDetailsComponent } from 'src/app/components/modals/inventory-income-details/inventory-income-details.component';
 import { IInventoryCheckDetail } from 'src/app/models/inventory-check-detail.model';
 import { InventoryCheckDetailsComponent } from 'src/app/components/modals/inventory-check-details/inventory-check-details.component';
+import { IInventoryIncome } from 'src/app/models/inventory-income.model';
+import { InventoryIncomesListComponent } from 'src/app/components/modals/inventory-incomes-list/inventory-incomes-list.component';
 
 @Injectable({
   providedIn: 'root',
@@ -166,7 +168,16 @@ export class ModalsService {
       'inventory-check-details-list',
       { details: details, showWarning: showWarning }
     );
-    if(result && result.data) return result.data as IInventoryCheckDetail;
+    if (result && result.data) return result.data as IInventoryCheckDetail;
+    return undefined;
+  }
+
+  public async showInventoryIncomesList(): Promise<IInventoryIncome | undefined> {
+    const result = await this.showModal(
+      InventoryIncomesListComponent,
+      'inventory-check-details-list'
+    );
+    if (result && result.data) return result.data as IInventoryIncome;
     return undefined;
   }
 

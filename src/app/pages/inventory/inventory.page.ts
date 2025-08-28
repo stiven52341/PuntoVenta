@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, IonHeader } from '@ionic/angular/standalone';
-import { ButtonListComponent } from 'src/app/components/button-list/button-list.component';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { ButtonListComponent } from 'src/app/components/elements/button-list/button-list.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
 
 @Component({

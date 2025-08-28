@@ -9,9 +9,9 @@ import {
   IonCardTitle,
   ViewWillEnter,
 } from '@ionic/angular/standalone';
-import { ButtonListComponent } from 'src/app/components/button-list/button-list.component';
-import { CircleGraphComponent } from 'src/app/components/charts/circle-graph/circle-graph.component';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { ButtonListComponent } from 'src/app/components/elements/button-list/button-list.component';
+import { CircleGraphComponent } from 'src/app/components/elements/charts/circle-graph/circle-graph.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
 import { LocalCashBoxService } from 'src/app/services/local/local-cash-box/local-cash-box.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
@@ -30,7 +30,6 @@ import { ModalsService } from 'src/app/services/modals/modals.service';
     HeaderBarComponent,
     ButtonListComponent,
     DecimalPipe,
-    CircleGraphComponent,
   ],
 })
 export class CashBoxPage implements ViewWillEnter {

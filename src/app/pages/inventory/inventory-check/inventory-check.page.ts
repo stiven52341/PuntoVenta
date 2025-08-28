@@ -4,7 +4,7 @@ import { IonBadge, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInpu
 import { addIcons } from 'ionicons';
 import { bookmark, list, save, search } from 'ionicons/icons';
 import { firstValueFrom, forkJoin } from 'rxjs';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
 import { States } from 'src/app/models/constants';
 import { IInventoryCheckDetail } from 'src/app/models/inventory-check-detail.model';

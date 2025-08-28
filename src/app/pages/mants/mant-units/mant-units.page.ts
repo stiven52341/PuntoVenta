@@ -18,7 +18,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { search } from 'ionicons/icons';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
 import { States } from 'src/app/models/constants';
 import { IUnitBase } from 'src/app/models/unit-base-product.model';

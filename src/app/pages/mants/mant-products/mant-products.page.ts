@@ -10,7 +10,7 @@ import {
   IonIcon,
   IonFooter,
 } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IProduct } from 'src/app/models/product.model';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';

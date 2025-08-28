@@ -11,7 +11,7 @@ import {
   IonToolbar,
   IonButton,
 } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { addIcons } from 'ionicons';
 import { trash, camera } from 'ionicons/icons';
 import { ICart } from 'src/app/models/cart.model';

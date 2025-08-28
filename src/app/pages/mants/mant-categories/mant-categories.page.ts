@@ -18,7 +18,7 @@ import {
 import { addIcons } from 'ionicons';
 import { search, camera, save, trash, checkmarkCircle } from 'ionicons/icons';
 import { firstValueFrom, forkJoin } from 'rxjs';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
 import { ICategory } from 'src/app/models/category.model';
 import { PhotoKeys, States } from 'src/app/models/constants';

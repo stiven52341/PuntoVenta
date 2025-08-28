@@ -8,7 +8,7 @@ import {
   IonItem,
   IonLabel,
 } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from '../../header-bar/header-bar.component';
+import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
 import { ICategory } from 'src/app/models/category.model';
 import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
 import { PhotosService } from 'src/app/services/photos/photos.service';

@@ -11,9 +11,9 @@ import {
   IonRefresherContent,
   RefresherCustomEvent
 } from '@ionic/angular/standalone';
-import { ProductCardComponent } from 'src/app/components/product-card/product-card.component';
+import { ProductCardComponent } from 'src/app/components/elements/product-card/product-card.component';
 import { ICategory } from 'src/app/models/category.model';
-import { CategoryCardComponent } from 'src/app/components/category-card/category-card.component';
+import { CategoryCardComponent } from 'src/app/components/elements/category-card/category-card.component';
 import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { PhotosService } from 'src/app/services/photos/photos.service';
@@ -25,7 +25,7 @@ import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
 import { LocalProductCategoryService } from 'src/app/services/local/local-product-category/local-product-category.service';
 import { IProductCategory } from 'src/app/models/product-category.model';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { GlobalService } from 'src/app/services/global/global.service';
 
 interface IProductDetail {

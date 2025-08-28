@@ -10,7 +10,7 @@ import {
   IonSearchbar,
   ModalController,
 } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from '../../header-bar/header-bar.component';
+import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
 import { IPurchase } from 'src/app/models/purchase.model';
 import { LocalPurchaseService } from 'src/app/services/local/local-purchase/local-purchase.service';
 import { DatePipe, DecimalPipe } from '@angular/common';

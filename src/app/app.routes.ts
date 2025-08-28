@@ -66,7 +66,8 @@ export const routes: Routes = [
     path: 'config/printer',
     loadComponent: () => import('./pages/config/printer-config/printer-config-page.page').then( m => m.PrinterConfigPage)
   },
-
-
-
+  {
+    path: 'consults/product-income',
+    loadComponent: () => import('./pages/consults/product-income/product-income.page').then( m => m.ProductIncomePage)
+  },
 ];

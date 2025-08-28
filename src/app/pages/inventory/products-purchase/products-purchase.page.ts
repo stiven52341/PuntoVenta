@@ -18,7 +18,7 @@ import {
 import { addIcons } from 'ionicons';
 import { list, save, search, bookmark } from 'ionicons/icons';
 import { debounceTime, firstValueFrom, forkJoin } from 'rxjs';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
 import { States } from 'src/app/models/constants';
 import { IInventoryIncomeDetail } from 'src/app/models/inventory-income-detail.model';

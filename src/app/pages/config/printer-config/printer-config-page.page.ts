@@ -19,7 +19,7 @@ import {
 import { addIcons } from 'ionicons';
 import { print, save, search } from 'ionicons/icons';
 import { firstValueFrom, forkJoin } from 'rxjs';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IGeneralInfo } from 'src/app/models/general-info.model';
 import {
   IPrinterModel,

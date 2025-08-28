@@ -9,7 +9,7 @@ import {
   IonLabel,
   IonCheckbox,
 } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from 'src/app/components/header-bar/header-bar.component';
+import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { addIcons } from 'ionicons';
 import { search } from 'ionicons/icons';
 import { ModalsService } from 'src/app/services/modals/modals.service';

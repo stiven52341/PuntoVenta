@@ -9,7 +9,7 @@ import {
   IonCard,
   ModalController,
 } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from '../../header-bar/header-bar.component';
+import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
 import { IProduct } from 'src/app/models/product.model';
 import { IUnit } from 'src/app/models/unit.model';
 import { firstValueFrom, forkJoin } from 'rxjs';

@@ -10,7 +10,7 @@ import {
   InfiniteScrollCustomEvent,
   ModalController,
 } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from '../../header-bar/header-bar.component';
+import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
 import { DecimalPipe } from '@angular/common';

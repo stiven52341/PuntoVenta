@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { IonCard, IonContent, IonHeader, IonItem, IonLabel, IonList, ModalController } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from '../../header-bar/header-bar.component';
+import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
 import { IInventoryCheckDetail } from 'src/app/models/inventory-check-detail.model';
 import { DecimalPipe } from '@angular/common';
 import { IProduct } from 'src/app/models/product.model';

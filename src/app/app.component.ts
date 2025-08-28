@@ -19,7 +19,7 @@ import { ScreenOrientation } from '@capacitor/screen-orientation';
 //DO NOT REMOVE
 import { ProductComponent } from './components/modals/product/product.component';
 import { IButton } from './models/button.model';
-import { ButtonListComponent } from './components/button-list/button-list.component';
+import { ButtonListComponent } from './components/elements/button-list/button-list.component';
 import { FilesService } from './services/files/files.service';
 import { States } from './models/constants';
 import { GlobalService } from './services/global/global.service';

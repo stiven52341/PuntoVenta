@@ -12,7 +12,7 @@ import {
   InfiniteScrollCustomEvent,
   IonToolbar,
 } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from '../../header-bar/header-bar.component';
+import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
 import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
 import { IProduct } from 'src/app/models/product.model';
 import { PhotosService } from 'src/app/services/photos/photos.service';

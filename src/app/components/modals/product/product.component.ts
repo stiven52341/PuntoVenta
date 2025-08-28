@@ -9,7 +9,7 @@ import {
   IonSelect,
   IonSelectOption,
 } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from '../../header-bar/header-bar.component';
+import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
 import { IProduct } from 'src/app/models/product.model';
 import { DecimalPipe, UpperCasePipe } from '@angular/common';
 import { IProductCategory } from 'src/app/models/product-category.model';

@@ -6,7 +6,7 @@ import {
   IonButton,
   ModalController,
 } from '@ionic/angular/standalone';
-import { HeaderBarComponent } from '../../header-bar/header-bar.component';
+import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
 import { FormsModule, NgModel } from '@angular/forms';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { LocalCashBoxService } from 'src/app/services/local/local-cash-box/local-cash-box.service';
