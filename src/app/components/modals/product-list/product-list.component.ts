@@ -123,6 +123,7 @@ export class ProductListComponent implements OnInit {
   }
 
   protected async onClick(product: { product: IProduct; image: string }) {
+    if(product.image == this.loadingImage) product.image = this.noImage;
     await this._modalCtrl.dismiss(product);
   }
 }

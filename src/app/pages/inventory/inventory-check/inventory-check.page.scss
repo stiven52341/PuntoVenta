@@ -1,0 +1,44 @@
+.content form {
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+}
+.footer-content {
+  padding: 0.5em;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 1em;
+
+  ion-button {
+    width: 50%;
+  }
+}
+
+hr {
+  background-color: lightgray;
+  width: 100%;
+}
+
+.complex-input {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 8fr 2fr;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1em;
+
+  ion-button {
+    height: 100%;
+    width: 100%;
+
+    ion-icon {
+      font-weight: bolder;
+      color: white;
+    }
+  }
+}

@@ -6,9 +6,11 @@ import { StorageKeys } from 'src/app/models/constants';
 @Injectable({
   providedIn: 'root'
 })
-export class LocalUnitBaseService extends InternalStorageCoreService<IUnitBase>{
+export class LocalUnitBaseService extends InternalStorageCoreService<IUnitBase> {
 
-  constructor() {
+  constructor(
+    
+  ) {
     super(StorageKeys.UNIT_BASE);
   }
 }
