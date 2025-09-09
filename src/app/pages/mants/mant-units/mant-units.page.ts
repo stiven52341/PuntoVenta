@@ -20,7 +20,7 @@ import { addIcons } from 'ionicons';
 import { search } from 'ionicons/icons';
 import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
-import { States } from 'src/app/models/constants';
+import { States } from 'src/app/services/constants';
 import { IUnitBase } from 'src/app/models/unit-base-product.model';
 import { IUnit } from 'src/app/models/unit.model';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';

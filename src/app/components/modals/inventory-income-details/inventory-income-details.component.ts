@@ -16,7 +16,7 @@ import { firstValueFrom, forkJoin } from 'rxjs';
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
 import { PhotosService } from 'src/app/services/photos/photos.service';
-import { PhotoKeys } from 'src/app/models/constants';
+import { PhotoKeys } from 'src/app/services/constants';
 import { DecimalPipe } from '@angular/common';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 

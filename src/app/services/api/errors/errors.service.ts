@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { ApiKeys } from 'src/app/models/constants';
+import { ApiKeys } from 'src/app/services/constants';
 import { FilesService } from '../../files/files.service';
 
 @Injectable({

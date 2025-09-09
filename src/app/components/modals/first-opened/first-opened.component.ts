@@ -13,7 +13,7 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 import { firstValueFrom, forkJoin } from 'rxjs';
-import { PhotoKeys } from 'src/app/models/constants';
+import { PhotoKeys } from 'src/app/services/constants';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { CategoryService } from 'src/app/services/api/category/category.service';
 import { CurrencyService } from 'src/app/services/api/currency/currency.service';

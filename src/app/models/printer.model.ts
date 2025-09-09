@@ -1,5 +1,5 @@
 import { IEntity } from '../services/api/api-core/api-core.service';
-import { States } from './constants';
+import { States } from '../services/constants';
 
 export class Printer implements IEntity<String> {
   public state: boolean;

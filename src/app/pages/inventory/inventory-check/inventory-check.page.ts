@@ -6,7 +6,7 @@ import { bookmark, list, save, search } from 'ionicons/icons';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
-import { States } from 'src/app/models/constants';
+import { States } from 'src/app/services/constants';
 import { IInventoryCheckDetail } from 'src/app/models/inventory-check-detail.model';
 import { IInventoryCheck } from 'src/app/models/inventory-check.model';
 import { IProduct } from 'src/app/models/product.model';
@@ -21,6 +21,7 @@ import { LocalUnitBaseService } from 'src/app/services/local/local-unit-base/loc
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
+import { InventoryCheckCartService } from 'src/app/services/local/inventory-check-cart/inventory-check-cart.service';
 
 @Component({
   selector: 'app-inventory-check',
@@ -51,12 +52,13 @@ export class InventoryCheckPage implements OnInit {
     private _toast: ToastService, private _localInventoryCheck: LocalInventoryCheckService,
     private _inventoryCheck: InventoryCheckService,
     private _localInventoryCheckDetails: LocalInventoryCheckDetailsService,
-    private _localInventory: LocalInventoryService
+    private _localInventory: LocalInventoryService,
+    private _inventoryCheckCart: InventoryCheckCartService
   ) {
     addIcons({ search, list, bookmark, save });
 
     this.form = new FormGroup({
-      amount: new FormControl<number>(0, [Validators.min(1), Validators.required]),
+      amount: new FormControl<number>(0, [Validators.min(0), Validators.required]),
       equivalency: new FormControl<number>(0, [Validators.min(1)]),
       baseAmount: new FormControl<number>({ value: 0, disabled: true }, [Validators.min(1)])
     });
@@ -71,19 +73,34 @@ export class InventoryCheckPage implements OnInit {
             'CONFIRME', '¿Está seguro de limpiar el formulario?'
           );
           if (!result) return;
-          this.clear();
+          
+          this._alert.showOptions('Confirme', '¿Qué quiere limpiar?', [
+            {
+              label: 'Actual',
+              do: () => {
+                this.clear();
+              }
+            },
+            {
+              label: 'Todo',
+              do: () => {
+                this.clear(true, true);
+              }
+            }
+          ]);
         }
       }
     ];
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.fieldsEvent.subscribe(async () => {
       if (!this.unit || !this.product?.idBaseUnit || this.unit!.id == this.product.idBaseUnit) {
         this.showEquivalency = false;
         this.baseUnit = undefined;
         this.equivalency = undefined;
-        this.form.get('baseAmount')?.setValue(0);
+        this.form.get('baseAmount')?.setValue(undefined);
+        this.form.get('equivalency')?.setValue(undefined);
         return;
       }
       this.showEquivalency = true;
@@ -93,6 +110,7 @@ export class InventoryCheckPage implements OnInit {
         this._localUnitBase.get({ idUnit: this.unit.id as number, idUnitBase: this.product.idBaseUnit })
       ]));
 
+      
       this.baseUnit = data[0];
       this.equivalency = data[1];
       const equivalencyControl = this.form.get('equivalency');
@@ -100,6 +118,9 @@ export class InventoryCheckPage implements OnInit {
       equivalencyControl?.setValue(this.equivalency?.equivalency);
       this.form.get('baseAmount')?.addValidators(Validators.required);
     });
+
+    const oldData = await this._inventoryCheckCart.getCurrent();
+    this.details = oldData.details;
   }
 
   protected async selectProduct() {
@@ -137,6 +158,15 @@ export class InventoryCheckPage implements OnInit {
     this.details.push(detail);
     this._toast.showToast('Detalle agregado', 2000, 'primary', 'top');
     this.clear();
+
+    const check: IInventoryCheck = {
+      id: 1,
+      date: new Date(),
+      details: this.details,
+      state: true,
+      uploaded: States.NOT_SYNCABLE
+    };
+    await this._inventoryCheckCart.insert(check);
   }
 
   private checkBeforeAdding(): boolean {
@@ -168,7 +198,7 @@ export class InventoryCheckPage implements OnInit {
     return true;
   }
 
-  protected clear(clearAll: boolean = false) {
+  protected clear(clearAll: boolean = false, showToast: boolean = false) {
     this.form.reset();
     this.product = undefined;
     this.unit = undefined;
@@ -176,6 +206,15 @@ export class InventoryCheckPage implements OnInit {
 
     if (clearAll) {
       this.details = [];
+      this._inventoryCheckCart.reset();
+    }
+
+    if(showToast){
+      if(clearAll){
+        this._toast.showToast('Todos los datos limpiados');
+      }else{
+        this._toast.showToast('Formulario limpiado');
+      }
     }
   }
 

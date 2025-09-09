@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from "@angular/core";
 import {
   IonContent,
   IonHeader,
@@ -8,30 +8,32 @@ import {
   IonInput,
   IonSelect,
   IonSelectOption,
-} from '@ionic/angular/standalone';
-import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
-import { IProduct } from 'src/app/models/product.model';
-import { DecimalPipe, UpperCasePipe } from '@angular/common';
-import { IProductCategory } from 'src/app/models/product-category.model';
-import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
-import { ICategory } from 'src/app/models/category.model';
-import { addIcons } from 'ionicons';
-import { heart, shareSocial, camera } from 'ionicons/icons';
-import { FormsModule } from '@angular/forms';
-import { IUnitProduct } from 'src/app/models/unit-product.model';
-import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
-import { firstValueFrom, forkJoin } from 'rxjs';
-import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
-import { IUnit } from 'src/app/models/unit.model';
-import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.service';
-import { AlertsService } from 'src/app/services/alerts/alerts.service';
-import { ToastService } from 'src/app/services/toast/toast.service';
-import { LocalInventoryService } from 'src/app/services/local/local-inventory/local-inventory.service';
+} from "@ionic/angular/standalone";
+import { HeaderBarComponent } from "../../elements/header-bar/header-bar.component";
+import { IProduct } from "src/app/models/product.model";
+import { DecimalPipe, UpperCasePipe } from "@angular/common";
+import { IProductCategory } from "src/app/models/product-category.model";
+import { LocalCategoriesService } from "src/app/services/local/local-categories/local-categories.service";
+import { ICategory } from "src/app/models/category.model";
+import { addIcons } from "ionicons";
+import { heart, shareSocial, camera } from "ionicons/icons";
+import { FormsModule } from "@angular/forms";
+import { IUnitProduct } from "src/app/models/unit-product.model";
+import { LocalUnitProductsService } from "src/app/services/local/local-unit-products/local-unit-products.service";
+import { firstValueFrom, forkJoin } from "rxjs";
+import { LocalUnitsService } from "src/app/services/local/local-units/local-units.service";
+import { IUnit } from "src/app/models/unit.model";
+import { LocalCartService } from "src/app/services/local/local-cart/local-cart.service";
+import { AlertsService } from "src/app/services/alerts/alerts.service";
+import { ToastService } from "src/app/services/toast/toast.service";
+import { LocalInventoryService } from "src/app/services/local/local-inventory/local-inventory.service";
+import { LocalProductsService } from "src/app/services/local/local-products/local-products.service";
+import { GlobalService } from "src/app/services/global/global.service";
 
 @Component({
-  selector: 'app-product',
-  templateUrl: './product.component.html',
-  styleUrls: ['./product.component.scss'],
+  selector: "app-product",
+  templateUrl: "./product.component.html",
+  styleUrls: ["./product.component.scss"],
   standalone: true,
   imports: [
     UpperCasePipe,
@@ -68,7 +70,9 @@ export class ProductComponent implements OnInit {
     private _cart: LocalCartService,
     private _alert: AlertsService,
     private _toast: ToastService,
-    private _invetory: LocalInventoryService
+    private _invetory: LocalInventoryService,
+    private _product: LocalProductsService,
+    private _global: GlobalService
   ) {
     addIcons({ heart, shareSocial, camera });
   }
@@ -79,7 +83,7 @@ export class ProductComponent implements OnInit {
         this._categories.getAll(),
         this._prices.getAll(),
         this._unit.getAll(),
-        this._invetory.get(this.product!.id as number)
+        this._invetory.get(this.product!.id as number),
       ])
     );
 
@@ -103,14 +107,13 @@ export class ProductComponent implements OnInit {
       }
     });
     this.selectedPrice =
-      this.prices.find((price) => price.unitPro.isDefault)?.unitPro.id as number ||
-      this.prices[0].unitPro.id as number;
+      (this.prices.find((price) => price.unitPro.isDefault)?.unitPro
+        .id as number) || (this.prices[0].unitPro.id as number);
 
     if (data[3]) {
-      this.existence = (data[3].existence) || 0;
+      this.existence = data[3].existence || 0;
       this.baseUnit = await this._unit.get(data[3].idUnit);
     }
-
   }
 
   protected getTotal() {
@@ -122,20 +125,23 @@ export class ProductComponent implements OnInit {
 
   private async check(unit: IUnit): Promise<boolean> {
     if (!this.cantidad || this.cantidad <= 0) {
-      await this._alert.showError('CANTIDAD INVÁLIDA');
+      await this._alert.showError("CANTIDAD INVÁLIDA");
       return false;
     }
     if (
-      !this.selectedPrice || this.selectedPrice == 0 ||
+      !this.selectedPrice ||
+      this.selectedPrice == 0 ||
       !this.prices.some((price) => price.unitPro.id == this.selectedPrice)
     ) {
-      await this._alert.showError('PRECIO INVÁLIDO');
+      await this._alert.showError("PRECIO INVÁLIDO");
       return false;
     }
 
     if (!unit.allowDecimals) {
       if (!Number.isInteger(this.cantidad)) {
-        await this._alert.showError('LA UNIDAD SELECCIONADA NO PERMITE DECIMALES');
+        await this._alert.showError(
+          "LA UNIDAD SELECCIONADA NO PERMITE DECIMALES"
+        );
         return false;
       }
     }
@@ -145,7 +151,9 @@ export class ProductComponent implements OnInit {
 
   protected async onAddProduct() {
     if (this.prices.length == 0) {
-      await this._alert.showError('NO HAY PRECIOS REGISTRADOS PARA ESTE PRODUCTO');
+      await this._alert.showError(
+        "NO HAY PRECIOS REGISTRADOS PARA ESTE PRODUCTO"
+      );
       return;
     }
 
@@ -154,13 +162,26 @@ export class ProductComponent implements OnInit {
     )!.unitPro;
     const unit = await this._unit.get(price.idUnit);
     if (!unit) {
-      this._alert.showError('No se encontró la unidad seleccionada');
+      this._alert.showError("No se encontró la unidad seleccionada");
       return;
     }
     if (!(await this.check(unit))) return;
 
     await this._cart.addProduct(this.product!, this.cantidad!, price);
 
-    await this._toast.showToast('PRODUCTO AGREGADO', 1000);
+    await this._toast.showToast("PRODUCTO AGREGADO", 1000);
+  }
+
+  protected async setFavorite() {
+    if (!this.product) return;
+    this.product.isFavorite = this.product?.isFavorite ? false : true;
+    await this._product
+      .update(this.product)
+      .then(() => {
+        this._global.updateData();
+      })
+      .catch(() => {
+        this._alert.showError("Error marcando producto como favorito");
+      });
   }
 }

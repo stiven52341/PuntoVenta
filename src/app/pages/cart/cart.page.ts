@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
 import {
   IonContent,
   IonHeader,
@@ -10,30 +10,30 @@ import {
   IonFooter,
   IonToolbar,
   IonButton,
-} from '@ionic/angular/standalone';
-import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
-import { addIcons } from 'ionicons';
-import { trash, camera } from 'ionicons/icons';
-import { ICart } from 'src/app/models/cart.model';
-import { LocalCartService } from 'src/app/services/local/local-cart/local-cart.service';
-import { IUnitProduct } from 'src/app/models/unit-product.model';
-import { IProduct } from 'src/app/models/product.model';
-import { PhotosService } from 'src/app/services/photos/photos.service';
-import { PhotoKeys, States } from 'src/app/models/constants';
-import { distinctUntilChanged, firstValueFrom, forkJoin } from 'rxjs';
-import { ToastService } from 'src/app/services/toast/toast.service';
-import { AlertsService } from 'src/app/services/alerts/alerts.service';
-import { FilesService } from 'src/app/services/files/files.service';
-import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';
-import { IPurchase } from 'src/app/models/purchase.model';
-import { PurchaseService } from 'src/app/services/api/purchase/purchase.service';
-import { LocalPurchaseService } from 'src/app/services/local/local-purchase/local-purchase.service';
-import { IUnit } from 'src/app/models/unit.model';
-import { PrintingService } from 'src/app/services/printing/printing.service';
-import { LocalInventoryService } from 'src/app/services/local/local-inventory/local-inventory.service';
-import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
-import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
-import { LocalUnitBaseService } from 'src/app/services/local/local-unit-base/local-unit-base.service';
+} from "@ionic/angular/standalone";
+import { HeaderBarComponent } from "src/app/components/elements/header-bar/header-bar.component";
+import { addIcons } from "ionicons";
+import { trash, camera } from "ionicons/icons";
+import { ICart } from "src/app/models/cart.model";
+import { LocalCartService } from "src/app/services/local/local-cart/local-cart.service";
+import { IUnitProduct } from "src/app/models/unit-product.model";
+import { IProduct } from "src/app/models/product.model";
+import { PhotosService } from "src/app/services/photos/photos.service";
+import { PhotoKeys, States } from "src/app/services/constants";
+import { distinctUntilChanged, firstValueFrom, forkJoin } from "rxjs";
+import { ToastService } from "src/app/services/toast/toast.service";
+import { AlertsService } from "src/app/services/alerts/alerts.service";
+import { FilesService } from "src/app/services/files/files.service";
+import { IPurchaseDetail } from "src/app/models/purchase-detail.model";
+import { IPurchase } from "src/app/models/purchase.model";
+import { PurchaseService } from "src/app/services/api/purchase/purchase.service";
+import { LocalPurchaseService } from "src/app/services/local/local-purchase/local-purchase.service";
+import { IUnit } from "src/app/models/unit.model";
+import { PrintingService } from "src/app/services/printing/printing.service";
+import { LocalInventoryService } from "src/app/services/local/local-inventory/local-inventory.service";
+import { LocalUnitProductsService } from "src/app/services/local/local-unit-products/local-unit-products.service";
+import { LocalProductsService } from "src/app/services/local/local-products/local-products.service";
+import { LocalUnitBaseService } from "src/app/services/local/local-unit-base/local-unit-base.service";
 
 export interface IProductCart {
   product: IProduct;
@@ -44,9 +44,9 @@ export interface IProductCart {
 }
 
 @Component({
-  selector: 'app-cart',
-  templateUrl: './cart.page.html',
-  styleUrls: ['./cart.page.scss'],
+  selector: "app-cart",
+  templateUrl: "./cart.page.html",
+  styleUrls: ["./cart.page.scss"],
   standalone: true,
   imports: [
     IonButton,
@@ -66,8 +66,8 @@ export class CartPage implements OnInit {
   protected loading: boolean = false;
   protected cart?: ICart;
   protected products: Array<IProductCart> = [];
-  private noImage: string = '../../../assets/no-image.png';
-  private loadingImage: string = '../../../assets/icon/loading.gif';
+  private noImage: string = "../../../assets/no-image.png";
+  private loadingImage: string = "../../../assets/icon/loading.gif";
 
   constructor(
     private _cart: LocalCartService,
@@ -95,6 +95,7 @@ export class CartPage implements OnInit {
     this.cart = await this._cart.setCart();
     await this.setProducts();
     this.loading = false;
+    this.loading = true;
 
     this._cart
       .getCart()
@@ -119,16 +120,13 @@ export class CartPage implements OnInit {
     this.products = [];
     const setProduct = async (product: IProductCart) => {
       product.photo = this.loadingImage;
-      this._photo.getPhoto(
-        product.product.id.toString(),
-        PhotoKeys.PRODUCTS_ALBUMN
-      ).then(photo => {
-        product.photo = photo || this.noImage;
-      });
+      this._photo
+        .getPhoto(product.product.id.toString(), PhotoKeys.PRODUCTS_ALBUMN)
+        .then((photo) => {
+          product.photo = photo || this.noImage;
+        });
       this.products.push(product);
     };
-
-
 
     const pros = this.cart.products.map((product) => setProduct(product));
     await firstValueFrom(forkJoin(pros));
@@ -149,12 +147,18 @@ export class CartPage implements OnInit {
   protected async removeProduct(product: IProductCart) {
     if (this.loading) {
       this._toast.showToast(
-        'NO PUEDE REMOVER UN PRODUCTO MIENTRAS SE ESTÁ CARGANDO'
+        "NO PUEDE REMOVER UN PRODUCTO MIENTRAS SE ESTÁ CARGANDO"
       );
       return;
     }
 
-    if (!await this._alert.showConfirm('CONFIRME', '¿Está seguro de remover este artículo del carrito?')) return;
+    if (
+      !(await this._alert.showConfirm(
+        "CONFIRME",
+        "¿Está seguro de remover este artículo del carrito?"
+      ))
+    )
+      return;
 
     this.loading = true;
     await this._cart.removeProduct(product.product);
@@ -163,13 +167,13 @@ export class CartPage implements OnInit {
 
   protected async onSave() {
     if (this.cart?.products == undefined || this.cart.products.length == 0) {
-      this._alert.showError('El carrito está vacío');
+      this._alert.showError("El carrito está vacío");
       return;
     }
 
     const resp = await this._alert.showConfirm(
-      'CONFIRME',
-      '¿Está seguro de registrar la compra?'
+      "CONFIRME",
+      "¿Está seguro de registrar la compra?"
     );
 
     if (!resp) return;
@@ -191,7 +195,6 @@ export class CartPage implements OnInit {
       total += this.getTotalArticle(product);
     });
 
-
     const purchase: IPurchase = {
       date: new Date(),
       total: total,
@@ -202,27 +205,30 @@ export class CartPage implements OnInit {
     };
 
     const save = async (purchase: IPurchase) => {
-      const result = await this._purchase.insert(purchase)
-        .catch((err) => {
-          this._file.saveError(err);
-          this._toast.showToast(
-            'ERROR AL REGISTRAR LA COMPRA EN LA BASE DE DATOS'
-          );
-        });
+      const result = await this._purchase.insert(purchase).catch((err) => {
+        this._file.saveError(err);
+        this._toast.showToast(
+          "ERROR AL REGISTRAR LA COMPRA EN LA BASE DE DATOS"
+        );
+      });
 
       purchase.uploaded = result ? States.SYNC : States.NOT_INSERTED;
 
-      await firstValueFrom(forkJoin([
-        this._localPurchase.insert(purchase),
-        this.updateInventory(purchaseDetails)
-      ])).then(async () => {
-        this._alert.showSuccess('COMPRA REGISTRADA');
-        this._cart.resetCart();
-        this._printing.printPurchase(purchase, purchaseDetails);
-      }).catch((err) => {
-        this._file.saveError(err);
-        this._toast.showToast('ERROR AL REGISTRAR LA COMPRA DE FORMA LOCAL');
-      });
+      await firstValueFrom(
+        forkJoin([
+          this._localPurchase.insert(purchase),
+          this.updateInventory(purchaseDetails),
+        ])
+      )
+        .then(async () => {
+          this._alert.showSuccess("COMPRA REGISTRADA");
+          this._cart.resetCart();
+          this._printing.printPurchase(purchase, purchaseDetails);
+        })
+        .catch((err) => {
+          this._file.saveError(err);
+          this._toast.showToast("ERROR AL REGISTRAR LA COMPRA DE FORMA LOCAL");
+        });
     };
 
     this.loading = true;
@@ -231,24 +237,29 @@ export class CartPage implements OnInit {
   }
 
   private async updateInventory(details: Array<IPurchaseDetail>) {
-    
     const sync = async (detail: IPurchaseDetail) => {
-      const price = await this._unitProduct.get(detail.id.idUnitProductCurrency);
+      const price = await this._unitProduct.get(
+        detail.id.idUnitProductCurrency
+      );
       const product = await this._product.get(price!.idProduct);
 
       let amount = detail.amount;
       if (product?.idBaseUnit && price!.idUnit != product.idBaseUnit) {
-        const equivalency = await this._unitBase.get(
-          { idUnit: price!.idUnit, idUnitBase: product.idBaseUnit }
-        );
+        const equivalency = await this._unitBase.get({
+          idUnit: price!.idUnit,
+          idUnitBase: product.idBaseUnit,
+        });
         if (!equivalency) return undefined;
         amount = equivalency.equivalency * detail.amount;
       }
       return { idProduct: product!.id, amount: amount };
-    }
-    const pros = details.map(async detail => {
+    };
+    const pros = details.map(async (detail) => {
       const existence = await sync(detail);
-      this._inventory.reduceExistence(existence!.idProduct as number, existence!.amount);
+      this._inventory.reduceExistence(
+        existence!.idProduct as number,
+        existence!.amount
+      );
     });
     await firstValueFrom(forkJoin(pros));
   }

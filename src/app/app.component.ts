@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
 import {
   IonApp,
   IonRouterOutlet,
@@ -8,30 +8,34 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  MenuController, IonFooter, IonLabel } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { StatusBar } from '@capacitor/status-bar';
-import { GeneralInfoService } from './services/local/general-info/general-info.service';
-import { IGeneralInfo } from './models/general-info.model';
-import { ModalsService } from './services/modals/modals.service';
-import { ScreenOrientation } from '@capacitor/screen-orientation';
+  MenuController,
+  IonFooter,
+  IonLabel,
+} from "@ionic/angular/standalone";
+import { StatusBar } from "@capacitor/status-bar";
+import { GeneralInfoService } from "./services/local/general-info/general-info.service";
+import { IGeneralInfo } from "./models/general-info.model";
+import { ModalsService } from "./services/modals/modals.service";
+import { ScreenOrientation } from "@capacitor/screen-orientation";
 
 //DO NOT REMOVE
-import { ProductComponent } from './components/modals/product/product.component';
-import { IButton } from './models/button.model';
-import { ButtonListComponent } from './components/elements/button-list/button-list.component';
-import { FilesService } from './services/files/files.service';
-import { States } from './models/constants';
-import { GlobalService } from './services/global/global.service';
-import { ToastService } from './services/toast/toast.service';
-import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
-import { App } from '@capacitor/app';
+import { ProductComponent } from "./components/modals/product/product.component";
+import { IButton } from "./models/button.model";
+import { ButtonListComponent } from "./components/elements/button-list/button-list.component";
+import { FilesService } from "./services/files/files.service";
+import { States } from "./services/constants";
+import { GlobalService } from "./services/global/global.service";
+import { ToastService } from "./services/toast/toast.service";
+import { Keyboard, KeyboardResize } from "@capacitor/keyboard";
+import { App } from "@capacitor/app";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
-  imports: [IonLabel, IonFooter, 
+  selector: "app-root",
+  templateUrl: "app.component.html",
+  styleUrls: ["app.component.scss"],
+  imports: [
+    IonLabel,
+    IonFooter,
     IonApp,
     IonRouterOutlet,
     IonMenu,
@@ -42,7 +46,7 @@ import { App } from '@capacitor/app';
     ProductComponent,
     IonContent,
     ButtonListComponent,
-    IonFooter
+    IonFooter,
   ],
 })
 export class AppComponent implements OnInit {
@@ -64,9 +68,9 @@ export class AppComponent implements OnInit {
       this.version = info.version;
     });
 
-    ScreenOrientation.lock({ orientation: 'portrait' })
+    ScreenOrientation.lock({ orientation: "portrait" })
       .then(() => {
-        console.log('Screen locked to portrait');
+        console.log("Screen locked to portrait");
       })
       .catch(async (err) => {
         await this._file.saveError(err);
@@ -74,71 +78,69 @@ export class AppComponent implements OnInit {
 
     this.menuOptions = [
       {
-        title: 'Caja',
-        image: '../assets/icon/cash.png',
+        title: "Caja",
+        image: "../assets/icon/cash.png",
         do: async () => {
-          await this.goTo('/cash-box');
+          await this.goTo("/cash-box");
         },
       },
       {
-        title: 'Productos',
-        image: '../assets/icon/apple.png',
+        title: "Productos",
+        image: "../assets/icon/apple.png",
         do: async () => {
-          await this.goTo('/products');
+          await this.goTo("/products");
         },
       },
       {
-        title: 'Carrito',
-        image: '../assets/icon/cart.png',
+        title: "Carrito",
+        image: "../assets/icon/cart.png",
         do: async () => {
-          await this.goTo('/cart');
+          await this.goTo("/cart");
         },
       },
       {
-        title: 'Inventario',
-        image: '../assets/icon/inventory.png',
+        title: "Inventario",
+        image: "../assets/icon/inventory.png",
         do: async () => {
-          await this.goTo('/inventory');
+          await this.goTo("/inventory");
         },
       },
       {
-        title: 'Mantenimientos',
-        image: '../assets/icon/pencil.png',
+        title: "Mantenimientos",
+        image: "../assets/icon/pencil.png",
         do: async () => {
-          await this.goTo('/mants');
+          await this.goTo("/mants");
         },
       },
       {
-        title: 'Consultas',
-        image: '../assets/icon/search.png',
+        title: "Consultas",
+        image: "../assets/icon/search.png",
         do: async () => {
-          await this.goTo('/consults');
+          await this.goTo("/consults");
         },
       },
       {
-        title: 'Configuración',
-        image: '../assets/icon/setting.png',
+        title: "Configuración",
+        image: "../assets/icon/setting.png",
         do: async () => {
-          await this.goTo('/config');
-        }
-      }
+          await this.goTo("/config");
+        },
+      },
     ];
 
-    addIcons({});
-
-    Keyboard.addListener('keyboardWillShow', (info) => {
+    Keyboard.addListener("keyboardWillShow", (info) => {
       // Opcional: cambiar modo de resize en caliente
       Keyboard.setResizeMode({ mode: KeyboardResize.None });
       // Scroll manual a la posición del input activo
       setTimeout(() => {
         const el: any = document.activeElement;
         if (el && el.scrollIntoView) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
         }
       }, 100);
     });
 
-    Keyboard.addListener('keyboardWillHide', () => {
+    Keyboard.addListener("keyboardWillHide", () => {
       Keyboard.setResizeMode({ mode: KeyboardResize.Native });
     });
   }
@@ -146,7 +148,7 @@ export class AppComponent implements OnInit {
   async ngOnInit() {
     await this.onInit();
     this._global.SyncData().then((result) => {
-      if (result) this._toast.showToast('Datos sincronizados');
+      if (result) this._toast.showToast("Datos sincronizados");
     });
   }
 
@@ -156,7 +158,7 @@ export class AppComponent implements OnInit {
     await StatusBar.setOverlaysWebView({
       overlay: false,
     });
-    await StatusBar.setBackgroundColor({ color: '#2dd55b' });
+    await StatusBar.setBackgroundColor({ color: "#2dd55b" });
     StatusBar.show();
 
     await this._generalInfo.initStorage();

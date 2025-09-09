@@ -12,7 +12,7 @@ import { HeaderBarComponent } from '../../elements/header-bar/header-bar.compone
 import { ICategory } from 'src/app/models/category.model';
 import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
 import { PhotosService } from 'src/app/services/photos/photos.service';
-import { PhotoKeys } from 'src/app/models/constants';
+import { PhotoKeys } from 'src/app/services/constants';
 import { NgClass } from '@angular/common';
 
 @Component({

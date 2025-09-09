@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { ToastService } from '../toast/toast.service';
 import { App } from '@capacitor/app';
-import { DirectoryKeys, FilesKeys } from 'src/app/models/constants';
+import { DirectoryKeys, FilesKeys } from 'src/app/services/constants';
 
 @Injectable({
   providedIn: 'root',

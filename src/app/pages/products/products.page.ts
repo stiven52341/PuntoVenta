@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, ViewChild } from "@angular/core";
 import {
   IonContent,
   IonHeader,
@@ -6,27 +6,28 @@ import {
   IonLabel,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
-  InfiniteScrollCustomEvent, IonToolbar,
+  InfiniteScrollCustomEvent,
+  IonToolbar,
   IonRefresher,
   IonRefresherContent,
-  RefresherCustomEvent
-} from '@ionic/angular/standalone';
-import { ProductCardComponent } from 'src/app/components/elements/product-card/product-card.component';
-import { ICategory } from 'src/app/models/category.model';
-import { CategoryCardComponent } from 'src/app/components/elements/category-card/category-card.component';
-import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
-import { firstValueFrom, forkJoin } from 'rxjs';
-import { PhotosService } from 'src/app/services/photos/photos.service';
-import { PhotoKeys } from 'src/app/models/constants';
-import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
-import { IProduct } from 'src/app/models/product.model';
-import { ModalsService } from 'src/app/services/modals/modals.service';
-import { IUnitProduct } from 'src/app/models/unit-product.model';
-import { LocalUnitProductsService } from 'src/app/services/local/local-unit-products/local-unit-products.service';
-import { LocalProductCategoryService } from 'src/app/services/local/local-product-category/local-product-category.service';
-import { IProductCategory } from 'src/app/models/product-category.model';
-import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
-import { GlobalService } from 'src/app/services/global/global.service';
+  RefresherCustomEvent,
+} from "@ionic/angular/standalone";
+import { ProductCardComponent } from "src/app/components/elements/product-card/product-card.component";
+import { ICategory } from "src/app/models/category.model";
+import { CategoryCardComponent } from "src/app/components/elements/category-card/category-card.component";
+import { LocalCategoriesService } from "src/app/services/local/local-categories/local-categories.service";
+import { firstValueFrom, forkJoin } from "rxjs";
+import { PhotosService } from "src/app/services/photos/photos.service";
+import { PhotoKeys } from "src/app/services/constants";
+import { LocalProductsService } from "src/app/services/local/local-products/local-products.service";
+import { IProduct } from "src/app/models/product.model";
+import { ModalsService } from "src/app/services/modals/modals.service";
+import { IUnitProduct } from "src/app/models/unit-product.model";
+import { LocalUnitProductsService } from "src/app/services/local/local-unit-products/local-unit-products.service";
+import { LocalProductCategoryService } from "src/app/services/local/local-product-category/local-product-category.service";
+import { IProductCategory } from "src/app/models/product-category.model";
+import { HeaderBarComponent } from "src/app/components/elements/header-bar/header-bar.component";
+import { GlobalService } from "src/app/services/global/global.service";
 
 interface IProductDetail {
   product: IProduct;
@@ -35,11 +36,12 @@ interface IProductDetail {
 }
 
 @Component({
-  selector: 'app-products',
-  templateUrl: './products.page.html',
-  styleUrls: ['./products.page.scss'],
+  selector: "app-products",
+  templateUrl: "./products.page.html",
+  styleUrls: ["./products.page.scss"],
   standalone: true,
-  imports: [IonToolbar,
+  imports: [
+    IonToolbar,
     IonLabel,
     CategoryCardComponent,
     IonSearchbar,
@@ -50,7 +52,7 @@ interface IProductDetail {
     IonInfiniteScroll,
     IonInfiniteScrollContent,
     IonRefresher,
-    IonRefresherContent
+    IonRefresherContent,
   ],
 })
 export class ProductsPage implements OnInit {
@@ -73,8 +75,8 @@ export class ProductsPage implements OnInit {
 
   protected onSelectCategory = new EventEmitter<ICategory>();
   protected selectedCategory?: ICategory;
-  private readonly noImage: string = '../../../assets/no-image.png';
-  @ViewChild('searchBar', {static: false}) searchBar!: IonSearchbar;
+  private readonly noImage: string = "../../../assets/no-image.png";
+  @ViewChild("searchBar", { static: false }) searchBar!: IonSearchbar;
 
   // private generating: boolean = false;
 
@@ -85,8 +87,8 @@ export class ProductsPage implements OnInit {
     private _modal: ModalsService,
     private _unitProduct: LocalUnitProductsService,
     private _productCategory: LocalProductCategoryService,
-    private _global: GlobalService,
-  ) { }
+    private _global: GlobalService
+  ) {}
 
   async ngOnInit() {
     this._global.listenToChanges().subscribe(async () => {
@@ -100,7 +102,6 @@ export class ProductsPage implements OnInit {
   }
 
   private async loadProducts() {
-
     this.categories = [];
     this.products = [];
     this.productsFiltered = [];
@@ -115,13 +116,19 @@ export class ProductsPage implements OnInit {
       ])
     );
 
+    const products = data[1].sort((a, b) => {
+      const fa = a.isFavorite ? 1 : 0;
+      const fb = b.isFavorite ? 1 : 0;
+      return fb - fa;
+    });
+
     const unitProducts = data[2].filter((uni) => uni.state == true);
     const productCategories = data[3].filter((pro) => pro.state == true);
 
     data[0].forEach((category) => {
       this.categories.push({
         category: category,
-        image: '../../../assets/icon/loading.gif',
+        image: "../../../assets/icon/loading.gif",
       });
     });
 
@@ -146,7 +153,7 @@ export class ProductsPage implements OnInit {
       });
     };
 
-    for (const product of data[1]) {
+    for (const product of products) {
       if (!product.state) continue;
       assignProducts(product);
     }
@@ -174,10 +181,9 @@ export class ProductsPage implements OnInit {
       }
     }
 
-
     for (const product of newList) {
-      if (!product.image || product.image == '') {
-        product.image = '../../../assets/icon/loading.gif';
+      if (!product.image || product.image == "") {
+        product.image = "../../../assets/icon/loading.gif";
         this.getPhotoProduct(product.product).then((data) => {
           product.image = data || this.noImage;
         });
@@ -260,7 +266,7 @@ export class ProductsPage implements OnInit {
 
   protected async onReset($event?: RefresherCustomEvent) {
     this.loading = true;
-    this.searchBar.value = '';
+    this.searchBar.value = "";
     await this.onInit();
     this.loading = false;
     $event?.target.complete();

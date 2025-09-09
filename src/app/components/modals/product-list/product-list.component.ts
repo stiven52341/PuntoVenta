@@ -16,7 +16,7 @@ import { HeaderBarComponent } from '../../elements/header-bar/header-bar.compone
 import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
 import { IProduct } from 'src/app/models/product.model';
 import { PhotosService } from 'src/app/services/photos/photos.service';
-import { PhotoKeys } from 'src/app/models/constants';
+import { PhotoKeys } from 'src/app/services/constants';
 import { Subscription } from 'rxjs';
 import { NgClass } from '@angular/common';
 

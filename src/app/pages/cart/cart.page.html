@@ -22,7 +22,12 @@
             slot="icon-only"
           ></ion-icon>
         </div>
-        <ion-label><b>{{ product.unit.name }} - ${{ product.price.price | number:'1.2-2' }}</b></ion-label>
+        <ion-label
+          ><b
+            >{{ product.unit.name }} - ${{ product.price.price | number:'1.2-2'
+            }}</b
+          ></ion-label
+        >
         <div class="cart-footer">
           <span>Total: ${{ getTotalArticle(product) | number:'1.2-2' }}</span>
           <ion-input

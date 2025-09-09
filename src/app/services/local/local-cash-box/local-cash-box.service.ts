@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
 import { ICashBox } from 'src/app/models/cash-box.model';
-import { StorageKeys } from 'src/app/models/constants';
+import { StorageKeys } from 'src/app/services/constants';
 import { LocalPurchaseService } from '../local-purchase/local-purchase.service';
 import { Observable } from 'rxjs';
 

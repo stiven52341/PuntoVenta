@@ -11,7 +11,7 @@ import { LocalProductCategoryService } from '../local/local-product-category/loc
 import { LocalPurchaseService } from '../local/local-purchase/local-purchase.service';
 import { LocalUnitsService } from '../local/local-units/local-units.service';
 import { LocalUnitProductsService } from '../local/local-unit-products/local-unit-products.service';
-import { States } from 'src/app/models/constants';
+import { States } from 'src/app/services/constants';
 import { ApiCoreService, IEntity } from '../api/api-core/api-core.service';
 import { CategoryService } from '../api/category/category.service';
 import { CurrencyService } from '../api/currency/currency.service';

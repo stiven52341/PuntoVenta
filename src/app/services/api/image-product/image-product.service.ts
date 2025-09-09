@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiCoreService } from '../api-core/api-core.service';
 import { IImageProduct } from 'src/app/models/image-product.model';
-import { ApiKeys } from 'src/app/models/constants';
+import { ApiKeys } from 'src/app/services/constants';
 import { PhotosService } from '../../photos/photos.service';
 import { lastValueFrom, timeout } from 'rxjs';
 import { HttpEvent } from '@angular/common/http';

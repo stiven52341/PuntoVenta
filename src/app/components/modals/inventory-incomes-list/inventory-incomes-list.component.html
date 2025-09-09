@@ -1,3 +1,28 @@
-<p>
-  inventory-incomes-list works!
-</p>
+<ion-header>
+  <app-header-bar title="lista de compras de mercancías" [arrowBack]="true" [isModal]="true"
+    [loading]="loading"></app-header-bar>
+</ion-header>
+<ion-content>
+  <div class="content">
+    <ion-list>
+      @for(income of incomesFiltered; track $index){
+      <ion-item (click)="onClick(income)">
+        <div class="item-content">
+          <ion-label>{{income.id}}.</ion-label>
+          <ion-label>Fecha: {{income.date | date:'dd-MM-yyyy hh:mm a'}}</ion-label>
+          <ion-label>Costo: ${{income.totalCost | number:'1.2-2'}}</ion-label>
+        </div>
+      </ion-item>
+      }@empty{
+      @if(loading){
+      <ion-label color="danger">Cargando...</ion-label>
+      }@else {
+      <ion-label color="danger">No hay compras de mercancías registradas</ion-label>
+      }
+      }
+    </ion-list>
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>

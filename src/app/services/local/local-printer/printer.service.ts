@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
-import { StorageKeys } from 'src/app/models/constants';
+import { StorageKeys } from 'src/app/services/constants';
 import { Printer } from 'src/app/models/printer.model';
 
 @Injectable({

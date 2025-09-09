@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom, timeout } from 'rxjs';
-import { ApiKeys, States } from 'src/app/models/constants';
+import { ApiKeys, States } from 'src/app/services/constants';
 import { FilesService } from '../../files/files.service';
 import { ErrorsService } from '../errors/errors.service';
 

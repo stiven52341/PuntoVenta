@@ -1,7 +1,7 @@
 import { EventEmitter, inject, Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
 import { ICart } from 'src/app/models/cart.model';
-import { States, StorageKeys } from 'src/app/models/constants';
+import { States, StorageKeys } from 'src/app/services/constants';
 import { IProduct } from 'src/app/models/product.model';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { Observable, shareReplay } from 'rxjs';

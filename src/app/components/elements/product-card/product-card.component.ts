@@ -42,5 +42,8 @@ export class ProductCardComponent implements OnInit {
     });
 
     this.unitProduct = units.find((unit) => unit.isDefault == true);
+    if(!this.unitProduct){
+      this.unitProduct = units[0];
+    }
   }
 }

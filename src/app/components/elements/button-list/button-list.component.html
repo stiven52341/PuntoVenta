@@ -1,4 +1,4 @@
-<ion-list>
+<ion-list lines="none">
   <ion-item *ngFor="let option of buttons">
     <ion-button [disabled]="option.disable == true || disabled" (click)="option.do()">
       <div class="button-content">

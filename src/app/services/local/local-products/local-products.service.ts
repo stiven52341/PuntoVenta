@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
 import { IProduct } from 'src/app/models/product.model';
-import { StorageKeys } from 'src/app/models/constants';
+import { StorageKeys } from 'src/app/services/constants';
 import { ProductService } from '../../api/product/product.service';
 import { firstValueFrom, forkJoin } from 'rxjs';
 

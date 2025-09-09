@@ -26,7 +26,7 @@ import { ProductService } from 'src/app/services/api/product/product.service';
 import { FilesService } from 'src/app/services/files/files.service';
 import { ImageProductService } from 'src/app/services/api/image-product/image-product.service';
 import { IImageProduct } from 'src/app/models/image-product.model';
-import { PhotoKeys, States } from 'src/app/models/constants';
+import { PhotoKeys, States } from 'src/app/services/constants';
 import { TitleCasePipe } from '@angular/common';
 import { IButton } from 'src/app/models/button.model';
 import { ToastService } from 'src/app/services/toast/toast.service';

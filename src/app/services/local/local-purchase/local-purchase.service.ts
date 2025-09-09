@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
 import { IPurchase } from 'src/app/models/purchase.model';
-import { StorageKeys } from 'src/app/models/constants';
+import { StorageKeys } from 'src/app/services/constants';
 import { LocalPurchaseDetailService } from '../local-purchase-detail/local-purchase-detail.service';
 import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';
 import { GlobalService } from '../../global/global.service';

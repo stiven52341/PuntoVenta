@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
 import { IInventory } from 'src/app/models/inventory.model';
-import { States, StorageKeys } from 'src/app/models/constants';
+import { States, StorageKeys } from 'src/app/services/constants';
 import { LocalProductsService } from '../local-products/local-products.service';
 
 @Injectable({

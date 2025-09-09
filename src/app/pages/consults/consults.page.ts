@@ -31,8 +31,10 @@ export class ConsultsPage implements OnInit {
       {
         title: 'COMPRAS DE MERCANCÍA',
         image: '../../../assets/icon/inventory-income.png',
-        do: () => {
-          
+        do: async () => {
+          const income = await this._modal.showInventoryIncomesList();
+          if(!income) return;
+          this._router.navigate(['consults/product-income', income.id]);
         }
       }
     ];

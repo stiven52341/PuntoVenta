@@ -12,7 +12,7 @@ import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { LocalCashBoxService } from 'src/app/services/local/local-cash-box/local-cash-box.service';
 import { CashBoxService } from 'src/app/services/api/cash-box/cash-box.service';
 import { ICashBox } from 'src/app/models/cash-box.model';
-import { States } from 'src/app/models/constants';
+import { States } from 'src/app/services/constants';
 import { FilesService } from 'src/app/services/files/files.service';
 
 @Component({

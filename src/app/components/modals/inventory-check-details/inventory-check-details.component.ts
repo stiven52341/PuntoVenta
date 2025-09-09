@@ -9,7 +9,7 @@ import { LocalProductsService } from 'src/app/services/local/local-products/loca
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { PhotosService } from 'src/app/services/photos/photos.service';
 import { firstValueFrom, forkJoin } from 'rxjs';
-import { PhotoKeys } from 'src/app/models/constants';
+import { PhotoKeys } from 'src/app/services/constants';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 
 @Component({

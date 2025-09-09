@@ -1,21 +1,28 @@
-import { Injectable } from '@angular/core';
-import { Media } from '@capacitor-community/media';
-import { firstValueFrom, forkJoin } from 'rxjs';
-import { PhotoKeys } from 'src/app/models/constants';
-import { IImageProduct } from 'src/app/models/image-product.model';
-import { AlertsService } from '../alerts/alerts.service';
-import { FilesService } from '../files/files.service';
-import { Directory } from '@capacitor/filesystem';
-import { App } from '@capacitor/app';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Injectable } from "@angular/core";
+import { Media } from "@capacitor-community/media";
+import { firstValueFrom, forkJoin } from "rxjs";
+import { PhotoKeys } from "src/app/services/constants";
+import { IImageProduct } from "src/app/models/image-product.model";
+import { FilesService } from "../files/files.service";
+import { Directory } from "@capacitor/filesystem";
+import { App } from "@capacitor/app";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import { PlatformService } from "../platform/platform.service";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class PhotosService {
-  constructor(private _alert: AlertsService, private _file: FilesService) { }
+  constructor(
+    private _file: FilesService,
+    private _platform: PlatformService
+  ) {}
 
   public async createAlbumn(albumn: PhotoKeys) {
+    if (!this._platform.isAndroid()) {
+      return;
+    }
+
     if (!(await this.requestGalleryAccess())) return;
     const alb = await this.getAlbumn(albumn);
     if (alb) return alb;
@@ -25,6 +32,10 @@ export class PhotosService {
   }
 
   public async getAlbumn(albumn: PhotoKeys) {
+    if (!this._platform.isAndroid()) {
+      return;
+    }
+
     if (!(await this.requestGalleryAccess())) return;
     return ((await Media.getAlbums()).albums || []).find(
       (a) => a.name == albumn
@@ -32,6 +43,10 @@ export class PhotosService {
   }
 
   public async savePhoto(name: string, data: string, albumnName: PhotoKeys) {
+    if (!this._platform.isAndroid()) {
+      return;
+    }
+
     if (!(await this.requestGalleryAccess())) return;
     const albumn = await this.createAlbumn(albumnName);
     await Media.savePhoto({
@@ -42,6 +57,10 @@ export class PhotosService {
   }
 
   public async savePhotos(photos: Array<IImageProduct>, album: PhotoKeys) {
+    if (!this._platform.isAndroid()) {
+      return;
+    }
+
     if (!(await this.requestGalleryAccess())) return;
 
     try {
@@ -64,29 +83,41 @@ export class PhotosService {
     name: string,
     album: PhotoKeys
   ): Promise<string | undefined> {
+    if (!this._platform.isAndroid()) {
+      return;
+    }
+
     try {
       if (!(await this.requestGalleryAccess())) return;
 
-      const path = `/Android/media/${(await App.getInfo()).id
-        }/${album}/${name}.png`;
-      const image = await this._file.readImages(path, Directory.ExternalStorage);
+      const path = `/Android/media/${
+        (await App.getInfo()).id
+      }/${album}/${name}.png`;
+      const image = await this._file.readImages(
+        path,
+        Directory.ExternalStorage
+      );
       if (!image) return undefined;
-      return 'data:image/png;base64,' + image.toString();
+      return "data:image/png;base64," + image.toString();
     } catch (error) {
       return undefined;
     }
   }
 
   public async requestGalleryAccess(): Promise<boolean> {
+    if (!this._platform.isAndroid()) {
+      return false;
+    }
+
     if (!(await this._file.requestStoragePermission())) return false;
 
     const status = await Camera.checkPermissions();
-    if (status.photos !== 'granted' || status.camera !== 'granted') {
+    if (status.photos !== "granted" || status.camera !== "granted") {
       const requestResult = await Camera.requestPermissions({
-        permissions: ['photos', 'camera'],
+        permissions: ["photos", "camera"],
       });
       return (
-        requestResult.photos === 'granted' && requestResult.camera === 'granted'
+        requestResult.photos === "granted" && requestResult.camera === "granted"
       );
     } else {
       return true;
@@ -94,6 +125,10 @@ export class PhotosService {
   }
 
   public async takePhoto(): Promise<string | undefined> {
+    if (!this._platform.isAndroid()) {
+      return;
+    }
+
     try {
       if (!(await this.requestGalleryAccess())) return;
       const image = await Camera.getPhoto({
@@ -104,7 +139,7 @@ export class PhotosService {
         width: 480,
       });
       return image.base64String
-        ? 'data:image/png;base64,' + image.base64String
+        ? "data:image/png;base64," + image.base64String
         : undefined;
       // return image.path;
     } catch (error) {
@@ -114,6 +149,10 @@ export class PhotosService {
   }
 
   public async openGallery(): Promise<string | undefined> {
+    if (!this._platform.isAndroid()) {
+      return;
+    }
+
     try {
       if (!(await this.requestGalleryAccess())) return;
       const image = await Camera.getPhoto({
@@ -125,7 +164,7 @@ export class PhotosService {
       });
 
       return image.base64String
-        ? 'data:image/png;base64,' + image.base64String
+        ? "data:image/png;base64," + image.base64String
         : undefined;
       // return image.path
     } catch (error) {
@@ -135,8 +174,7 @@ export class PhotosService {
   }
 
   public base64ToBlob(base64: string, contentType: string): Blob {
-
-    const byteChars = atob(base64.replace('data:image/png;base64,', ''));
+    const byteChars = atob(base64.replace("data:image/png;base64,", ""));
     const byteNumbers = new Array(byteChars.length);
     for (let i = 0; i < byteChars.length; i++) {
       byteNumbers[i] = byteChars.charCodeAt(i);

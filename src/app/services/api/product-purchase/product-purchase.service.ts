@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiCoreService } from '../api-core/api-core.service';
 import { IProductPurchase } from 'src/app/models/product-purchase.model';
-import { ApiKeys } from 'src/app/models/constants';
+import { ApiKeys } from 'src/app/services/constants';
 
 @Injectable({
   providedIn: 'root'

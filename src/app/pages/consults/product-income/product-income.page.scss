@@ -1,0 +1,47 @@
+.content{
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    justify-content: center;
+    align-items: center;
+
+    ion-list{
+        padding: 0;
+    }
+
+    .card-content{
+        display: flex;
+        flex-direction: row;
+        gap: 1em;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .detail-card{
+        // height: 10em;
+    }
+
+    .card-content-big{
+        // padding: 1em;
+        width: 100%;
+        display: grid;
+        grid-template-columns: 3fr 5fr 5fr;
+        gap: .5em;
+        justify-content: center;
+        align-items: center;
+
+        .img{
+            img{
+                min-width: 3em;
+                width: 5em;
+            }
+        }
+    }
+}
+
+hr{
+    background-color: lightgray;
+    width: 100%;
+}

@@ -22,7 +22,7 @@ import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { UnitProductService } from 'src/app/services/api/unit-product/unit-product.service';
 import { FilesService } from 'src/app/services/files/files.service';
 import { IButton } from 'src/app/models/button.model';
-import { States } from 'src/app/models/constants';
+import { States } from 'src/app/services/constants';
 import { GlobalService } from 'src/app/services/global/global.service';
 import { TitleCasePipe } from '@angular/common';
 import { IUnitBase } from 'src/app/models/unit-base-product.model';

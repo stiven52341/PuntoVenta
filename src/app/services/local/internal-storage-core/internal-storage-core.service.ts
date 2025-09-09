@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
-import { StorageKeys } from 'src/app/models/constants';
+import { StorageKeys } from 'src/app/services/constants';
 import { IEntity } from '../../api/api-core/api-core.service';
 import { FilesService } from '../../files/files.service';
 

@@ -39,7 +39,7 @@
     }
   }
 
-  .details{
+  .details {
     width: 100%;
     height: 100%;
     border-radius: 10px;
@@ -52,7 +52,7 @@
     justify-content: flex-start;
     align-items: flex-start;
 
-    .header{
+    .header {
       width: 100%;
       display: flex;
       flex-direction: row;
@@ -60,29 +60,28 @@
       justify-content: space-between;
       align-items: center;
 
-
-      ion-label{
+      ion-label {
         font-size: larger;
       }
     }
-    #title{
+    #title {
       font-weight: bold;
       font-size: larger;
       display: flex;
       flex-direction: row;
       align-items: center;
-      justify-content: flex-start;
-      gap: .5em;
+      justify-content: space-between;
+      gap: 0.5em;
     }
 
-    span{
+    span {
       width: 100%;
       text-align: center;
     }
 
-    ion-button{
+    ion-button {
       width: 100%;
-      ion-label{
+      ion-label {
         color: white;
       }
     }

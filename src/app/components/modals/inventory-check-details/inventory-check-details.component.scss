@@ -27,9 +27,10 @@
             width: 100%;
             display: grid;
             // flex-direction: row;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 2fr 10em;
             align-items: center;
             justify-content: space-evenly;
+            gap: 1em;
 
             .title{
                 justify-self: left;

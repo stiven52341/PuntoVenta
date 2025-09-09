@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
-import { States, StorageKeys } from 'src/app/models/constants';
+import { States, StorageKeys } from 'src/app/services/constants';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { LocalProductsService } from '../local-products/local-products.service';
 
