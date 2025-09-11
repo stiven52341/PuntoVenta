@@ -1,10 +1,10 @@
-import type { CapacitorConfig } from '@capacitor/cli';
-import { KeyboardResize } from '@capacitor/keyboard';
+import type { CapacitorConfig } from "@capacitor/cli";
+import { KeyboardResize } from "@capacitor/keyboard";
 
 const config: CapacitorConfig = {
-  appId: 'reyno.software.sells.point',
-  appName: 'Punto de Venta',
-  webDir: 'www',
+  appId: "reyno.software.sells.point",
+  appName: "Punto de Venta",
+  webDir: "www",
   plugins: {
     Media: {
       androidGalleryMode: true,
@@ -14,28 +14,28 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       overlaysWebView: false,
-      style: 'DARK',
-      backgroundColor: '#ffffffff',
+      style: "DARK",
+      backgroundColor: "#ffffffff",
     },
     Keyboard: {
       resize: KeyboardResize.Ionic,
-      resizeOnFullScreen: true
+      resizeOnFullScreen: true,
     },
     BluetoothLe: {
       displayStrings: {
         scanning: "Scanning",
         cancel: "Cancel",
         availableDevices: "Available devices",
-        noDeviceFound: "No device found"
-      }
-    }
+        noDeviceFound: "No device found",
+      },
+    },
   },
   android: {
     allowMixedContent: true,
   },
   server: {
     cleartext: true, // This enables HTTP support for local dev
-    allowNavigation: ['*']
+    allowNavigation: ["*"],
   },
 };
 

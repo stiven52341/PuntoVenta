@@ -34,6 +34,7 @@ import { LocalInventoryService } from "src/app/services/local/local-inventory/lo
 import { LocalUnitProductsService } from "src/app/services/local/local-unit-products/local-unit-products.service";
 import { LocalProductsService } from "src/app/services/local/local-products/local-products.service";
 import { LocalUnitBaseService } from "src/app/services/local/local-unit-base/local-unit-base.service";
+import { ErrorsService } from "src/app/services/api/errors/errors.service";
 
 export interface IProductCart {
   product: IProduct;
@@ -81,7 +82,8 @@ export class CartPage implements OnInit {
     private _inventory: LocalInventoryService,
     private _unitProduct: LocalUnitProductsService,
     private _product: LocalProductsService,
-    private _unitBase: LocalUnitBaseService
+    private _unitBase: LocalUnitBaseService,
+    private _error: ErrorsService
   ) {
     addIcons({ trash, camera });
   }
@@ -95,7 +97,6 @@ export class CartPage implements OnInit {
     this.cart = await this._cart.setCart();
     await this.setProducts();
     this.loading = false;
-    this.loading = true;
 
     this._cart
       .getCart()
@@ -108,6 +109,7 @@ export class CartPage implements OnInit {
           this.loading = false;
         },
         error: (err) => this._file.saveError(err),
+        complete: () => this.loading = false
       });
   }
 
@@ -228,6 +230,8 @@ export class CartPage implements OnInit {
         .catch((err) => {
           this._file.saveError(err);
           this._toast.showToast("ERROR AL REGISTRAR LA COMPRA DE FORMA LOCAL");
+          this._alert.showError(err);
+          this._error.saveErrors(err);
         });
     };
 
@@ -241,7 +245,8 @@ export class CartPage implements OnInit {
       const price = await this._unitProduct.get(
         detail.id.idUnitProductCurrency
       );
-      const product = await this._product.get(price!.idProduct);
+      if(!price) return undefined;
+      const product = await this._product.get(price.idProduct);
 
       let amount = detail.amount;
       if (product?.idBaseUnit && price!.idUnit != product.idBaseUnit) {
@@ -256,9 +261,10 @@ export class CartPage implements OnInit {
     };
     const pros = details.map(async (detail) => {
       const existence = await sync(detail);
+      if(!existence) return;
       this._inventory.reduceExistence(
-        existence!.idProduct as number,
-        existence!.amount
+        existence.idProduct as number,
+        existence.amount
       );
     });
     await firstValueFrom(forkJoin(pros));

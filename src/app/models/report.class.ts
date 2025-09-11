@@ -20,25 +20,25 @@ export class Report {
 
   public addFooter() {}
 
-  public addLines(
+  public async addLines(
     lines: string,
     position: 'start' | 'middle' | 'end' = 'start',
     size: 'normal' | 'large' | 'larger' | 'bold' = 'normal'
   ) {
-    this.intArray.push(...this._stp.renderLines(lines, position, size));
+    this.intArray.push(... await this._stp.renderLines(lines, position, size));
   }
 
-  public fillLine(
+  public async fillLine(
     character: string = ' ',
     lines: number = 1,
     size: 'normal' | 'bold' | 'large' | 'larger' = 'normal'
   ) {
     for (let i = 0; i < lines; i++) {
-      this.intArray.push(this._stp.renderCharacterLine(character, size));
+      this.intArray.push(await this._stp.renderCharacterLine(character, size));
     }
   }
 
-  public addRow(
+  public async addRow(
     columns: [
       column1: string,
       column2: string,
@@ -48,7 +48,7 @@ export class Report {
     color: "normal" | "bold" = 'normal',
     position: "start" | "center" | "end" | "space-between" = 'start'
   ) {
-    this.intArray.push(...this._stp.renderRow(columns, color, position));
+    this.intArray.push(...await this._stp.renderRow(columns, color, position));
   }
 
   public getIntArray() {

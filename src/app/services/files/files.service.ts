@@ -59,18 +59,29 @@ export class FilesService {
     }
   }
 
-  public async saveError(error: unknown, showToast: boolean = true) {
+  public async saveError(error: unknown | any, showToast: boolean = true) {
     if (!(await this.requestStoragePermission())) return;
 
     const info = await App.getInfo();
     if (showToast)
       this._toast.showToast(
-        `Errores guardados en android/data/${info.id}/files/errors.txt`,
+        `Errores guardados en Documents/${info.name}/files/errors.txt`,
         3000,
         'danger'
       );
     let data = (await this.read(FilesKeys.ERRORS)) || '';
-    data = `${data}\n***\n${JSON.stringify(error)}`;
+
+    switch(typeof error){
+      case 'string':
+        data = `${data}\n***\n${error}`;
+        break;
+      case 'object':
+        data = `${data}\n***\n${JSON.stringify(error)}`;
+        break;
+      default:
+        data = `${data}\n***\n${JSON.stringify(error)}`;
+        break;
+    }
     await this.write(data, FilesKeys.ERRORS);
   }
 
@@ -82,7 +93,7 @@ export class FilesService {
     return result.publicStorage == 'granted';
   }
 
-  private async checkDirectory(dir: DirectoryKeys) {
+  public async checkDirectory(dir: DirectoryKeys) {
     try {
       await Filesystem.readdir({
         path: dir,

@@ -31,7 +31,9 @@ export class StringToPrintService {
   ];
 
   constructor(private _localPrinter: LocalPrinterService) {
-    this.getLenght();
+    this.getLenght().catch(err => {
+      console.log(err);
+    });
   }
 
   /**
@@ -60,12 +62,16 @@ export class StringToPrintService {
    * @param size - Tamaño del texto a imprimir.
    * @returns La línea de texto formateada para impresión.
    */
-  public renderLines(
+  public async renderLines(
     text: string,
     position: 'start' | 'middle' | 'end' = 'start',
     size: 'normal' | 'large' | 'larger' | 'bold' = 'normal'
-  ): Uint8Array[] {
-    this.getLenght();
+  ): Promise<Uint8Array[]> {
+    try {
+      await this.getLenght();
+    } catch (error) {
+      throw error;
+    }
     if(!this.printer){
       throw new Error('No printer');
     }
@@ -266,8 +272,12 @@ export class StringToPrintService {
    * @param char - Caracter a reemplazar.
    * @returns El caracter reemplazado si es necesario, de lo contrario, devuelve el caracter original.
    */
-  private replaceCharacter(char: string): string {
-    this.getLenght();
+  private async replaceCharacter(char: string): Promise<string> {
+    try {
+      await this.getLenght();
+    } catch (error) {
+      throw error;
+    }
 
     // Convertimos el caracter a minúsculas para compararlo con los caracteres no permitidos
     char = char.toLowerCase();
@@ -300,11 +310,15 @@ export class StringToPrintService {
    * @param size
    * @returns `Uint8Array`
    */
-  public renderCharacterLine(
+  public async renderCharacterLine(
     char: string = ' ',
     size: 'normal' | 'bold' | 'large' | 'larger' = 'normal'
-  ): Uint8Array {
-    this.getLenght();
+  ): Promise<Uint8Array> {
+    try {
+      await this.getLenght();
+    } catch (error) {
+      throw error;
+    }
 
     let str = '';
     let intArray = new Uint8Array();
@@ -362,7 +376,7 @@ export class StringToPrintService {
    * @param position Se permiten 4 posiciones. `start`,`center`,`end`,`space-between`(la primera fila, `start`;la segunda y tercera, `center`; y la última, `end`)
    * @returns `Array<Uint8Array>`
    */
-  public renderRow(
+  public async renderRow(
     columns: [
       column1: string,
       column2: string,
@@ -371,8 +385,12 @@ export class StringToPrintService {
     ],
     color: 'normal' | 'bold' = 'normal',
     position: 'start' | 'center' | 'end' | 'space-between' = 'center'
-  ): Array<Uint8Array> {
-    this.getLenght();
+  ): Promise<Array<Uint8Array>> {
+    try {
+      await this.getLenght();
+    } catch (error) {
+      throw error;
+    }
 
     let intArray: Array<Uint8Array> = [];
     let str: string = '';
