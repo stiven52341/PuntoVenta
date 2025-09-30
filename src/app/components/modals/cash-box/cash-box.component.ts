@@ -14,6 +14,8 @@ import { CashBoxService } from 'src/app/services/api/cash-box/cash-box.service';
 import { ICashBox } from 'src/app/models/cash-box.model';
 import { States } from 'src/app/services/constants';
 import { FilesService } from 'src/app/services/files/files.service';
+import { PrintingService } from 'src/app/services/printing/printing.service';
+import { ErrorsService } from 'src/app/services/api/errors/errors.service';
 
 @Component({
   selector: 'app-cash-box',
@@ -45,8 +47,10 @@ export class CashBoxComponent implements OnInit {
     private _alert: AlertsService,
     private _localCashbox: LocalCashBoxService,
     private _cashbox: CashBoxService,
-    private _file: FilesService
-  ) {}
+    private _file: FilesService,
+    private _printing: PrintingService,
+    private _error: ErrorsService
+  ) { }
 
   async ngOnInit() {
     switch (this.type) {
@@ -59,7 +63,7 @@ export class CashBoxComponent implements OnInit {
       case 'close':
         this.cashbox = (await this._localCashbox.getAll()).find(c => c.state);
 
-        if(!this.cashbox){
+        if (!this.cashbox) {
           this._alert.showError('No hay ninguna caja abierta');
           this._modalCtrl.dismiss();
           return;
@@ -132,12 +136,21 @@ export class CashBoxComponent implements OnInit {
 
       await this._localCashbox
         .update(cashbox)
-        .then(() => {
-          this._alert.showSuccess(`Caja cerrada con $${this.amount.toFixed(2)}`);
-          this._modalCtrl.dismiss(this.amount);
+        .then(async () => {
+          try {
+            await this._printing.printSells(cashbox);
+            this._alert.showSuccess(`Caja cerrada con $${this.amount.toFixed(2)}`);
+            this._modalCtrl.dismiss(this.amount);
+          } catch (error) {
+            this._alert.showError(`Error en finalizacion de caja: ${error}`);
+            this._file.saveError(error);
+            this._error.saveErrors(new Error(JSON.stringify(error)));
+            console.log(error);
+          }
         })
         .catch((err) => {
           this._file.saveError(err);
+          this._error.saveErrors(err);
           this._alert.showError('Error cerrando caja');
         });
     };

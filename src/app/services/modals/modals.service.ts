@@ -45,7 +45,7 @@ export class ModalsService {
       canDismiss: canDismiss,
       id: id,
       breakpoints: undefined, // can snap to 0% (dismiss), 30%, 60%, or 100%
-      initialBreakpoint: undefined,
+      initialBreakpoint: undefined
     };
 
     if (partialModal) {

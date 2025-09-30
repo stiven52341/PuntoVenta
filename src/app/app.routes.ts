@@ -102,4 +102,8 @@ export const routes: Routes = [
         (m) => m.ProductIncomePage
       ),
   },
+  {
+    path: 'orders',
+    loadComponent: () => import('./pages/orders/orders.page').then( m => m.OrdersPage)
+  },
 ];

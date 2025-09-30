@@ -28,6 +28,8 @@ import { GlobalService } from "./services/global/global.service";
 import { ToastService } from "./services/toast/toast.service";
 import { Keyboard, KeyboardResize } from "@capacitor/keyboard";
 import { App } from "@capacitor/app";
+import { OrdersWsService } from "./services/web-socket/orders/orders-ws.service";
+import { NotificationsService } from "./services/notifications/notifications.service";
 
 @Component({
   selector: "app-root",
@@ -62,7 +64,9 @@ export class AppComponent implements OnInit {
     private _modal: ModalsService,
     private _file: FilesService,
     private _global: GlobalService,
-    private _toast: ToastService
+    private _toast: ToastService,
+    private _ordersWs: OrdersWsService,
+    private _notifications: NotificationsService
   ) {
     App.getInfo().then((info) => {
       this.version = info.version;
@@ -75,6 +79,8 @@ export class AppComponent implements OnInit {
       .catch(async (err) => {
         await this._file.saveError(err);
       });
+
+    this._notifications.init();
 
     this.menuOptions = [
       {
@@ -90,6 +96,13 @@ export class AppComponent implements OnInit {
         do: async () => {
           await this.goTo("/products");
         },
+      },
+      {
+        title: "Pedidos",
+        image: '../assets/icon/order.png',
+        do: async () => {
+          await this.goTo("/orders");
+        }
       },
       {
         title: "Carrito",
@@ -149,6 +162,11 @@ export class AppComponent implements OnInit {
     await this.onInit();
     this._global.SyncData().then((result) => {
       if (result) this._toast.showToast("Datos sincronizados");
+
+      this._ordersWs.connect()?.subscribe(order => {
+        this._notifications.scheduleImmediate('Nuevo pedido', `${order.name} hizo un pedido`);
+      });
+
     });
   }
 
@@ -188,6 +206,10 @@ export class AppComponent implements OnInit {
     // AppComponent.loadingData.emit(false);
     this._global.updateData();
     this._file.deleteTempData();
+
+    // this._ordersWs.connect()?.subscribe(order => {
+    //   console.log(order);
+    // });
   }
 
   private async goTo(path: string) {

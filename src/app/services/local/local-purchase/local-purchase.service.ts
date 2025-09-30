@@ -39,7 +39,7 @@ export class LocalPurchaseService extends InternalStorageCoreService<IPurchase> 
     startDate: Date,
     endDate: Date,
     disabledOnes: boolean = false
-  ): Promise<Array<IPurchase> | undefined> {
+  ): Promise<Array<IPurchase>> {
     if (startDate.getTime() > endDate.getTime()) {
       const temp = startDate;
       startDate = endDate;
@@ -52,8 +52,8 @@ export class LocalPurchaseService extends InternalStorageCoreService<IPurchase> 
 
     return purchases.filter((purchase) => {
       return (
-        purchase.date.getTime() >= startDate.getTime() &&
-        purchase.date.getTime() <= endDate.getTime()
+        new Date(purchase.date).getTime() >= new Date(startDate).getTime() &&
+        new Date(purchase.date).getTime() <= new Date(endDate).getTime()
       );
     });
   }

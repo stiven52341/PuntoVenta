@@ -35,6 +35,7 @@ import { LocalUnitProductsService } from "src/app/services/local/local-unit-prod
 import { LocalProductsService } from "src/app/services/local/local-products/local-products.service";
 import { LocalUnitBaseService } from "src/app/services/local/local-unit-base/local-unit-base.service";
 import { ErrorsService } from "src/app/services/api/errors/errors.service";
+import { LocalCashBoxService } from "src/app/services/local/local-cash-box/local-cash-box.service";
 
 export interface IProductCart {
   product: IProduct;
@@ -83,7 +84,8 @@ export class CartPage implements OnInit {
     private _unitProduct: LocalUnitProductsService,
     private _product: LocalProductsService,
     private _unitBase: LocalUnitBaseService,
-    private _error: ErrorsService
+    private _error: ErrorsService,
+    private _cash: LocalCashBoxService
   ) {
     addIcons({ trash, camera });
   }
@@ -171,6 +173,10 @@ export class CartPage implements OnInit {
     if (this.cart?.products == undefined || this.cart.products.length == 0) {
       this._alert.showError("El carrito está vacío");
       return;
+    }
+
+    if(!await this._cash.getOpenedCashbox()){
+      await this._alert.showWarning('La caja está cerrada');
     }
 
     const resp = await this._alert.showConfirm(

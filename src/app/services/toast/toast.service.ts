@@ -19,6 +19,9 @@ export class ToastService {
       animated: true,
       color: color,
       position: position,
+      swipeGesture: 'vertical',
+      keyboardClose: true,
+      
     });
 
     await toast.present();

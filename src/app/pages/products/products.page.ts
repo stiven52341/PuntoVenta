@@ -87,7 +87,7 @@ export class ProductsPage implements OnInit {
     private _modal: ModalsService,
     private _unitProduct: LocalUnitProductsService,
     private _productCategory: LocalProductCategoryService,
-    private _global: GlobalService
+    private _global: GlobalService,
   ) {}
 
   async ngOnInit() {

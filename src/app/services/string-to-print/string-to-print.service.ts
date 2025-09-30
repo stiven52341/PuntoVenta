@@ -153,7 +153,7 @@ export class StringToPrintService {
         } else if (i >= posI && i < posF) {
           //Ciclo que recorre la linea a imprimir y agrega el caracter al string de impresión
           for (let j = 0; j < linea.length; j++, i++, c++) {
-            str += this.replaceCharacter(linea.charAt(j));
+            str += await this.replaceCharacter(linea.charAt(j));
           }
         } else {
           //Si i está en la posición final...
@@ -162,7 +162,7 @@ export class StringToPrintService {
             if (posF == length) {
               //Agrega el caracter al string
               //Esto es así porque sino cuando la posición es `end` la función se buggea...
-              str += this.replaceCharacter(linea.charAt(c));
+              str += await this.replaceCharacter(linea.charAt(c));
               str += this.caracterSeparacion;
               saltos++;
               c++;

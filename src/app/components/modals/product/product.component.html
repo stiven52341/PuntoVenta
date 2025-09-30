@@ -1,5 +1,5 @@
 <ion-header>
-  <app-header-bar [showCart]="true" [arrowBack]="true" title="producto"></app-header-bar>
+  <app-header-bar [loading]="loading" [showCart]="true" [arrowBack]="true" title="producto"></app-header-bar>
 </ion-header>
 <ion-content fullscreen="true">
   <div class="content">
@@ -48,9 +48,9 @@
       </div>
 
       <ion-input label="Cantidad" name="cantidad" id="cantidad" min="1" [(ngModel)]="cantidad" clearInput="true"
-        label-placement="stacked" type="number" fill="outline" placeholder="Ingrese una cantidad"></ion-input>
+        label-placement="stacked" type="number" fill="outline" placeholder="Ingrese una cantidad" #amount></ion-input>
       <span>Total: ${{ getTotal() | number : "1.2-2" }}</span>
-      <ion-button color="primary" (click)="this.onAddProduct()">
+      <ion-button [disabled]="loading" color="primary" (click)="this.onAddProduct()">
         <ion-label> Añadir al carrito </ion-label>
       </ion-button>
     </div>

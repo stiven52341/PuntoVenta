@@ -1,0 +1,30 @@
+.content{
+    padding: 1em;
+
+    .card-content{
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: .5em;
+
+        .item{
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: .5em;
+
+            img{
+                width: 3em;
+            }
+
+            .text-duo{
+                width: 100%;
+            }
+        }
+    }
+}

@@ -9,7 +9,11 @@ import { BluetoothService } from '../bluetooth/bluetooth.service';
 import { FilesService } from '../files/files.service';
 import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';
 import { LocalPrinterService } from '../local/local-printer/printer.service';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { ICashBox } from 'src/app/models/cash-box.model';
+import { firstValueFrom, forkJoin } from 'rxjs';
+import { LocalPurchaseService } from '../local/local-purchase/local-purchase.service';
+import { ToastService } from '../toast/toast.service';
 
 @Injectable({
   providedIn: 'root',
@@ -23,8 +27,11 @@ export class PrintingService {
     private _product: LocalProductsService,
     private _file: FilesService,
     private _printer: LocalPrinterService,
-    private _number: DecimalPipe
-  ) {}
+    private _number: DecimalPipe,
+    private _date: DatePipe,
+    private _purchase: LocalPurchaseService,
+    private _toast: ToastService
+  ) { }
 
   public async printPurchase(
     purchase: IPurchase,
@@ -32,44 +39,44 @@ export class PrintingService {
     mensaje: string = '¿Quiere imprimir un recibo de compra?'
   ) {
     const printer = await this._printer.getCurrentPrinter();
-    if(!printer){
+    if (!printer) {
       return;
     }
 
     const resp = await this._alert.showConfirm('Confirme', mensaje);
     if (!resp) return;
-    
+
     const report = new Report(this._stp);
 
     report.addHeader();
-    report.addLines('Recibo de Compra', 'middle', 'large');
-    report.fillLine('=');
+    await report.addLines('Recibo de Compra', 'middle', 'large');
+    await report.fillLine('=');
 
-    report.addRow(
+    await report.addRow(
       ['Cantidad', 'Precio', 'Total'],
       'bold',
       'center'
     );
-    
-    report.fillLine('-');
+
+    await report.fillLine('-');
 
     for (const detail of purchaseDetails) {
       const price = await this._price.get(detail.id.idUnitProductCurrency);
       const product = await this._product.get(price!.idProduct);
-      report.addLines(product!.name);
-      report.addRow([
+      await report.addLines(product!.name);
+      await report.addRow([
         `${this._number.transform(detail!.amount, '1.2-2')}`,
         `$${this._number.transform(detail!.priceUsed, '1.2-2')}`,
         `$${this._number.transform(detail.amount * detail.priceUsed, '1.2-2')}`,
       ], 'normal', 'center');
     }
 
-    report.fillLine('=');
-    report.addLines(`Cant. Productos: ${purchaseDetails.length}`);
-    report.addLines(`Total: $${this._number.transform(purchase.total, '1.2-2')}`);
-    report.fillLine();
-    report.addLines('Gracias por su compra!', 'middle', 'bold');
-    report.fillLine(undefined, 5);
+    await report.fillLine('=');
+    await report.addLines(`Cant. Productos: ${purchaseDetails.length}`);
+    await report.addLines(`Total: $${this._number.transform(purchase.total, '1.2-2')}`);
+    await report.fillLine();
+    await report.addLines('Gracias por su compra!', 'middle', 'bold');
+    await report.fillLine(undefined, 5);
 
     await this._bluetooth
       .print(report.getIntArray())
@@ -78,6 +85,70 @@ export class PrintingService {
       })
       .catch((err) => {
         this._alert.showError('Error al imprimir compra');
+        this._file.saveError(err);
+      });
+  }
+
+  public async printSells(
+    cashbox: ICashBox,
+    message: string = '¿Quiere imprimir el reporte de ventas?'
+  ) {
+    const printer = await this._printer.getCurrentPrinter();
+    if (!printer) {
+      this._toast.showToast('No tiene impresora configurada');
+      return;
+    }
+
+    if (cashbox.state != false || !cashbox.end) {
+      this._alert.showError('La caja no está cerrada');
+      return;
+    }
+
+    const resp = await this._alert.showConfirm('Confirme', message);
+    if (!resp) return;
+
+    const purchases = (await this._purchase.getPurchasesByDates(new Date(cashbox.init), new Date(cashbox.end)))
+      .sort((a, b) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      });
+
+    if (purchases.length == 0) {
+      this._alert.showError('No se encontraron ventas');
+      return;
+    }
+
+    const report = new Report(this._stp);
+    let total: number = 0;
+
+    report.addHeader();
+    await report.addLines('Reporte de Ventas', 'middle', 'bold');
+    await report.addLines(`Desde: ${this._date.transform(new Date(cashbox.init), 'dd/MM/yyyy hh:mm a')}`);
+    await report.addLines(`Hasta: ${this._date.transform(new Date(cashbox.end), 'dd/MM/yyyy hh:mm a')}`);
+    await report.addLines(`Monto de inicio: $${this._number.transform(cashbox.initCash, '1.2-2')}`);
+    await report.addLines(`Monto de cierre: $${this._number.transform(cashbox.endCash, '1.2-2')}`);
+    await report.fillLine();
+    await report.fillLine('=');
+    await report.addRow(['Hora', 'Total'], 'bold');
+    await report.fillLine('-');
+
+    for(const purchase of purchases){
+      total += purchase.total;
+      await report.addRow([
+        this._date.transform(new Date(purchase.date), 'hh:mm a')!,
+        `$${this._number.transform(purchase.total, '1.2-2')}`
+      ]);
+    }
+    await report.fillLine('=');
+    await report.addRow(['Total:', `$${this._number.transform(total, '1.2-2')!}`],'bold');
+    await report.fillLine('',5);
+
+    await this._bluetooth
+      .print(report.getIntArray())
+      .then(() => {
+        this._alert.showSuccess('Ventas imprimidas con éxito');
+      })
+      .catch((err) => {
+        this._alert.showError('Error al imprimir ventas');
         this._file.saveError(err);
       });
   }

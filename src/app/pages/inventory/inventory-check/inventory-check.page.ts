@@ -73,7 +73,7 @@ export class InventoryCheckPage implements OnInit {
             'CONFIRME', '¿Está seguro de limpiar el formulario?'
           );
           if (!result) return;
-          
+
           this._alert.showOptions('Confirme', '¿Qué quiere limpiar?', [
             {
               label: 'Actual',
@@ -95,12 +95,15 @@ export class InventoryCheckPage implements OnInit {
 
   async ngOnInit() {
     this.fieldsEvent.subscribe(async () => {
-      if (!this.unit || !this.product?.idBaseUnit || this.unit!.id == this.product.idBaseUnit) {
+      const equivalencyControl = this.form.get('equivalency');
+      if (!this.unit || !this.product?.idBaseUnit || Number(this.unit!.id) == Number(this.product.idBaseUnit)) {
         this.showEquivalency = false;
         this.baseUnit = undefined;
         this.equivalency = undefined;
         this.form.get('baseAmount')?.setValue(undefined);
         this.form.get('equivalency')?.setValue(undefined);
+        equivalencyControl?.removeValidators(Validators.required);
+        this.form.get('baseAmount')?.removeValidators(Validators.required);
         return;
       }
       this.showEquivalency = true;
@@ -110,10 +113,9 @@ export class InventoryCheckPage implements OnInit {
         this._localUnitBase.get({ idUnit: this.unit.id as number, idUnitBase: this.product.idBaseUnit })
       ]));
 
-      
+
       this.baseUnit = data[0];
       this.equivalency = data[1];
-      const equivalencyControl = this.form.get('equivalency');
       equivalencyControl?.addValidators(Validators.required);
       equivalencyControl?.setValue(this.equivalency?.equivalency);
       this.form.get('baseAmount')?.addValidators(Validators.required);
@@ -202,6 +204,7 @@ export class InventoryCheckPage implements OnInit {
     this.form.reset();
     this.product = undefined;
     this.unit = undefined;
+    this.baseUnit = undefined;
     this.fieldsEvent.emit();
 
     if (clearAll) {
@@ -209,10 +212,10 @@ export class InventoryCheckPage implements OnInit {
       this._inventoryCheckCart.reset();
     }
 
-    if(showToast){
-      if(clearAll){
+    if (showToast) {
+      if (clearAll) {
         this._toast.showToast('Todos los datos limpiados');
-      }else{
+      } else {
         this._toast.showToast('Formulario limpiado');
       }
     }
@@ -272,7 +275,7 @@ export class InventoryCheckPage implements OnInit {
     });
   }
 
-  private async updateLocalInventory(details: Array<IInventoryCheckDetail>){
+  private async updateLocalInventory(details: Array<IInventoryCheckDetail>) {
     const pros = details.map(async detail => {
       await this._localInventory.update({
         id: detail.id.idProduct,

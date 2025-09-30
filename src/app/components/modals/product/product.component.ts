@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import {
   IonContent,
   IonHeader,
@@ -8,10 +8,12 @@ import {
   IonInput,
   IonSelect,
   IonSelectOption,
+  Platform,
+  ModalController,
 } from "@ionic/angular/standalone";
 import { HeaderBarComponent } from "../../elements/header-bar/header-bar.component";
 import { IProduct } from "src/app/models/product.model";
-import { DecimalPipe, UpperCasePipe } from "@angular/common";
+import { DecimalPipe, Location, UpperCasePipe } from "@angular/common";
 import { IProductCategory } from "src/app/models/product-category.model";
 import { LocalCategoriesService } from "src/app/services/local/local-categories/local-categories.service";
 import { ICategory } from "src/app/models/category.model";
@@ -20,7 +22,7 @@ import { heart, shareSocial, camera } from "ionicons/icons";
 import { FormsModule } from "@angular/forms";
 import { IUnitProduct } from "src/app/models/unit-product.model";
 import { LocalUnitProductsService } from "src/app/services/local/local-unit-products/local-unit-products.service";
-import { firstValueFrom, forkJoin } from "rxjs";
+import { firstValueFrom, forkJoin, Subscription } from "rxjs";
 import { LocalUnitsService } from "src/app/services/local/local-units/local-units.service";
 import { IUnit } from "src/app/models/unit.model";
 import { LocalCartService } from "src/app/services/local/local-cart/local-cart.service";
@@ -50,10 +52,11 @@ import { GlobalService } from "src/app/services/global/global.service";
     IonSelectOption,
   ],
 })
-export class ProductComponent implements OnInit {
+export class ProductComponent implements OnInit, OnDestroy {
   @Input({ required: true }) product?: IProduct;
   @Input() image?: string;
   @Input() productCategories?: Array<IProductCategory> = [];
+  @ViewChild('amount', {static: false}) amountInput!: IonInput;
 
   protected prices: Array<{ unitPro: IUnitProduct; unit: IUnit }> = [];
   protected selectedPrice?: number;
@@ -62,6 +65,9 @@ export class ProductComponent implements OnInit {
   protected categories: Array<ICategory> = [];
   protected existence: number = 0;
   protected baseUnit?: IUnit;
+  protected loading: boolean = false;
+
+  private subs: Array<Subscription> = [];
 
   constructor(
     private _categories: LocalCategoriesService,
@@ -72,12 +78,22 @@ export class ProductComponent implements OnInit {
     private _toast: ToastService,
     private _invetory: LocalInventoryService,
     private _product: LocalProductsService,
-    private _global: GlobalService
+    private _global: GlobalService,
+    private _platform: Platform,
+    private _modalCtrl: ModalController
   ) {
     addIcons({ heart, shareSocial, camera });
   }
 
   async ngOnInit() {
+    const backHandler = this._platform.backButton.subscribeWithPriority(10, async () => {
+      const topModal = await this._modalCtrl.getTop();
+      if(topModal){
+        await topModal.dismiss();
+      }
+    });
+    this.subs.push(backHandler);
+
     const data = await firstValueFrom(
       forkJoin([
         this._categories.getAll(),
@@ -114,6 +130,11 @@ export class ProductComponent implements OnInit {
       this.existence = data[3].existence || 0;
       this.baseUnit = await this._unit.get(data[3].idUnit);
     }
+    setTimeout(() => this.amountInput.setFocus(), 300);
+  }
+
+  ngOnDestroy(): void {
+    this.subs.map(sub => sub.unsubscribe());
   }
 
   protected getTotal() {
@@ -157,19 +178,27 @@ export class ProductComponent implements OnInit {
       return;
     }
 
-    const price = this.prices.find(
-      (price) => price.unitPro.id == this.selectedPrice
-    )!.unitPro;
-    const unit = await this._unit.get(price.idUnit);
-    if (!unit) {
-      this._alert.showError("No se encontró la unidad seleccionada");
-      return;
+    this.loading = true;
+    try {
+      const price = this.prices.find(
+        (price) => price.unitPro.id == this.selectedPrice
+      )!.unitPro;
+      const unit = await this._unit.get(price.idUnit);
+      if (!unit) {
+        this._alert.showError("No se encontró la unidad seleccionada");
+        return;
+      }
+      if (!(await this.check(unit))) return;
+
+      await this._cart.addProduct(this.product!, this.cantidad!, price);
+    } catch (error) {
+      console.error('Error adding product to cart', error);
+    } finally {
+      this.loading = false;
+
+      this._toast.showToast("PRODUCTO AGREGADO", 1000);
     }
-    if (!(await this.check(unit))) return;
 
-    await this._cart.addProduct(this.product!, this.cantidad!, price);
-
-    await this._toast.showToast("PRODUCTO AGREGADO", 1000);
   }
 
   protected async setFavorite() {

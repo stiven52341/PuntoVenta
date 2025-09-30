@@ -1,0 +1,61 @@
+<ion-header [translucent]="true">
+  <app-header-bar title="PEDIDOS" [loading]="loading" [isModal]="false"></app-header-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content">
+    <ion-list lines="none">
+
+      @for(order of this.orders; track order.id){
+      <ion-item>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>PEDIDO #{{ order.id }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="card-content">
+              <div class="item">
+                <img src="../../../assets/icon/smile-face.png" alt="Not found">
+                <div class="text-duo">
+                  <ion-label><b>Cliente:</b></ion-label>
+                  <ion-label>{{ order.name }}</ion-label>
+                </div>
+              </div>
+              <div class="item">
+                <img src="../../../assets/icon/address.png" alt="Not found">
+                <div class="text-duo">
+                  <ion-label><b>Dirección:</b></ion-label>
+                  <ion-label>{{ order.address }}</ion-label>
+                </div>
+              </div>
+              <div class="item">
+                <img src="../../../assets/icon/phone.png" alt="Not found">
+                <div class="text-duo">
+                  <ion-label><b>Teléfono:</b></ion-label>
+                  <ion-label>{{ order.phone }}</ion-label>
+                </div>
+              </div>
+              <div class="item">
+                <img src="../../../assets/icon/date.png" alt="Not found">
+                <div class="text-duo">
+                  <ion-label><b>Fecha:</b></ion-label>
+                  <ion-label>{{ order.date | date:'dd/MM/yyyy hh:mm a' }}</ion-label>
+                </div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+      }@empty {
+      @if(this.loading){
+      <ion-label color="danger">Cargando...</ion-label>
+      }@else {
+      <ion-label color="danger">No hay pedidos.</ion-label>
+      }
+      }
+    </ion-list>
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>
