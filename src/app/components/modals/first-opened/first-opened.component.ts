@@ -151,7 +151,7 @@ export class FirstOpenedComponent implements OnInit {
         this._productPurhchase.getAll(),
         this._unitBase.getAll(),
         this._inventory.getAll(),
-        this._orders.getAll()
+        // this._orders.getAll()
       ])
     ).catch(async (err) => {
       this._alert.showError('Error descargando los datos');
@@ -181,7 +181,7 @@ export class FirstOpenedComponent implements OnInit {
     const productPurchases = result[12] || [];
     const unitBases = result[13] || [];
     const inventory = result[14] || [];
-    const orders = result[15] || [];
+    // const orders = result[15] || [];
     
     imagesPros.map(
       (image) => (image.data = `data:image/png;base64,${image.data}`)
@@ -248,7 +248,7 @@ export class FirstOpenedComponent implements OnInit {
         this._productPurchaseSto.set(productPurchases),
         this._unitBaseSto.set(unitBases),
         this._inventorySto.set(inventory),
-        this._ordersSto.set(orders)
+        // this._ordersSto.set(orders)
       ])
     ).catch((err) => {
       this._alert.showError('Error guardando los datos');

@@ -37,7 +37,6 @@ export class WebsocketBaseService<T extends IEntity<ID>, ID = T extends IEntity<
       console.log('STOMP connected', frame);
       this.connectionState.next('CONNECTED');
 
-      // Subscribe to a topic — server sends to /topic/greetings
       this.subscription = this.client.subscribe(this.path, (message: IMessage) => {
         try {
           const body = JSON.parse(message.body);
@@ -68,6 +67,7 @@ export class WebsocketBaseService<T extends IEntity<ID>, ID = T extends IEntity<
     this.client?.deactivate();
     this.messages.complete();
     this.connectionState.next('DISCONNECTED');
+    this.connectionState.complete();
   }
 
   public getConnectionState() {

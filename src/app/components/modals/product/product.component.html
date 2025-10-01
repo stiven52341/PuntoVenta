@@ -1,5 +1,6 @@
 <ion-header>
-  <app-header-bar [loading]="loading" [showCart]="true" [arrowBack]="true" title="producto"></app-header-bar>
+  <app-header-bar [loading]="loading" [showCart]="type != 'normal' ? true : false" [arrowBack]="true"
+    title="producto"></app-header-bar>
 </ion-header>
 <ion-content fullscreen="true">
   <div class="content">
@@ -11,7 +12,8 @@
       }
       <div class="meta">
         <ion-button (click)="setFavorite()" shape="round" size="large">
-          <ion-icon slot="icon-only" [color]="this.product?.isFavorite ? 'danger' : 'light'" name="heart" size="large"></ion-icon>
+          <ion-icon slot="icon-only" [color]="this.product?.isFavorite ? 'danger' : 'light'" name="heart"
+            size="large"></ion-icon>
         </ion-button>
         <ion-button shape="round" size="large">
           <ion-icon slot="icon-only" name="share-social" size="large"></ion-icon>
@@ -43,7 +45,7 @@
           product?.name || "Sin nombre" | uppercase
           }}</ion-label>
         @if(existence != 0 && baseUnit){
-          <ion-label color="danger">({{this.existence}} {{this.baseUnit.name}})</ion-label>
+        <ion-label color="danger">({{this.existence}} {{this.baseUnit.name}})</ion-label>
         }
       </div>
 

@@ -4,13 +4,22 @@
 
 <ion-content [fullscreen]="true">
   <div class="content">
-    <ion-list lines="none">
+    <ion-list lines="none" [inset]="false">
 
       @for(order of this.orders; track order.id){
-      <ion-item>
+      <ion-item (click)="onClick(order)">
         <ion-card>
           <ion-card-header>
-            <ion-card-title>PEDIDO #{{ order.id }}</ion-card-title>
+            <div class="header-content">
+              <ion-card-title>PEDIDO #{{ order.id }}</ion-card-title>
+              @if(order.processed){
+                 <ion-label color="success">Procesado</ion-label>
+              }@else{
+                <ion-label color="danger">Sin procesar</ion-label>
+              }
+             
+            </div>
+
           </ion-card-header>
           <ion-card-content>
             <div class="card-content">

@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { InfiniteScrollCustomEvent, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonLabel, IonList } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
@@ -35,7 +36,8 @@ export class OrdersPage implements OnInit {
     private _alert: AlertsService,
     private _toast: ToastService,
     private _file: FilesService,
-    private _error: ErrorsService
+    private _error: ErrorsService,
+    private _router: Router
   ) { }
 
   async ngOnInit() {
@@ -91,5 +93,9 @@ export class OrdersPage implements OnInit {
     setTimeout(() => {
       $event.target.complete();
     }, 500);
+  }
+
+  protected onClick(order: IOrder){
+    this._router.navigate(['/orders/detail', order.id]);
   }
 }

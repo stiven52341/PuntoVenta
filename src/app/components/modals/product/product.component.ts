@@ -13,7 +13,7 @@ import {
 } from "@ionic/angular/standalone";
 import { HeaderBarComponent } from "../../elements/header-bar/header-bar.component";
 import { IProduct } from "src/app/models/product.model";
-import { DecimalPipe, Location, UpperCasePipe } from "@angular/common";
+import { DecimalPipe, UpperCasePipe } from "@angular/common";
 import { IProductCategory } from "src/app/models/product-category.model";
 import { LocalCategoriesService } from "src/app/services/local/local-categories/local-categories.service";
 import { ICategory } from "src/app/models/category.model";
@@ -31,6 +31,10 @@ import { ToastService } from "src/app/services/toast/toast.service";
 import { LocalInventoryService } from "src/app/services/local/local-inventory/local-inventory.service";
 import { LocalProductsService } from "src/app/services/local/local-products/local-products.service";
 import { GlobalService } from "src/app/services/global/global.service";
+import { PhotosService } from "src/app/services/photos/photos.service";
+import { PhotoKeys } from "src/app/services/constants";
+import { LocalProductCategoryService } from "src/app/services/local/local-product-category/local-product-category.service";
+import { FilesService } from "src/app/services/files/files.service";
 
 @Component({
   selector: "app-product",
@@ -56,7 +60,10 @@ export class ProductComponent implements OnInit, OnDestroy {
   @Input({ required: true }) product?: IProduct;
   @Input() image?: string;
   @Input() productCategories?: Array<IProductCategory> = [];
-  @ViewChild('amount', {static: false}) amountInput!: IonInput;
+  @Input() defaultAmount?: number;
+  @Input() defaultPrice?: IUnitProduct;
+  @ViewChild('amount', { static: false }) amountInput!: IonInput;
+  @Input() type: 'normal' | 'order' = 'normal';
 
   protected prices: Array<{ unitPro: IUnitProduct; unit: IUnit }> = [];
   protected selectedPrice?: number;
@@ -80,7 +87,10 @@ export class ProductComponent implements OnInit, OnDestroy {
     private _product: LocalProductsService,
     private _global: GlobalService,
     private _platform: Platform,
-    private _modalCtrl: ModalController
+    private _modalCtrl: ModalController,
+    private _photo: PhotosService,
+    private _productCategories: LocalProductCategoryService,
+    private _file: FilesService
   ) {
     addIcons({ heart, shareSocial, camera });
   }
@@ -88,7 +98,7 @@ export class ProductComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     const backHandler = this._platform.backButton.subscribeWithPriority(10, async () => {
       const topModal = await this._modalCtrl.getTop();
-      if(topModal){
+      if (topModal) {
         await topModal.dismiss();
       }
     });
@@ -103,12 +113,35 @@ export class ProductComponent implements OnInit, OnDestroy {
       ])
     );
 
+    if (!this.image) {
+      this.image = "../../assets/icon/loading.gif";
+      this._photo.getPhoto(this.product!.id.toString(), PhotoKeys.PRODUCTS_ALBUMN).then(photo => {
+        this.image = photo || '../../assets/icon/no-image.png';
+      });
+    }
+
+    if (!this.categories || this.categories.length == 0) {
+      this._productCategories
+        .getCategoriesByProduct(this.product!.id as number)
+        .then(categories => this.categories = categories)
+        .catch(err => {
+          this._toast.showToast('Error obteniendo categorías', undefined, 'danger');
+          console.error('Error con categorias', err);
+          this._file.saveError(err);
+        });
+    }
+
     if (this.productCategories && this.productCategories.length > 0) {
       this.categories = data[0].filter((category) => {
         return this.productCategories?.some(
           (pc) => pc.id.idCategory == category.id
         );
       });
+    }
+
+    if (this.defaultAmount) {
+      this.cantidad = this.defaultAmount;
+      this.amountInput.setFocus();
     }
 
     data[1].forEach((unitProduct) => {
@@ -131,6 +164,11 @@ export class ProductComponent implements OnInit, OnDestroy {
       this.baseUnit = await this._unit.get(data[3].idUnit);
     }
     setTimeout(() => this.amountInput.setFocus(), 300);
+
+    if (this.defaultPrice) {
+      this.selectedPrice = +this.defaultPrice!.id;
+      console.log('Selected price', this.selectedPrice);
+    }
   }
 
   ngOnDestroy(): void {
@@ -178,25 +216,43 @@ export class ProductComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.loading = true;
-    try {
-      const price = this.prices.find(
-        (price) => price.unitPro.id == this.selectedPrice
-      )!.unitPro;
-      const unit = await this._unit.get(price.idUnit);
-      if (!unit) {
-        this._alert.showError("No se encontró la unidad seleccionada");
-        return;
+    const price = this.prices.find(
+          (price) => price.unitPro.id == this.selectedPrice
+        )!.unitPro;
+
+    const save = async () => {
+      this.loading = true;
+      try {
+        
+        const unit = await this._unit.get(price.idUnit);
+        if (!unit) {
+          this._alert.showError("No se encontró la unidad seleccionada");
+          return;
+        }
+        if (!(await this.check(unit))) return;
+
+        await this._cart.addProduct(this.product!, this.cantidad!, price);
+      } catch (error) {
+        console.error('Error adding product to cart', error);
+      } finally {
+        this.loading = false;
+        this._toast.showToast("PRODUCTO AGREGADO", 1000);
       }
-      if (!(await this.check(unit))) return;
+    }
+    const modifyOrder = async () => {
+      await this._modalCtrl.dismiss(
+        { product: this.product, price, amount: this.cantidad },
+        undefined, 'product-detail-modal'
+      );
+    }
 
-      await this._cart.addProduct(this.product!, this.cantidad!, price);
-    } catch (error) {
-      console.error('Error adding product to cart', error);
-    } finally {
-      this.loading = false;
-
-      this._toast.showToast("PRODUCTO AGREGADO", 1000);
+    switch(this.type){
+      case 'normal':
+        await save();
+        break;
+      case 'order':
+        await modifyOrder();
+        break;
     }
 
   }

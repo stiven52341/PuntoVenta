@@ -1,0 +1,109 @@
+<ion-header [translucent]="true">
+  <app-header-bar [loading]="loading" title="Procesar pedido" [isModal]="false" [arrowBack]="true"></app-header-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Pedido #{{this.order?.id}}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="card-content">
+          <div class="item">
+            <img src="../../../assets/icon/smile-face.png" alt="Not found">
+            <div class="text-duo">
+              <ion-label><b>Cliente:</b></ion-label>
+              <ion-label>{{ order?.name }}</ion-label>
+            </div>
+          </div>
+          <div class="item">
+            <img src="../../../assets/icon/address.png" alt="Not found">
+            <div class="text-duo">
+              <ion-label><b>Dirección:</b></ion-label>
+              <ion-label>{{ order?.address }}</ion-label>
+            </div>
+          </div>
+          <div class="item">
+            <img src="../../../assets/icon/phone.png" alt="Not found">
+            <div class="text-duo">
+              <ion-label><b>Teléfono:</b></ion-label>
+              <ion-label>{{ order?.phone }}</ion-label>
+            </div>
+          </div>
+          <div class="item">
+            <img src="../../../assets/icon/date.png" alt="Not found">
+            <div class="text-duo">
+              <ion-label><b>Fecha:</b></ion-label>
+              <ion-label>{{ order?.date | date:'dd/MM/yyyy hh:mm a' }}</ion-label>
+            </div>
+          </div>
+          <div class="item">
+            <img src="../../../assets/icon/cash.png" alt="Not found">
+            <div class="text-duo">
+              <ion-label><b>Total:</b></ion-label>
+              <ion-label>${{ order?.total| number:'1.2-2' }}</ion-label>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+    <ion-button (click)="call()">
+      <ion-icon color="light" name="call"></ion-icon>
+      <ion-label color="light">Llamar al cliente</ion-label>
+    </ion-button>
+    <hr>
+    <ion-label><b>Detalles</b></ion-label>
+    <ion-list lines="none">
+      @for(detail of detailsFiltered; track $index){
+      <ion-item (click)="onClickDetail($index)">
+        <ion-card style="width: 100%;">
+          <ion-card-header>
+            <ion-card-title>{{detail.product.name}}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="detail-card-content">
+              <div class="img">
+                <img src="{{detail.image}}" alt="Not found">
+              </div>
+              <div class="left">
+                <div class="duo">
+                  <ion-label><b>Cantidad:</b></ion-label>
+                  <ion-label>{{detail.detail.amount | number:'1.2-2'}}</ion-label>
+                </div>
+                <div class="duo">
+                  <ion-label><b>Precio:</b></ion-label>
+                  <ion-label>${{detail.detail.priceUsed | number:'1.2-2'}}</ion-label>
+                </div>
+              </div>
+              <div class="right">
+                <div class="duo">
+                  <ion-label><b>Unidad:</b></ion-label>
+                  <ion-label>{{detail.unit.name}}</ion-label>
+                </div>
+                
+                <div class="duo">
+                  <ion-label><b>Total:</b></ion-label>
+                  <ion-label>${{(detail.detail.priceUsed * detail.detail.amount) | number:'1.2-2'}}</ion-label>
+                </div>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+      }
+    </ion-list>
+  </div>
+</ion-content>
+<ion-footer>
+  <div class="footer-content">
+    <ion-button (click)="onDisable()" color="danger">
+      <ion-icon color="light" name="trash"></ion-icon>
+      <ion-label color="light">Cancelar</ion-label>
+    </ion-button>
+    <ion-button (click)="onProcess()" >
+      <ion-icon color="light" name="save"></ion-icon>
+      <ion-label color="light">Procesar</ion-label>
+    </ion-button>
+  </div>
+</ion-footer>

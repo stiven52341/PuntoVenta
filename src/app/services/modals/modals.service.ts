@@ -75,14 +75,25 @@ export class ModalsService {
     product: IProduct,
     unitProduct: IUnitProduct,
     image?: string,
-    productCategories?: Array<IProductCategory>
-  ) {
-    return await this.showModal(ProductComponent, 'product-detail-modal', {
+    productCategories?: Array<IProductCategory>,
+    type: 'normal' | 'order' = 'normal',
+    defaultAmount?: number,
+    defaultPrice?: IUnitProduct
+  ): Promise<{ product: IProduct, price: IUnitProduct, amount: number } | undefined> {
+    const result = await this.showModal(ProductComponent, 'product-detail-modal', {
       product: product,
       image: image,
       unitProduct: unitProduct,
       productCategories: productCategories || [],
+      type: type,
+      defaultAmount,
+      defaultPrice
     });
+
+    if(result && result.data){
+      return result.data as { product: IProduct, price: IUnitProduct, amount: number };
+    }
+    return undefined;
   }
 
   public async showProductListModal(): Promise<

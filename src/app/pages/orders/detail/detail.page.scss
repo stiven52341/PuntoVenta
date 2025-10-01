@@ -1,0 +1,88 @@
+ion-button {
+    width: 100%;
+}
+
+hr{
+    width:100%;
+    background-color: lightgray;
+}
+
+.content {
+    width: 100%;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: .5em;
+
+    ion-card {
+        // width: 100%;
+        .header-content {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-content {
+
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: .5em;
+
+            .item {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                gap: .5em;
+
+                img {
+                    width: 3em;
+                }
+
+                .text-duo {
+                    width: 100%;
+                }
+            }
+        }
+
+        .detail-card-content{
+            width: 100%;
+            display: grid;
+            grid-template-columns: 3.5em 1fr 1fr;
+            gap: .6em;
+            justify-content: space-between;
+            align-items: center;
+
+            .img{
+                img{
+                    width: 4em;
+                }
+            }
+
+            .duo{
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                align-items: center;
+                gap: .5em;
+            }
+        }
+    }
+}
+
+.footer-content{
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .5em;
+}

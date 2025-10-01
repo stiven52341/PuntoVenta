@@ -52,7 +52,7 @@ export class NotificationsService {
         id,
         title,
         body,
-        smallIcon: 'ic_stat_icon'
+        smallIcon: 'ic_stat_icon',
       }]
     });
   }
