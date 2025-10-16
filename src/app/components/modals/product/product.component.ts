@@ -10,6 +10,7 @@ import {
   IonSelectOption,
   Platform,
   ModalController,
+  IonImg,
 } from "@ionic/angular/standalone";
 import { HeaderBarComponent } from "../../elements/header-bar/header-bar.component";
 import { IProduct } from "src/app/models/product.model";
@@ -54,6 +55,7 @@ import { FilesService } from "src/app/services/files/files.service";
     IonContent,
     IonSelect,
     IonSelectOption,
+    IonImg
   ],
 })
 export class ProductComponent implements OnInit, OnDestroy {
@@ -67,12 +69,13 @@ export class ProductComponent implements OnInit, OnDestroy {
 
   protected prices: Array<{ unitPro: IUnitProduct; unit: IUnit }> = [];
   protected selectedPrice?: number;
-
+  protected addButtonLabel: string = "Añadir al carrito".toUpperCase();
   protected cantidad?: number;
   protected categories: Array<ICategory> = [];
   protected existence: number = 0;
   protected baseUnit?: IUnit;
   protected loading: boolean = false;
+  protected showCartButton: boolean = true;
 
   private subs: Array<Subscription> = [];
 
@@ -168,6 +171,15 @@ export class ProductComponent implements OnInit, OnDestroy {
     if (this.defaultPrice) {
       this.selectedPrice = +this.defaultPrice!.id;
       console.log('Selected price', this.selectedPrice);
+    }
+
+    if(this.type == 'order'){
+      this.showCartButton = false;
+      if(this.defaultPrice){
+        this.addButtonLabel = "Modificar detalle".toUpperCase();
+      }else{
+        this.addButtonLabel = "Agregar al pedido".toUpperCase();
+      }
     }
   }
 

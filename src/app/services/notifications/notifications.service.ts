@@ -46,13 +46,15 @@ export class NotificationsService {
    * @param body `string`
    * @param id `number` By default 1
    */
-  public async scheduleImmediate(title: string, body: string, id: number = 1){
+  public async scheduleImmediate(title: string, body: string, id: number = 1, route?: string){
     await LocalNotifications.schedule({
       notifications: [{
         id,
         title,
         body,
         smallIcon: 'ic_stat_icon',
+        extra: { route },
+        
       }]
     });
   }

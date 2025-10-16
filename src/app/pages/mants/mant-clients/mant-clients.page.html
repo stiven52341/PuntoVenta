@@ -1,0 +1,49 @@
+<ion-header [translucent]="true">
+  <app-header-bar [buttons]="this.barOptions" [loading]="this.loading" title="Mantenimiento de clientes" [arrowBack]="true"
+    [isModal]="false"></app-header-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content">
+    <form [formGroup]="form">
+      <div class="form-content">
+        <div class="complex-input">
+          <ion-input [disabled]="true" labelPlacement="stacked" placeholder="Seleccione un cliente" fill="outline"
+            label="CLIENTE" [value]="client?.id"></ion-input>
+          <ion-button (click)="onSearchClients()">
+            <ion-icon name="search"></ion-icon>
+          </ion-button>
+        </div>
+        <ion-input formControlName="name" labelPlacement="stacked" fill="outline" label="Nombre"
+          placeholder="Nombre del cliente" [clearInput]="true" type="text"></ion-input>
+        <ion-input formControlName="phone" labelPlacement="stacked" fill="outline" label="Teléfono"
+          placeholder="Teléfono del cliente" [clearInput]="true" type="tel"></ion-input>
+        <ion-input formControlName="address" labelPlacement="stacked" fill="outline" label="Dirección"
+          placeholder="Dirección del cliente" [clearInput]="true" type="text"></ion-input>
+        <ion-input formControlName="maxCredit" labelPlacement="stacked" fill="outline" label="Crédito máximo"
+          placeholder="Crédito máximo del cliente" [clearInput]="true" type="number"></ion-input>
+      </div>
+    </form>
+  </div>
+</ion-content>
+<ion-footer>
+  <div class="footer-content">
+    @if(this.client){
+    @if(this.client.state){
+    <ion-button color="danger" (click)="onChangeStatus('disable')">
+      <ion-icon name="trash" color="light"></ion-icon>
+      <ion-label color="light">Desactivar</ion-label>
+    </ion-button>
+    }@else {
+    <ion-button color="danger" (click)="onChangeStatus('activate')">
+      <ion-icon name="save" color="light"></ion-icon>
+      <ion-label color="light">Activar</ion-label>
+    </ion-button>
+    }
+    }
+    <ion-button (click)="onSubmit()">
+      <ion-icon name="save" color="light"></ion-icon>
+      <ion-label color="light">Guardar</ion-label>
+    </ion-button>
+  </div>
+</ion-footer>

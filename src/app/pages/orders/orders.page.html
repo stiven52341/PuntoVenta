@@ -1,5 +1,17 @@
 <ion-header [translucent]="true">
-  <app-header-bar title="PEDIDOS" [loading]="loading" [isModal]="false"></app-header-bar>
+  <app-header-bar title="PEDIDOS" [loading]="loading" [isModal]="false" [showCart]="true"></app-header-bar>
+
+  <form [formGroup]="searchForm">
+    <ion-toolbar color="primary">
+      <ion-searchbar formControlName="name" placeholder="Buscar por nombre del cliente" slot="start"></ion-searchbar>
+      <ion-select formControlName="params" slot="end" color="light" placeholder="Filtrar por">
+        <ion-select-option value="all">Todos</ion-select-option>
+        <ion-select-option value="enable">Activos</ion-select-option>
+        <ion-select-option value="disable">Inactivos</ion-select-option>
+        <ion-select-option value="processed">Procesados</ion-select-option>
+      </ion-select>
+    </ion-toolbar>
+  </form>
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -12,12 +24,15 @@
           <ion-card-header>
             <div class="header-content">
               <ion-card-title>PEDIDO #{{ order.id }}</ion-card-title>
+              @if(order.state){
               @if(order.processed){
-                 <ion-label color="success">Procesado</ion-label>
+              <ion-label color="success"><b>Procesado</b></ion-label>
               }@else{
-                <ion-label color="danger">Sin procesar</ion-label>
+              <ion-label color="danger">Sin procesar</ion-label>
               }
-             
+              }@else {
+              <ion-label color="danger"><b>Cancelado</b></ion-label>
+              }
             </div>
 
           </ion-card-header>

@@ -1,0 +1,65 @@
+.content{
+    padding: 1em;
+
+    ion-button{
+        width: 100%;
+    }
+
+    .card-content{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        justify-content: center;
+        align-items: center;
+        gap: 1em;
+
+        .card-item{
+            display: grid;
+            grid-template-columns: 3em 1fr;
+            justify-content: center;
+            align-items: center;
+            gap: .5em;
+
+            .duo{
+                display: flex;
+                flex-direction: column;
+                // gap: .5em;
+                justify-content: start;
+                align-items: flex-start;
+            }
+        }
+    }
+
+    .bills{
+        width: 100%;
+        ion-card{
+            width: 100%;
+
+            .card-content{
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                justify-content: space-between;
+                align-items: center;
+                gap: .5em;
+
+                .tri-element{
+                    .img{
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                    }
+
+                    width:100%;
+                    display: grid;
+                    grid-template-columns: 2em 1fr;
+                }
+            }
+        }
+    }
+}
+
+hr{
+    width: 100%;
+    background-color: lightgray;
+}

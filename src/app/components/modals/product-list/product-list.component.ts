@@ -11,6 +11,7 @@ import {
   IonInfiniteScrollContent,
   InfiniteScrollCustomEvent,
   IonToolbar,
+  IonImg,
 } from '@ionic/angular/standalone';
 import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
 import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
@@ -36,7 +37,8 @@ import { NgClass } from '@angular/common';
     HeaderBarComponent,
     IonSearchbar,
     NgClass,
-    IonToolbar
+    IonToolbar,
+    IonImg
   ],
 })
 export class ProductListComponent implements OnInit {

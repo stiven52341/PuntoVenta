@@ -1,5 +1,10 @@
 .content {
   padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  justify-content: center;
+  align-items: center;
 
   .cart {
     width: 100%;
@@ -60,6 +65,29 @@ ion-footer {
 
     ion-button {
      color: white !important;
+    }
+  }
+}
+
+.product-disabled{
+  background-color: #c5000f;
+}
+
+.complex-input {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 8fr 2fr;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1em;
+
+  ion-button {
+    height: 100%;
+    width: 100%;
+
+    ion-icon {
+      font-weight: bolder;
+      color: white;
     }
   }
 }

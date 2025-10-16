@@ -20,6 +20,10 @@ import { IInventoryCheckDetail } from 'src/app/models/inventory-check-detail.mod
 import { InventoryCheckDetailsComponent } from 'src/app/components/modals/inventory-check-details/inventory-check-details.component';
 import { IInventoryIncome } from 'src/app/models/inventory-income.model';
 import { InventoryIncomesListComponent } from 'src/app/components/modals/inventory-incomes-list/inventory-incomes-list.component';
+import { IClient } from 'src/app/models/client.model';
+import { ClientsListComponent } from 'src/app/components/modals/clients-list/clients-list.component';
+import { IBill } from 'src/app/models/bill.model';
+import { BillPayComponent } from 'src/app/components/modals/bill-pay/bill-pay.component';
 
 @Injectable({
   providedIn: 'root',
@@ -35,7 +39,8 @@ export class ModalsService {
     data?: any,
     cssClass: string = 'default',
     canDismiss: boolean = true,
-    partialModal: boolean = false
+    partialModal: boolean = false,
+    initHeight: number = 0.6
   ) {
     const modalInfo: any = {
       component: component,
@@ -50,7 +55,7 @@ export class ModalsService {
 
     if (partialModal) {
       (modalInfo.breakpoints = [0, 0.3, 0.6, 1]),
-        (modalInfo.initialBreakpoint = 0.4);
+        (modalInfo.initialBreakpoint = initHeight);
     }
 
     const modal = await this._modalCtrl.create(modalInfo);
@@ -73,7 +78,7 @@ export class ModalsService {
 
   public async showProductModal(
     product: IProduct,
-    unitProduct: IUnitProduct,
+    unitProduct?: IUnitProduct,
     image?: string,
     productCategories?: Array<IProductCategory>,
     type: 'normal' | 'order' = 'normal',
@@ -90,17 +95,17 @@ export class ModalsService {
       defaultPrice
     });
 
-    if(result && result.data){
+    if (result && result.data) {
       return result.data as { product: IProduct, price: IUnitProduct, amount: number };
     }
     return undefined;
   }
 
-  public async showProductListModal(): Promise<
+  public async showProductListModal(showOnlyActiveProducts: boolean = false): Promise<
     { product: IProduct; image: string } | undefined
   > {
     const result = (
-      await this.showModal(ProductListComponent, 'product-list-modal')
+      await this.showModal(ProductListComponent, 'product-list-modal', { showOnlyActiveProducts })
     )?.data;
     if (result) {
       return result as { product: IProduct; image: string };
@@ -189,6 +194,28 @@ export class ModalsService {
       'inventory-check-details-list'
     );
     if (result && result.data) return result.data as IInventoryIncome;
+    return undefined;
+  }
+
+  public async showClientsList(showWithBalance: boolean = false): Promise<IClient | undefined>{
+    const result = await this.showModal(
+      ClientsListComponent,
+      'clients-list',
+      {showWithBalance},
+      undefined
+    );
+    if (result && result.data) return result.data as IClient;
+    return undefined;
+  }
+
+  public async showBillPay(idBill: number, bill?: IBill): Promise<IBill | undefined>{
+    const result = await this.showModal(
+      BillPayComponent,
+      'bill-pay',
+      {idBill,bill},
+      undefined, true, true,.8
+    );
+    if (result && result.data) return result.data as IBill;
     return undefined;
   }
 

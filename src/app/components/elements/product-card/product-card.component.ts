@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { IonIcon } from '@ionic/angular/standalone';
+import { IonIcon, IonImg } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { cartOutline } from 'ionicons/icons';
 import { IProduct } from 'src/app/models/product.model';
@@ -13,7 +13,7 @@ import { LocalUnitProductsService } from 'src/app/services/local/local-unit-prod
   templateUrl: './product-card.component.html',
   styleUrls: ['./product-card.component.scss'],
   standalone: true,
-  imports: [IonIcon],
+  imports: [IonIcon, IonImg],
 })
 export class ProductCardComponent implements OnInit {
   @Input({ required: true }) product!: IProduct;

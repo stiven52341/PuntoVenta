@@ -112,6 +112,13 @@ export class AppComponent implements OnInit {
         },
       },
       {
+        title: 'Cuentas x cobrar',
+        image: '../assets/icon/money.png',
+        do: async () => {
+          await this.goTo('/cxc');
+        }
+      },
+      {
         title: "Inventario",
         image: "../assets/icon/inventory.png",
         do: async () => {
@@ -164,7 +171,9 @@ export class AppComponent implements OnInit {
       if (result) this._toast.showToast("Datos sincronizados");
 
       this._ordersWs.connect()?.subscribe(order => {
-        this._notifications.scheduleImmediate('Nuevo pedido', `${order.name} hizo un pedido`);
+        this._notifications.scheduleImmediate(
+          'Nuevo pedido', `${order.name} hizo un pedido`, undefined, `/orders/detail/${order.id}`
+        );
       });
 
     });

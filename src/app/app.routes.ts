@@ -110,4 +110,16 @@ export const routes: Routes = [
     path: 'orders/detail/:id',
     loadComponent: () => import('./pages/orders/detail/detail.page').then( m => m.DetailPage)
   },
+  {
+    path: 'mants/clients',
+    loadComponent: () => import('./pages/mants/mant-clients/mant-clients.page').then( m => m.MantClientsPage)
+  },
+  {
+    path: 'cxc',
+    loadComponent: () => import('./pages/cxc/cxc.page').then( m => m.CxcPage)
+  },
+  {
+    path: 'cxc/bill/:id',
+    loadComponent: () => import('./pages/cxc/late-bills/late-bills.page').then( m => m.LateBillsPage)
+  },
 ];

@@ -1,0 +1,22 @@
+.content{
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+
+    ion-button{
+        width: 100%;
+    }
+
+    .duo{
+        width: 100%;
+        display: grid;
+        grid-template-columns: 10fr 2fr;
+        gap: 0.5em;
+        justify-content: space-between;
+        align-items: center;
+    }
+}

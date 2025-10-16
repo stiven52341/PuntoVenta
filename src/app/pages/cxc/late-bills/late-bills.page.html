@@ -1,0 +1,129 @@
+<ion-header [translucent]="true">
+    <app-header-bar [loading]="loading" title="Factura pendiente" [arrowBack]="true" [isModal]="false"></app-header-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <div class="content">
+        <ion-card>
+            <ion-card-header>
+                <ion-card-title>{{ this.client?.id }}. {{ this.client?.name }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                <div class="card-content">
+                    <div class="left">
+                        <div class="card-item">
+
+                            <div class="img">
+                                <ion-img src="../../../../assets/icon/address.png"></ion-img>
+                            </div>
+                            <div class="duo">
+                                <ion-label><b>Dirección:</b></ion-label>
+                                <ion-label>{{ this.client?.address }}</ion-label>
+                            </div>
+                        </div>
+                        <div class="card-item">
+                            <div class="img">
+                                <ion-img src="../../../../assets/icon/money.png"></ion-img>
+                            </div>
+                            <div class="duo">
+                                <ion-label><b>Crédito máximo:</b></ion-label>
+                                <ion-label>${{ this.client?.maxCredit | number:'1.2-2' }}</ion-label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="card-item">
+                            <div class="img">
+                                <ion-img src="../../../../assets/icon/phone.png"></ion-img>
+                            </div>
+                            <div class="duo">
+                                <ion-label><b>Teléfono:</b></ion-label>
+                                <ion-label>{{ this.client?.phone }}</ion-label>
+                            </div>
+                        </div>
+                        <div class="card-item">
+                            <div class="img">
+                                <ion-img src="../../../../assets/icon/cash.png"></ion-img>
+                            </div>
+                            <div class="duo">
+                                <ion-label><b>Balance:</b></ion-label>
+                                @if(client && client.balance >= client.maxCredit){
+                                <ion-label color="danger">${{ this.client.balance | number:'1.2-2' }}</ion-label>
+                                }@else {
+                                <ion-label>${{ this.client?.balance | number:'1.2-2' }}</ion-label>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </ion-card-content>
+        </ion-card>
+        <ion-button (click)="onCall()">
+            <ion-icon color="light" name="call"></ion-icon>
+            <ion-label color="light">Llamar al cliente</ion-label>
+        </ion-button>
+        <hr>
+        <div class="bills">
+            <ion-list lines="none">
+                <ion-list-header><b>Facturas</b></ion-list-header>
+                @for(bill of bills; track bill.id){
+                <ion-item (click)="onClickBill(bill)">
+                    <ion-card>
+                        <ion-card-header>
+                            <ion-card-title>Factura #{{bill.id}}</ion-card-title>
+                        </ion-card-header>
+                        <ion-card-content>
+                            <div class="card-content">
+                                <div class="tri-element">
+                                    <div class="img">
+                                        <ion-img src="../../../../assets/icon/money.png"></ion-img>
+                                    </div>
+                                    <div class="duo">
+                                        <ion-label><b>Total:</b></ion-label>
+                                        <ion-label>${{bill.total | number:'1.2-2'}}</ion-label>
+                                    </div>
+
+                                </div>
+                                <div class="tri-element">
+                                    <div class="img">
+                                        <img src="../../../../assets/icon/cash.png" alt="Not found">
+                                    </div>
+                                    <div class="duo">
+                                        <ion-label><b>Pagado:</b></ion-label>
+                                        <ion-label>${{(bill.balance) | number:'1.2-2'}}</ion-label>
+                                    </div>
+
+                                </div>
+                                <div class="tri-element">
+                                    <div class="img">
+                                        <img src="../../../../assets/icon/close-cash.png" alt="Not found">
+                                    </div>
+                                    <div class="duo">
+                                        <ion-label><b>Por pagar:</b></ion-label>
+                                        <ion-label>${{(bill.total - bill.balance) | number:'1.2-2'}}</ion-label>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </ion-card-content>
+                    </ion-card>
+                </ion-item>
+                }@empty {
+                @if(loading){
+                <ion-item>
+                    <ion-label color="danger">Cargando...</ion-label>
+                </ion-item>
+
+                }@else {
+                <ion-item>
+                    <ion-label color="danger">Sin elementos</ion-label>
+                </ion-item>
+                }
+                }
+            </ion-list>
+        </div>
+
+    </div>
+</ion-content>

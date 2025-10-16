@@ -29,6 +29,8 @@ import { LocalUnitBaseService } from '../local/local-unit-base/local-unit-base.s
 import { UnitBaseService } from '../api/unit-base/unit-base.service';
 import { LocalPurchaseDetailService } from '../local/local-purchase-detail/local-purchase-detail.service';
 import { InternalStorageCoreService } from '../local/internal-storage-core/internal-storage-core.service';
+import { LocalBillInvoiceService } from '../local/local-bill-invoice/local-bill-invoice.service';
+import { BillInvoiceService } from '../api/bill-invoice/bill-invoice.service';
 
 @Injectable({
   providedIn: 'root',
@@ -53,6 +55,7 @@ export class GlobalService {
   private _localCashbox = inject(LocalCashBoxService);
   private _localUnitBase = inject(LocalUnitBaseService);
   private _localPurchaseDetails = inject(LocalPurchaseDetailService);
+  private _localInvoices = inject(LocalBillInvoiceService);
 
   //Api
   private _categories = inject(CategoryService);
@@ -66,10 +69,12 @@ export class GlobalService {
   private _unitProduct = inject(UnitProductService);
   private _cashbox = inject(CashBoxService);
   private _unitBase = inject(UnitBaseService);
+  private _invoices = inject(BillInvoiceService);
 
   //Other
   private _files = inject(FilesService);
   private update = new EventEmitter<void>();
+  private updateOrdersEvt = new EventEmitter<void>();
 
   constructor() { }
 
@@ -89,7 +94,8 @@ export class GlobalService {
         this._localUnitProduct.getAll(),
         this._localCashbox.getAll(),
         this._localUnitBase.getAll(),
-        this._localPurchaseDetails.getAll()
+        this._localPurchaseDetails.getAll(),
+        this._localInvoices.getAll()
       ])
     );
 
@@ -151,6 +157,10 @@ export class GlobalService {
       return value.uploaded != States.SYNC && value.uploaded != States.DOWNLOADED;
     });
 
+    const invoices = results[14].filter(value => {
+      return value.uploaded != States.SYNC && value.uploaded != States.DOWNLOADED;
+    });
+
     for (const purchase of purchases) {
       purchase.details = purchasesDetails.filter(detail => {
         return +detail.id.idPurchase == +purchase.id
@@ -196,6 +206,7 @@ export class GlobalService {
       this.syncValues(productCategories, this._productCategories, this._localProductCategories),
       this.syncValues(purchases, this._purchases, this._localPurchase),
       this.syncValues(cashboxes, this._cashbox, this._localCashbox),
+      this.syncValues(invoices, this._invoices, this._localInvoices)
     ])).catch(err => {
       this._files.saveError(err);
       return false;
@@ -228,6 +239,14 @@ export class GlobalService {
       value.uploaded = States.SYNC
       await localService.update(value);
     }
+  }
+
+  public updateOrders() {
+    this.updateOrdersEvt.emit();
+  }
+
+  public listenToOrderUpdating() {
+    return this.updateOrdersEvt.asObservable();
   }
 
   public updateData() {

@@ -56,7 +56,12 @@ import { LocalUnitBaseService } from 'src/app/services/local/local-unit-base/loc
 import { InventoryService } from 'src/app/services/api/inventory/inventory.service';
 import { LocalInventoryService } from 'src/app/services/local/local-inventory/local-inventory.service';
 import { LocalOrdersService } from 'src/app/services/local/local-orders/local-orders.service';
-import { OrdersService } from 'src/app/services/api/orders/orders.service';
+import { ClientService } from 'src/app/services/api/client/client.service';
+import { LocalClientService } from 'src/app/services/local/local-client/local-client.service';
+import { LocalBillsService } from 'src/app/services/local/bills/bills.service';
+import { BillsService } from 'src/app/services/api/bills/bills.service';
+import { BillInvoiceService } from 'src/app/services/api/bill-invoice/bill-invoice.service';
+import { LocalBillInvoiceService } from 'src/app/services/local/local-bill-invoice/local-bill-invoice.service';
 
 @Component({
   selector: 'app-first-opened',
@@ -100,7 +105,9 @@ export class FirstOpenedComponent implements OnInit {
   private _productPurhchase = inject(ProductPurchaseService);
   private _unitBase = inject(UnitBaseService);
   private _inventory = inject(InventoryService);
-  private _orders = inject(OrdersService);
+  private _client = inject(ClientService);
+  private _bills = inject(BillsService);
+  private _billInvoice = inject(BillInvoiceService);
 
   //Local
   private _categorySto = inject(LocalCategoriesService);
@@ -120,7 +127,9 @@ export class FirstOpenedComponent implements OnInit {
   private _productPurchaseSto = inject(LocalProductPurchaseService);
   private _unitBaseSto = inject(LocalUnitBaseService);
   private _inventorySto = inject(LocalInventoryService);
-  private _ordersSto = inject(LocalOrdersService);
+  private _clientSto = inject(LocalClientService);
+  private _billsSto = inject(LocalBillsService);
+  private _billInvoiceSto = inject(LocalBillInvoiceService);
 
   constructor() {}
 
@@ -152,6 +161,9 @@ export class FirstOpenedComponent implements OnInit {
         this._unitBase.getAll(),
         this._inventory.getAll(),
         // this._orders.getAll()
+        this._client.getAll(),
+        this._bills.getAll(),
+        this._billInvoice.getAll()
       ])
     ).catch(async (err) => {
       this._alert.showError('Error descargando los datos');
@@ -181,6 +193,9 @@ export class FirstOpenedComponent implements OnInit {
     const productPurchases = result[12] || [];
     const unitBases = result[13] || [];
     const inventory = result[14] || [];
+    const clients = result[15] || [];
+    const bills = result[16] || [];
+    const billInvoices = result[17] || [];
     // const orders = result[15] || [];
     
     imagesPros.map(
@@ -248,6 +263,9 @@ export class FirstOpenedComponent implements OnInit {
         this._productPurchaseSto.set(productPurchases),
         this._unitBaseSto.set(unitBases),
         this._inventorySto.set(inventory),
+        this._clientSto.set(clients),
+        this._billsSto.set(bills),
+        this._billInvoiceSto.set(billInvoices)
         // this._ordersSto.set(orders)
       ])
     ).catch((err) => {

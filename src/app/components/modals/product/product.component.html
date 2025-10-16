@@ -1,14 +1,13 @@
 <ion-header>
-  <app-header-bar [loading]="loading" [showCart]="type != 'normal' ? true : false" [arrowBack]="true"
-    title="producto"></app-header-bar>
+  <app-header-bar [loading]="loading" [showCart]="showCartButton" [arrowBack]="true" title="producto"></app-header-bar>
 </ion-header>
 <ion-content fullscreen="true">
   <div class="content">
     <div class="image">
       @if(image){
-      <img src="{{ image }}" alt="" />
+      <ion-img src="{{ image }}"></ion-img>
       }@else {
-      <img src="../../../../assets/no-image.png" alt="" />
+      <ion-img src="../../../../assets/no-image.png"></ion-img>
       }
       <div class="meta">
         <ion-button (click)="setFavorite()" shape="round" size="large">
@@ -53,7 +52,7 @@
         label-placement="stacked" type="number" fill="outline" placeholder="Ingrese una cantidad" #amount></ion-input>
       <span>Total: ${{ getTotal() | number : "1.2-2" }}</span>
       <ion-button [disabled]="loading" color="primary" (click)="this.onAddProduct()">
-        <ion-label> Añadir al carrito </ion-label>
+        <ion-label> {{ this.addButtonLabel }} </ion-label>
       </ion-button>
     </div>
   </div>

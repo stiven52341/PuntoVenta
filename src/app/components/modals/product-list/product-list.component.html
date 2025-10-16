@@ -14,7 +14,7 @@
         <ion-item (click)="onClick(product)">
           <div class="item-content" [ngClass]="{ null: !product.product.state }">
             <div class="image">
-              <img src="{{ product.image }}" alt="" />
+              <ion-img src="{{ product.image }}"></ion-img>
             </div>
             <p>{{ product.product.id }}.</p>
             <p>{{ product.product.name }}</p>

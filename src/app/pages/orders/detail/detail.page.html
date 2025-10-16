@@ -45,6 +45,31 @@
               <ion-label>${{ order?.total| number:'1.2-2' }}</ion-label>
             </div>
           </div>
+          <div class="item">
+            @if(this.order?.state){
+                @if(this.order?.processed){
+                  <img src="../../../assets/icon/success.png" alt="Not found">
+                }@else {
+                  <img src="../../../assets/icon/clock.png" alt="Not found">
+                }
+              }@else{
+                <img src="../../../assets/icon/error.png" alt="Not found">
+              }
+            
+            <div class="text-duo">
+              <ion-label><b>Estado:</b></ion-label>
+              @if(this.order?.state){
+                @if(this.order?.processed){
+                  <ion-label color="success"><b>Procesado</b></ion-label>
+                }@else {
+                  <ion-label color="primary">Sin procesar</ion-label>
+                }
+              }@else{
+                <ion-label color="danger"><b>Desactivado</b></ion-label>
+              }
+              
+            </div>
+          </div>
         </div>
       </ion-card-content>
     </ion-card>
@@ -53,7 +78,16 @@
       <ion-label color="light">Llamar al cliente</ion-label>
     </ion-button>
     <hr>
-    <ion-label><b>Detalles</b></ion-label>
+    <div class="details-title">
+      <ion-label><b>Detalles</b></ion-label>
+      @if(!this.order?.processed){
+      <ion-button (click)="onAddDetail()">
+        <ion-icon color="light" name="add-circle"></ion-icon>
+        <ion-label color="light">Agregar</ion-label>
+      </ion-button>
+      }
+    </div>
+
     <ion-list lines="none">
       @for(detail of detailsFiltered; track $index){
       <ion-item (click)="onClickDetail($index)">
@@ -81,7 +115,7 @@
                   <ion-label><b>Unidad:</b></ion-label>
                   <ion-label>{{detail.unit.name}}</ion-label>
                 </div>
-                
+
                 <div class="duo">
                   <ion-label><b>Total:</b></ion-label>
                   <ion-label>${{(detail.detail.priceUsed * detail.detail.amount) | number:'1.2-2'}}</ion-label>
@@ -95,15 +129,26 @@
     </ion-list>
   </div>
 </ion-content>
+
+@if(!this.order?.state || !this.order?.processed){
 <ion-footer>
   <div class="footer-content">
+    @if(this.order?.state){
     <ion-button (click)="onDisable()" color="danger">
       <ion-icon color="light" name="trash"></ion-icon>
       <ion-label color="light">Cancelar</ion-label>
     </ion-button>
-    <ion-button (click)="onProcess()" >
+    }@else {
+    <ion-button (click)="reactivateDetail()" color="danger">
+      <ion-icon color="light" name="refresh-circle"></ion-icon>
+      <ion-label color="light">Reactivar</ion-label>
+    </ion-button>
+    }
+
+    <ion-button (click)="onProcess()">
       <ion-icon color="light" name="save"></ion-icon>
       <ion-label color="light">Procesar</ion-label>
     </ion-button>
   </div>
 </ion-footer>
+}

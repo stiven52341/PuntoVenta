@@ -64,6 +64,13 @@ export class MantsPage implements OnInit {
         image: "../../../assets/icon/category.png",
       },
       {
+        title: 'CLIENTES',
+        image: '../../../assets/icon/smile-face.png',
+        do: async () => {
+          await this._router.navigate(['/mants/clients']);
+        }
+      },
+      {
         title: "Establecer unidad base para todos los productos",
         image: "../../../assets/icon/box-income.png",
         do: async () => {
@@ -83,10 +90,14 @@ export class MantsPage implements OnInit {
             "warning"
           );
 
-          if (!adv1) return;
+          if (!adv1) {
+            this.loading = false;
+            return;
+          }
 
           const unit = await this._modal.showUnitsList();
           if (!unit) {
+            this.loading = false;
             this._alert.showError("Debe seleccionar una unidad");
             return;
           }
@@ -96,9 +107,11 @@ export class MantsPage implements OnInit {
             `¿Está seguro de asignar como unidad base la unidad <b>${unit.name}</b>
             para todos los productos?`
           );
-          if (!adv2) return;
+          if (!adv2) {
+            this.loading = false
+            return;
+          }
 
-          this.loading = true;
           this._localProduct
             .setBaseUnitForAllProducts(+unit.id)
             .then(() => {

@@ -11,4 +11,11 @@ export class PurchaseService extends ApiCoreService<IPurchase>{
   constructor() {
     super(ApiKeys.PURCHASE);
   }
+
+  public async getPurchasesByClient(idClient: number){
+    const data = await this.getAll() || [];
+    return data.filter(purchase => {
+      purchase.idClient == idClient
+    });
+  }
 }
