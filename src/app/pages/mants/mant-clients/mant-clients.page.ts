@@ -15,6 +15,8 @@ import { States } from 'src/app/services/constants';
 import { FilesService } from 'src/app/services/files/files.service';
 import { LocalClientService } from 'src/app/services/local/local-client/local-client.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
+import { MaskitoOptions, MaskitoElementPredicate, maskitoTransform } from '@maskito/core';
+import { MaskitoDirective } from '@maskito/angular';
 
 @Component({
   selector: 'app-mant-clients',
@@ -23,7 +25,7 @@ import { ModalsService } from 'src/app/services/modals/modals.service';
   standalone: true,
   imports: [
     IonContent, IonHeader, HeaderBarComponent, IonInput, IonButton, IonIcon, IonFooter,
-    IonLabel, ReactiveFormsModule
+    IonLabel, ReactiveFormsModule, MaskitoDirective
   ],
   providers: [TitleCasePipe]
 })
@@ -32,6 +34,8 @@ export class MantClientsPage implements OnInit {
   protected form: FormGroup;
   protected loading: boolean = false;
   protected barOptions: Array<IButton>;
+  protected readonly phoneMask: MaskitoOptions;
+  protected readonly maskPredicate: MaskitoElementPredicate;
 
   constructor(
     private _modal: ModalsService, private _alert: AlertsService, private _localClient: LocalClientService,
@@ -39,6 +43,16 @@ export class MantClientsPage implements OnInit {
     private _titleCase: TitleCasePipe
   ) {
     addIcons({ search, save, trash });
+
+    this.phoneMask = {
+      mask: ['(', /\d/, /\d/, /\d/, ')', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]
+    };
+
+    this.maskPredicate = async (el) => {
+      const ion = el as unknown as HTMLIonInputElement;
+      const input = await ion.getInputElement(); // Promise<HTMLInputElement | HTMLTextAreaElement>
+      return input;
+    };
 
     this.form = new FormGroup({
       name: new FormControl<string>('', [
@@ -56,7 +70,7 @@ export class MantClientsPage implements OnInit {
       {
         title: 'Limpiar',
         do: async () => {
-          if(!await this._alert.showConfirm(undefined, '¿Está seguro de limpiar el formulario?')) return;
+          if (!await this._alert.showConfirm(undefined, '¿Está seguro de limpiar el formulario?')) return;
           this.clear();
           this._alert.showWarning('Formulario limpiado');
         }
@@ -112,7 +126,7 @@ export class MantClientsPage implements OnInit {
     try {
       if (!this.client) {
         await this.onSave();
-      }else{
+      } else {
         await this.onModify();
       }
     } finally {
@@ -121,7 +135,7 @@ export class MantClientsPage implements OnInit {
   }
 
   private async onSave() {
-    if(!await this._alert.showConfirm(undefined, '¿Está seguro de guardar el nuevo cliente?')) return;
+    if (!await this._alert.showConfirm(undefined, '¿Está seguro de guardar el nuevo cliente?')) return;
 
     const newClient: IClient = {
       id: await this._localClient.getNextID(),
@@ -145,8 +159,8 @@ export class MantClientsPage implements OnInit {
     });
   }
 
-  private async onModify(){
-    if(!await this._alert.showConfirm(undefined, '¿Está seguro de modificar el cliente?')) return;
+  private async onModify() {
+    if (!await this._alert.showConfirm(undefined, '¿Está seguro de modificar el cliente?')) return;
 
     const newClient: IClient = {
       id: this.client!.id,
@@ -169,10 +183,10 @@ export class MantClientsPage implements OnInit {
     });
   }
 
-  protected async onChangeStatus(action: 'activate' | 'disable' = 'disable'){
-    switch(action){
+  protected async onChangeStatus(action: 'activate' | 'disable' = 'disable') {
+    switch (action) {
       case 'activate':
-        if(!await this._alert.showConfirm(undefined, '¿Está seguro de reactivar el cliente?')) return;
+        if (!await this._alert.showConfirm(undefined, '¿Está seguro de reactivar el cliente?')) return;
 
         this.loading = true;
         this.client!.state = true;
@@ -187,7 +201,7 @@ export class MantClientsPage implements OnInit {
         }).finally(() => this.loading = false);
         break;
       case 'disable':
-        if(!await this._alert.showConfirm(undefined, '¿Está seguro de desactivar el cliente?')) return;
+        if (!await this._alert.showConfirm(undefined, '¿Está seguro de desactivar el cliente?')) return;
         this.loading = true;
         this.client!.state = false;
         const result2 = await this._client.delete(this.client!) ? States.SYNC : States.NOT_DELETED;
@@ -203,7 +217,7 @@ export class MantClientsPage implements OnInit {
     }
   }
 
-  private clear(){
+  private clear() {
     this.form.reset();
     this.client = undefined;
   }

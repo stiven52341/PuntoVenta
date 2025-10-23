@@ -16,7 +16,8 @@
         </div>
         <ion-input formControlName="name" labelPlacement="stacked" fill="outline" label="Nombre"
           placeholder="Nombre del cliente" [clearInput]="true" type="text"></ion-input>
-        <ion-input formControlName="phone" labelPlacement="stacked" fill="outline" label="Teléfono"
+        <ion-input formControlName="phone" [maskito]="phoneMask" [maskitoElement]="maskPredicate"
+          labelPlacement="stacked" fill="outline" label="Teléfono"
           placeholder="Teléfono del cliente" [clearInput]="true" type="tel"></ion-input>
         <ion-input formControlName="address" labelPlacement="stacked" fill="outline" label="Dirección"
           placeholder="Dirección del cliente" [clearInput]="true" type="text"></ion-input>
