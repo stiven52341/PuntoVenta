@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonContent, IonIcon, IonInput, IonLabel, ModalController } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonIcon, IonImg, IonInput, IonLabel, ModalController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { add, addCircle, save } from 'ionicons/icons';
 import { IBillInvoice } from 'src/app/models/bill-invoice.model';
@@ -18,7 +18,7 @@ import { LocalBillInvoiceService } from 'src/app/services/local/local-bill-invoi
   templateUrl: './bill-pay.component.html',
   styleUrls: ['./bill-pay.component.scss'],
   standalone: true,
-  imports: [IonContent, IonInput, FormsModule, IonButton, IonIcon, IonLabel]
+  imports: [IonContent, IonInput, FormsModule, IonButton, IonIcon, IonLabel, IonImg]
 })
 export class BillPayComponent implements OnInit {
   @Input({ required: true }) idBill!: number;
@@ -90,7 +90,7 @@ export class BillPayComponent implements OnInit {
 
     const billInvoice: IBillInvoice = {
       id: await this._localBillInvoice.getNextID(),
-      amount: this.pay,
+      amount: Number(this.pay.toFixed(2)),
       idBill: this.bill!.id,
       state: true,
       uploaded: States.NOT_INSERTED

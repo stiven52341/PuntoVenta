@@ -36,6 +36,15 @@ export class ConsultsPage implements OnInit {
           if(!income) return;
           this._router.navigate(['consults/product-income', income.id]);
         }
+      },
+      {
+        title: 'PASES DE INVENTARIO',
+        image: '../../../assets/icon/inventory-ajust.png',
+        do: async() => {
+          const check = await this._modal.showInventoryChecksList();
+          if(!check) return;
+          this._router.navigate(['consults/inventory-checks/', check.id]);
+        }
       }
     ];
   }

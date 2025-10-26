@@ -1,9 +1,9 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonBadge, IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonLabel } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { bookmark, list, save, search } from 'ionicons/icons';
-import { firstValueFrom, forkJoin } from 'rxjs';
+import { debounceTime, firstValueFrom, forkJoin, Subscription } from 'rxjs';
 import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
 import { States } from 'src/app/services/constants';
@@ -33,7 +33,7 @@ import { InventoryCheckCartService } from 'src/app/services/local/inventory-chec
     IonInput, IonIcon, IonLabel, IonFooter, ReactiveFormsModule
   ]
 })
-export class InventoryCheckPage implements OnInit {
+export class InventoryCheckPage implements OnInit, OnDestroy {
   protected product?: IProduct;
   protected unit?: IUnit;
   protected baseUnit?: IUnit;
@@ -45,6 +45,7 @@ export class InventoryCheckPage implements OnInit {
   protected form: FormGroup;
 
   private fieldsEvent: EventEmitter<void>;
+  private subs: Array<Subscription> = [];
 
   constructor(
     private _modal: ModalsService, private _localUnit: LocalUnitsService,
@@ -94,7 +95,7 @@ export class InventoryCheckPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.fieldsEvent.subscribe(async () => {
+    const sub1 = this.fieldsEvent.subscribe(async () => {
       const equivalencyControl = this.form.get('equivalency');
       if (!this.unit || !this.product?.idBaseUnit || Number(this.unit!.id) == Number(this.product.idBaseUnit)) {
         this.showEquivalency = false;
@@ -121,8 +122,18 @@ export class InventoryCheckPage implements OnInit {
       this.form.get('baseAmount')?.addValidators(Validators.required);
     });
 
+    const sub2 = this.form.valueChanges.pipe(debounceTime(300)).subscribe(() => {
+      this.form.get('baseAmount')?.setValue((this.equivalency?.equivalency || 0) * (this.form.get('amount')?.value || 0));
+    });
+
+    this.subs.push(sub1, sub2);
+
     const oldData = await this._inventoryCheckCart.getCurrent();
     this.details = oldData.details;
+  }
+
+  ngOnDestroy(): void {
+    this.subs.map(sub => sub.unsubscribe());
   }
 
   protected async selectProduct() {
@@ -143,6 +154,7 @@ export class InventoryCheckPage implements OnInit {
     if (!this.checkBeforeAdding()) return;
     //if(!await this._alert.showConfirm('CONFIRME', '¿Está seguro de agregar el detalle?')) return;
 
+    const baseAmount = this.form.get('baseAmount')?.value;
     const detail: IInventoryCheckDetail = {
       id: {
         idInventoryCheck: 0,
@@ -156,6 +168,7 @@ export class InventoryCheckPage implements OnInit {
       uploaded: States.NOT_INSERTED,
       equivalencyUsed: this.form.get('equivalency')?.value
     };
+    
 
     this.details.push(detail);
     this._toast.showToast('Detalle agregado', 2000, 'primary', 'top');
@@ -245,7 +258,8 @@ export class InventoryCheckPage implements OnInit {
       id: await this._localInventoryCheck.getNextID(),
       state: true,
       uploaded: States.NOT_INSERTED
-    }
+    };
+    
 
     const result = (await this._inventoryCheck.insert(header))
       ? States.SYNC : States.NOT_INSERTED;

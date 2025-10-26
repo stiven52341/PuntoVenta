@@ -172,7 +172,7 @@ export class MantClientsPage implements OnInit {
       uploaded: States.NOT_UPDATED,
       balance: this.client!.balance
     };
-    newClient.uploaded = await this._client.insert(newClient) ? States.SYNC : States.NOT_UPDATED;
+    newClient.uploaded = await this._client.update(newClient) ? States.SYNC : States.NOT_UPDATED;
     this._localClient.update(newClient).then(() => {
       this._alert.showSuccess('Cliente modificado');
       this.clear();

@@ -30,38 +30,25 @@ export abstract class InternalStorageCoreService<
 
   public async insert(obj: T) {
     const valores = await this.getAll();
+    const index = valores.findIndex(value => this.compareIDs(value.id, obj.id));
+    if(index != -1){
+      throw new Error('There is already an element with same ID');
+    }
+
     valores.push(obj);
     await InternalStorageCoreService._storage.set(this.key, valores);
   }
 
   public async get(id: U) {
     return (await this.getAll()).find((valor: T) => {
-      if (valor.id instanceof Object) {
-        const keys = Object.keys(valor.id);
-        let result = true;
-        keys.forEach((key) => {
-          result = result && (valor.id as any)[key] == (id as any)[key];
-        });
-        return result;
-      }
-
-      return valor.id == id;
+      return this.compareIDs(valor.id, id);
     });
   }
 
   public async update(obj: T) {
     const valores = await this.getAll();
     const index = valores.findIndex((valor) => {
-      if (valor.id instanceof Object) {
-        const keys = Object.keys(valor.id);
-        let result = true;
-        keys.forEach((key) => {
-          result = result && (valor.id as any)[key] == (obj.id as any)[key];
-        });
-        return result;
-      }
-
-      return valor.id == obj.id;
+      return this.compareIDs(valor.id, obj.id);
     });
     if (index == -1) throw new Error('Not found');
     valores[index] = obj;
@@ -72,16 +59,7 @@ export abstract class InternalStorageCoreService<
   public async delete(obj: T) {
     const valores = await this.getAll();
     const index = valores.findIndex((valor) => {
-      if (valor.id instanceof Object) {
-        const keys = Object.keys(valor.id);
-        let result = true;
-        keys.forEach((key) => {
-          result = result && (valor.id as any)[key] == (obj.id as any)[key];
-        });
-        return result;
-      }
-
-      return valor.id == obj.id;
+      return this.compareIDs(valor.id, obj.id);
     });
     if (index == -1) throw new Error('Not found');
     valores.splice(index, 1);
@@ -106,12 +84,25 @@ export abstract class InternalStorageCoreService<
     await this.update(obj);
   }
 
-  public static async getAllSavedData(): Promise<string>{
+  public static async getAllSavedData(): Promise<string> {
     const all: Record<string, any> = {};
     // storage.forEach returns a Promise<void>
     await InternalStorageCoreService._storage.forEach((value, key) => {
       all[key] = value;
     });
     return JSON.stringify(all);
+  }
+
+  private compareIDs(id1: U, id2: U): boolean {
+    if (id1 instanceof Object) {
+      const keys = Object.keys(id1);
+      let result = true;
+      keys.forEach((key) => {
+        result = result && (id1 as any)[key] == (id2 as any)[key];
+      });
+      return result;
+    }
+
+    return id1 == id2;
   }
 }

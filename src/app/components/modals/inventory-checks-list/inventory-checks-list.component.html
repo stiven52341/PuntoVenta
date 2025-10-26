@@ -1,0 +1,30 @@
+<ion-header>
+  <app-header-bar [loading]="loading" title="Lista de pases de inventorio" [isModal]="true"
+    [arrowBack]="true"></app-header-bar>
+  <form [formGroup]="searchForm">
+    <div class="toolbar-content">
+      <ion-input formControlName="from" type="date" label="Desde" fill="outline"></ion-input>
+      <ion-input formControlName="to" type="date" label="Hasta" fill="outline"></ion-input>
+    </div>
+  </form>
+
+</ion-header>
+<ion-content>
+  <div class="content">
+    <ion-list>
+      @for(check of checksFiltered; track check.id){
+      <ion-item (click)="onClick(check)">
+        <div class="item-content">
+          <ion-label color="danger"><b>{{check.id}}</b>.</ion-label>
+          <ion-label>{{ check.date | date:'dd/MM/yyyy hh:mm a' }}</ion-label>
+          <ion-label><b>Cant. productos:</b> {{ check.details.length }}</ion-label>
+        </div>
+      </ion-item>
+      }
+
+    </ion-list>
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>

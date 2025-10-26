@@ -24,6 +24,8 @@ import { IClient } from 'src/app/models/client.model';
 import { ClientsListComponent } from 'src/app/components/modals/clients-list/clients-list.component';
 import { IBill } from 'src/app/models/bill.model';
 import { BillPayComponent } from 'src/app/components/modals/bill-pay/bill-pay.component';
+import { IInventoryCheck } from 'src/app/models/inventory-check.model';
+import { InventoryChecksListComponent } from 'src/app/components/modals/inventory-checks-list/inventory-checks-list.component';
 
 @Injectable({
   providedIn: 'root',
@@ -197,25 +199,34 @@ export class ModalsService {
     return undefined;
   }
 
-  public async showClientsList(showWithBalance: boolean = false): Promise<IClient | undefined>{
+  public async showClientsList(showWithBalance: boolean = false): Promise<IClient | undefined> {
     const result = await this.showModal(
       ClientsListComponent,
       'clients-list',
-      {showWithBalance},
+      { showWithBalance },
       undefined
     );
     if (result && result.data) return result.data as IClient;
     return undefined;
   }
 
-  public async showBillPay(idBill: number, bill?: IBill): Promise<IBill | undefined>{
+  public async showBillPay(idBill: number, bill?: IBill): Promise<IBill | undefined> {
     const result = await this.showModal(
       BillPayComponent,
       'bill-pay',
-      {idBill,bill},
-      undefined, true, true,.8
+      { idBill, bill },
+      undefined, true, true, .8
     );
     if (result && result.data) return result.data as IBill;
+    return undefined;
+  }
+
+  public async showInventoryChecksList(): Promise<IInventoryCheck | undefined> {
+    const result = await this.showModal(
+      InventoryChecksListComponent,
+      'inventory-checks-list',
+    );
+    if (result && result.data) return result.data as IInventoryCheck;
     return undefined;
   }
 

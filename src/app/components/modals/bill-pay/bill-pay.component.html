@@ -8,7 +8,7 @@
     <div class="duo">
       <ion-input #payInput type="number" [clearInput]="true" label="Abonar" name="pay" [(ngModel)]="pay"
         labelPlacement="stacked" fill="outline"></ion-input>
-      <ion-button (click)="onApply()">
+      <ion-button [disabled]="loading" (click)="onApply()">
         <ion-icon color="light" name="add-circle"></ion-icon>
         <ion-label color="light">Aplicar</ion-label>
       </ion-button>
@@ -16,9 +16,12 @@
 
     <ion-input [disabled]="true" label="Restante" [value]="this.getToPay() - pay" labelPlacement="stacked"
       fill="outline"></ion-input>
-    <ion-button (click)="onProcess()">
+    <ion-button [disabled]="loading" (click)="onProcess()">
       <ion-icon color="light" name="save"></ion-icon>
       <ion-label color="light">Procesar</ion-label>
     </ion-button>
+    @if(loading){
+      <ion-img src="../../../../assets/icon/loading.gif" alt="Not found"></ion-img>
+    }
   </div>
 </ion-content>

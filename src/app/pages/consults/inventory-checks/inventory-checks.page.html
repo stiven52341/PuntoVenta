@@ -1,0 +1,70 @@
+<ion-header [translucent]="true">
+  <app-header-bar [loading]="loading" title="Consulta de pase de inventario" [isModal]="false"
+    [arrowBack]="true"></app-header-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title><b>{{ this.check?.id }}.</b> Fecha: {{ this.check?.date | date:'dd/MM/yyyy hh:mm a'
+          }}</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+    <hr>
+    <ion-list lines="none">
+      <ion-label><b>Detalles</b></ion-label>
+      @for (detail of detailsFiltered; track $index) {
+      <ion-item>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title><b>{{ $index + 1 }}.</b> {{ detail.product.name }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="card-content">
+              <div class="img">
+                <ion-img [src]="detail.photo"></ion-img>
+              </div>
+              <div class="left">
+                <div class="duo">
+                  <ion-label><b>Unidad:</b></ion-label>
+                  <ion-label>{{detail.unit.name}}</ion-label>
+                </div>
+                <div class="duo">
+                  <ion-label><b>Cantidad:</b></ion-label>
+                  <ion-label>{{detail.detail.amount}}</ion-label>
+                </div>
+              </div>
+              @if(detail.baseUnit){
+              <div class="right">
+                <div class="duo">
+                  <ion-label><b>Unidad B.:</b></ion-label>
+                  <ion-label>{{detail.baseUnit.name}}</ion-label>
+                </div>
+                <div class="duo">
+                  <ion-label><b>Cantidad en B.:</b></ion-label>
+                  <ion-label>{{detail.detail.amountBaseUnit}}</ion-label>
+                </div>
+              </div>
+              }
+
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+      }
+
+    </ion-list>
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>
+@if(isPrinter){
+<ion-footer>
+  <ion-button>
+    <ion-icon name="save"></ion-icon>
+    <ion-label>REIMPRIMIR</ion-label>
+  </ion-button>
+</ion-footer>
+}

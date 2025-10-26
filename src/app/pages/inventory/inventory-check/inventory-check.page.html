@@ -30,8 +30,7 @@
       <ion-input labelPlacement="stacked" fill="outline" label="CANTIDAD" type="number" [clearInput]="true"
         formControlName="equivalency" placeholder="Cuanto equivale la unidad con la unidad base"></ion-input>
       <ion-input labelPlacement="stacked" fill="outline" label="CANTIDAD EN UNIDAD BASE" type="number"
-        formControlName="baseAmount"
-        [value]="(this.equivalency?.equivalency || 0) * (this.form.get('amount')?.value || 0)"></ion-input>
+        formControlName="baseAmount"></ion-input>
       }
     </form>
   </div>
