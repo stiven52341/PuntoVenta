@@ -5,6 +5,7 @@ import { addIcons } from 'ionicons';
 import { add, addCircle, save } from 'ionicons/icons';
 import { IBillInvoice } from 'src/app/models/bill-invoice.model';
 import { IBill } from 'src/app/models/bill.model';
+import { ICoin } from 'src/app/models/coin.model';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { BillInvoiceService } from 'src/app/services/api/bill-invoice/bill-invoice.service';
 import { ErrorsService } from 'src/app/services/api/errors/errors.service';
@@ -26,7 +27,6 @@ export class BillPayComponent implements OnInit {
   @ViewChild('payInput', { static: false }) payInput?: IonInput;
   protected loading: boolean = false;
   protected pay: number = 0;
-
   constructor(
     private _localBill: LocalBillsService, private _alert: AlertsService,
     private _billInvoice: BillInvoiceService, private _localBillInvoice: LocalBillInvoiceService,

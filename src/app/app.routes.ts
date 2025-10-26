@@ -126,4 +126,8 @@ export const routes: Routes = [
     path: 'consults/inventory-checks/:id',
     loadComponent: () => import('./pages/consults/inventory-checks/inventory-checks.page').then( m => m.InventoryChecksPage)
   },
+  {
+    path: 'consults/cash-box/:id',
+    loadComponent: () => import('./pages/consults/cash-boxes/cash-boxes.page').then( m => m.CashBoxesPage)
+  },
 ];

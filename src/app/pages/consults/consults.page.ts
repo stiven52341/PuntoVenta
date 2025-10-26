@@ -45,6 +45,15 @@ export class ConsultsPage implements OnInit {
           if(!check) return;
           this._router.navigate(['consults/inventory-checks/', check.id]);
         }
+      },
+      {
+        title: 'CAJAS',
+        image: '../../../assets/icon/cash-box.png',
+        do: async() => {
+          const cashbox = await this._modal.showCashBoxesList();
+          if(!cashbox) return;
+          this._router.navigate(['consults/cash-box/', cashbox.id]);
+        }
       }
     ];
   }

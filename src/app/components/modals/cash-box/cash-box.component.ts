@@ -1,13 +1,18 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
   IonContent,
   IonHeader,
   IonInput,
   IonButton,
   ModalController,
+  IonImg,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonFooter,
+  IonIcon,
 } from '@ionic/angular/standalone';
 import { HeaderBarComponent } from '../../elements/header-bar/header-bar.component';
-import { FormsModule, NgModel } from '@angular/forms';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
 import { LocalCashBoxService } from 'src/app/services/local/local-cash-box/local-cash-box.service';
 import { CashBoxService } from 'src/app/services/api/cash-box/cash-box.service';
@@ -16,6 +21,14 @@ import { States } from 'src/app/services/constants';
 import { FilesService } from 'src/app/services/files/files.service';
 import { PrintingService } from 'src/app/services/printing/printing.service';
 import { ErrorsService } from 'src/app/services/api/errors/errors.service';
+import { ICoin } from 'src/app/models/coin.model';
+import { LocalCoinService } from 'src/app/services/local/local-coin/local-coin.service';
+import { DecimalPipe } from '@angular/common';
+import { addIcons } from 'ionicons';
+import { save } from 'ionicons/icons';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { debounceTime, Subscription } from 'rxjs';
+import { ICoinCashbox } from 'src/app/models/coin-cashbox.model';
 
 @Component({
   selector: 'app-cash-box',
@@ -28,19 +41,31 @@ import { ErrorsService } from 'src/app/services/api/errors/errors.service';
     IonHeader,
     IonContent,
     HeaderBarComponent,
-    FormsModule,
+    IonImg,
+    IonList,
+    IonItem,
+    IonLabel,
+    DecimalPipe,
+    IonFooter,
+    IonIcon,
+    ReactiveFormsModule
   ],
 })
-export class CashBoxComponent implements OnInit {
+export class CashBoxComponent implements OnInit, OnDestroy {
   protected title: string = 'Caja';
   protected inputPlaceholder: string = '';
   protected label: string = '';
-  protected amount: number = 0;
+  // protected amount: number = 0;
   protected buttonText: string = '';
+  protected coins: Array<ICoin> = [];
   @Input({ required: true }) type!: 'open' | 'close';
   @Input() balance: number = 0;
+  protected loading: boolean = false;
+  protected total: number = 0;
+  protected form: FormGroup;
 
   private cashbox?: ICashBox;
+  private subs: Array<Subscription> = [];
 
   constructor(
     private _modalCtrl: ModalController,
@@ -49,10 +74,34 @@ export class CashBoxComponent implements OnInit {
     private _cashbox: CashBoxService,
     private _file: FilesService,
     private _printing: PrintingService,
-    private _error: ErrorsService
-  ) { }
+    private _error: ErrorsService,
+    private _coin: LocalCoinService,
+    private _number: DecimalPipe
+  ) {
+    addIcons({ save });
+
+    this.form = new FormGroup({});
+  }
 
   async ngOnInit() {
+    this.loading = true;
+    this.coins = await this._coin.getAll();
+
+    this.coins.forEach(coin => {
+      this.form.addControl(coin.id.toString(), new FormControl<number>(0, [Validators.required, Validators.min(0)]));
+    });
+
+    const sub = this.form.valueChanges.pipe(debounceTime(300)).subscribe(() => {
+      this.total = 0;
+      this.coins.forEach(coin => {
+        const value = (this.form.get(coin.id.toString())?.value || 0) as number;
+        this.total += value * coin.value;
+      });
+    });
+    this.subs.push(sub);
+
+    this.loading = false;
+
     switch (this.type) {
       case 'open':
         this.title = 'Abrir Caja';
@@ -73,16 +122,28 @@ export class CashBoxComponent implements OnInit {
         this.inputPlaceholder = 'Ingrese la cantidad de cierre';
         this.label = 'Cantidad de Cierre';
         this.buttonText = 'Cerrar Caja';
-        this.amount = this.balance;
+        this.total = 0;
         break;
     }
   }
 
+  ngOnDestroy(): void {
+    this.subs.map(sub => sub.unsubscribe());
+  }
+
   private checkForm(): boolean {
-    if (this.amount < 1) {
-      this._alert.showError('La cantidad debe ser mayor a 0');
+    if (this.total < 1) {
+      this._alert.showError('El total debe ser mayor a 0');
       return false;
     }
+
+    for (const coin of this.coins) {
+      if (this.form.get(coin.id.toString())?.invalid) {
+        this._alert.showError(`Cantidad de $${this._number.transform(coin.value)} inválido`);
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -99,12 +160,29 @@ export class CashBoxComponent implements OnInit {
     )
       return;
 
+    const newID = await this._localCashbox.getNextID();
+
+    const coinCash: Array<ICoinCashbox> = [];
+    this.coins.forEach((coin, index) => {
+      const amount = (this.form.get(coin.id.toString())?.value || 0) as number;
+      coinCash.push({
+        id: index,
+        amount: amount,
+        idCashbox: newID,
+        idCoin: coin.id,
+        state: true,
+        uploaded: States.NOT_INSERTED,
+        closing: this.type == 'close'
+      });
+    });
+
     let cashbox: ICashBox = {
-      id: await this._localCashbox.getNextID(),
+      id: newID,
       init: new Date(),
-      initCash: this.amount,
+      initCash: this.total,
       state: true,
       uploaded: States.NOT_INSERTED,
+      coins: coinCash
     };
 
     const open = async () => {
@@ -114,8 +192,8 @@ export class CashBoxComponent implements OnInit {
       await this._localCashbox
         .insert(cashbox)
         .then(() => {
-          this._alert.showSuccess(`Caja abierta con $${this.amount.toFixed(2)}`);
-          this._modalCtrl.dismiss(this.amount);
+          this._alert.showSuccess(`Caja abierta con $${this.total.toFixed(2)}`);
+          this._modalCtrl.dismiss(this.total);
         })
         .catch((err) => {
           this._file.saveError(err);
@@ -127,7 +205,7 @@ export class CashBoxComponent implements OnInit {
       cashbox = this.cashbox!;
 
       cashbox.end = new Date();
-      cashbox.endCash = this.amount;
+      cashbox.endCash = this.total;
       cashbox.state = false;
 
       const result = await this._cashbox.update(cashbox);
@@ -139,8 +217,8 @@ export class CashBoxComponent implements OnInit {
         .then(async () => {
           try {
             await this._printing.printSells(cashbox);
-            this._alert.showSuccess(`Caja cerrada con $${this.amount.toFixed(2)}`);
-            this._modalCtrl.dismiss(this.amount);
+            this._alert.showSuccess(`Caja cerrada con $${this.total.toFixed(2)}`);
+            this._modalCtrl.dismiss(this.total);
           } catch (error) {
             this._alert.showError(`Error en finalizacion de caja: ${error}`);
             this._file.saveError(error);

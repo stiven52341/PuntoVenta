@@ -22,7 +22,8 @@ export enum ApiKeys {
   ORDERS = PATH + 'orders',
   CLIENTS = PATH + 'clients',
   BILLS = PATH + 'bills',
-  BILL_INVOICE = PATH + 'bill-invoices'
+  BILL_INVOICE = PATH + 'bill-invoices',
+  COINS = PATH + 'coins'
 }
 
 export enum WebsocketKeys{
@@ -55,7 +56,8 @@ export enum StorageKeys {
   ORDERS = 'orders',
   CLIENTS = 'clients',
   BILLS = 'bills',
-  BILL_INVOICE = 'bill-invoices'
+  BILL_INVOICE = 'bill-invoices',
+  COINS = 'coins'
 }
 
 export enum PhotoKeys {

@@ -1,23 +1,47 @@
 <ion-header>
-  <app-header-bar
-    [title]="title"
-    [arrowBack]="true"
-    [isModal]="true"
-  ></app-header-bar>
+  <app-header-bar [title]="title" [arrowBack]="true" [isModal]="true" [arrowBack]="true"></app-header-bar>
 </ion-header>
 <ion-content>
   <div class="content">
-    <ion-input
-      [min]="1"
-      name="amount"
-      [(ngModel)]="amount"
-      [label]="label"
-      label-placement="stacked"
-      fill="outline"
-      [placeholder]="inputPlaceholder"
-      type="number"
-      [clearInput]="true"
-    ></ion-input>
-    <ion-button (click)="onClose()">{{ this.buttonText }}</ion-button>
+    <!-- <ion-input [min]="1" name="amount" [(ngModel)]="amount" [label]="label" label-placement="stacked" fill="outline"
+      [placeholder]="inputPlaceholder" type="number" [clearInput]="true"></ion-input>-->
+
+    <ion-list lines="none">
+      <form [formGroup]="form">
+        @for(coin of coins; track coin.id){
+        <ion-item>
+          <div class="duo">
+            <ion-label>Moneda de ${{ coin.value | number }}</ion-label>
+            <ion-input [clearInput]="true" formControlName="{{coin.id.toString()}}" label="Cantidad" type="number" label-placement="stacked"
+              fill="outline"></ion-input>
+          </div>
+        </ion-item>
+        }@empty {
+        @if(loading){
+        <ion-label color="danger">Cargando...</ion-label>
+        }@else {
+        <ion-label color="danger">Sin elementos</ion-label>
+        }
+        }
+      </form>
+    </ion-list>
+
+    <ion-label>
+      <b>Total: </b> ${{this.total | number:'1.2-2'}}
+    </ion-label>
+
+    @if(this.loading){
+    <ion-img src="../../../../assets/icon/loading.gif"></ion-img>
+    }
+
+
   </div>
 </ion-content>
+<ion-footer>
+  <div class="footer-content">
+    <ion-button color="danger" (click)="onClose()">
+      <ion-icon name="save"></ion-icon>
+      <ion-label color="light">{{ this.buttonText }}</ion-label>
+    </ion-button>
+  </div>
+</ion-footer>

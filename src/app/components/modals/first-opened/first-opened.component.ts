@@ -62,6 +62,8 @@ import { LocalBillsService } from 'src/app/services/local/bills/bills.service';
 import { BillsService } from 'src/app/services/api/bills/bills.service';
 import { BillInvoiceService } from 'src/app/services/api/bill-invoice/bill-invoice.service';
 import { LocalBillInvoiceService } from 'src/app/services/local/local-bill-invoice/local-bill-invoice.service';
+import { CoinService } from 'src/app/services/api/coin/coin.service';
+import { LocalCoinService } from 'src/app/services/local/local-coin/local-coin.service';
 
 @Component({
   selector: 'app-first-opened',
@@ -108,6 +110,7 @@ export class FirstOpenedComponent implements OnInit {
   private _client = inject(ClientService);
   private _bills = inject(BillsService);
   private _billInvoice = inject(BillInvoiceService);
+  private _coinService = inject(CoinService);
 
   //Local
   private _categorySto = inject(LocalCategoriesService);
@@ -130,6 +133,7 @@ export class FirstOpenedComponent implements OnInit {
   private _clientSto = inject(LocalClientService);
   private _billsSto = inject(LocalBillsService);
   private _billInvoiceSto = inject(LocalBillInvoiceService);
+  private _coinSto = inject(LocalCoinService);
 
   constructor() {}
 
@@ -163,7 +167,8 @@ export class FirstOpenedComponent implements OnInit {
         // this._orders.getAll()
         this._client.getAll(),
         this._bills.getAll(),
-        this._billInvoice.getAll()
+        this._billInvoice.getAll(),
+        this._coinService.getAll()
       ])
     ).catch(async (err) => {
       this._alert.showError('Error descargando los datos');
@@ -196,6 +201,7 @@ export class FirstOpenedComponent implements OnInit {
     const clients = result[15] || [];
     const bills = result[16] || [];
     const billInvoices = result[17] || [];
+    const coins = result[18] || [];
     // const orders = result[15] || [];
     
     imagesPros.map(
@@ -265,7 +271,8 @@ export class FirstOpenedComponent implements OnInit {
         this._inventorySto.set(inventory),
         this._clientSto.set(clients),
         this._billsSto.set(bills),
-        this._billInvoiceSto.set(billInvoices)
+        this._billInvoiceSto.set(billInvoices),
+        this._coinSto.set(coins)
         // this._ordersSto.set(orders)
       ])
     ).catch((err) => {

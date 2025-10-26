@@ -1,0 +1,65 @@
+.content{
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .5em;
+
+    ion-card{
+        width: 100%;
+    }
+
+    .card-content{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: .5em;
+
+        .tri{
+            width: 100%;
+            display: grid;
+            grid-template-columns: 3em 1fr 2fr;
+            justify-content: space-between;
+            align-items: center;
+            gap: .5em;
+        }
+    }
+
+    hr{
+        width: 100%;
+        background-color: lightgray;
+    }
+
+    ion-list{
+        width: 100%;
+    }
+
+    ion-item{
+        width: 100%;
+        
+        ion-card{
+            width: 100%;
+
+            .card-content-details{
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                gap: .5em;
+
+                .tri-detail{
+                    display: grid;
+                    grid-template-columns: 3em 5em 5em;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: .5em;
+
+                }
+            }
+        }
+    }
+}

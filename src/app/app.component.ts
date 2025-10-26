@@ -1,5 +1,5 @@
-import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RoutesRecognized } from "@angular/router";
 import {
   IonApp,
   IonRouterOutlet,
@@ -30,6 +30,7 @@ import { Keyboard, KeyboardResize } from "@capacitor/keyboard";
 import { App } from "@capacitor/app";
 import { OrdersWsService } from "./services/web-socket/orders/orders-ws.service";
 import { NotificationsService } from "./services/notifications/notifications.service";
+import { AlertsService } from "./services/alerts/alerts.service";
 
 @Component({
   selector: "app-root",
@@ -54,6 +55,7 @@ import { NotificationsService } from "./services/notifications/notifications.ser
 export class AppComponent implements OnInit {
   // public static loadingData = new EventEmitter<boolean>();
 
+  @ViewChild('outlet', { static: true }) outlet?: IonRouterOutlet;
   protected menuOptions: Array<IButton>;
   protected version?: string;
 
@@ -66,7 +68,8 @@ export class AppComponent implements OnInit {
     private _global: GlobalService,
     private _toast: ToastService,
     private _ordersWs: OrdersWsService,
-    private _notifications: NotificationsService
+    private _notifications: NotificationsService,
+    private _alert: AlertsService
   ) {
     App.getInfo().then((info) => {
       this.version = info.version;
@@ -176,6 +179,14 @@ export class AppComponent implements OnInit {
         );
       });
 
+    });
+
+    this.outlet?.stackWillChange.subscribe(async () => {
+      await this._alert.showLoading('show');
+    });
+
+    this.outlet?.stackDidChange.subscribe(async () => {
+      await this._alert.showLoading('close');
     });
   }
 

@@ -26,6 +26,8 @@ import { IBill } from 'src/app/models/bill.model';
 import { BillPayComponent } from 'src/app/components/modals/bill-pay/bill-pay.component';
 import { IInventoryCheck } from 'src/app/models/inventory-check.model';
 import { InventoryChecksListComponent } from 'src/app/components/modals/inventory-checks-list/inventory-checks-list.component';
+import { ICashBox } from 'src/app/models/cash-box.model';
+import { CashBoxesListComponent } from 'src/app/components/modals/cash-boxes-list/cash-boxes-list.component';
 
 @Injectable({
   providedIn: 'root',
@@ -156,9 +158,7 @@ export class ModalsService {
       CashBoxComponent,
       'sells-list',
       { type: type, balance: balance },
-      'my-partial-modal',
-      undefined,
-      true
+      'my-partial-modal'
     );
     if (result && result.data) return result.data as number;
     return undefined;
@@ -227,6 +227,15 @@ export class ModalsService {
       'inventory-checks-list',
     );
     if (result && result.data) return result.data as IInventoryCheck;
+    return undefined;
+  }
+
+  public async showCashBoxesList(): Promise<ICashBox | undefined> {
+    const result = await this.showModal(
+      CashBoxesListComponent,
+      'cash-boxes-list',
+    );
+    if (result && result.data) return result.data as ICashBox;
     return undefined;
   }
 

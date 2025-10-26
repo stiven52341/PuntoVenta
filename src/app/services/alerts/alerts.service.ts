@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { AlertButton, AlertController } from '@ionic/angular/standalone';
+import { AlertButton, AlertController, LoadingController } from '@ionic/angular/standalone';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AlertsService {
   private alert?: HTMLIonAlertElement;
-  constructor(private alertCtrl: AlertController) {}
+  private loading?: HTMLIonLoadingElement;
+  constructor(private alertCtrl: AlertController, private _loadingCtrl: LoadingController) {}
 
   private async showAlert(
     title: string,
@@ -125,6 +126,27 @@ export class AlertsService {
     });
 
     return await this.showAlert(title, info, undefined, buttons);
+  }
+
+  public async showLoading(action: 'show' | 'close'){
+    switch(action){
+      case 'show':
+        if(this.loading){
+          await this.loading.dismiss();
+          this.loading = undefined;
+        }
+
+        this.loading = await this._loadingCtrl.create({
+          animated: true, backdropDismiss: false, message: 'Cargando...',
+          spinner: 'crescent'
+        });
+        await this.loading.present();
+        break;
+      case 'close':
+        if(!this.loading) return;
+        await this.loading.dismiss();
+        break;
+    }
   }
 }
 

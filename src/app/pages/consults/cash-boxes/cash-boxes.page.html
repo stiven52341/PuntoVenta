@@ -1,0 +1,137 @@
+<ion-header [translucent]="true">
+  <app-header-bar title="Consulta de caja" [isModal]="false" [arrowBack]="true" [loading]="loading"></app-header-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Datos Generales</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="card-content">
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/calendar-plus.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>Apertura:</b></ion-label>
+            <ion-label>{{ cashbox?.init | date:'dd/MM/yyyy hh:mm a' }}</ion-label>
+          </div>
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/calendar-less.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>Cierre:</b></ion-label>
+            <ion-label>{{ cashbox?.end | date:'dd/MM/yyyy hh:mm a' }}</ion-label>
+          </div>
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/cash.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>$Apertura:</b></ion-label>
+            <ion-label>${{ cashbox?.initCash | number:'1.2-2' }}</ion-label>
+          </div>
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/cash-money.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>$Cierre:</b></ion-label>
+            <ion-label>${{ cashbox?.endCash| number:'1.2-2' }}</ion-label>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+    <hr>
+    <ion-label><b>Monedas de apertura</b></ion-label>
+    <ion-list lines="none">
+      @for (coin of coinsFromOpen; track coin.coin.id) {
+      <ion-item>
+        <ion-card>
+          <ion-card-content>
+            <div class="card-content-details">
+              <div class="tri-detail">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/cash.png"></ion-img>
+                </div>
+                <ion-label color="danger"><b>Moneda:</b></ion-label>
+                <ion-label>{{ coin.coin.value }}</ion-label>
+              </div>
+              <div class="tri-detail">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/cash-money.png"></ion-img>
+                </div>
+                <ion-label color="danger"><b>Cantidad:</b></ion-label>
+                <ion-label>{{ coin.relation.amount }}</ion-label>
+              </div>
+              <div class="tri-detail">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/take-money.png"></ion-img>
+                </div>
+                <ion-label color="danger"><b>Total:</b></ion-label>
+                <ion-label>${{ (coin.relation.amount * coin.coin.value) | number:'1.2-2'}}</ion-label>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+      }@empty {
+      @if(loading){
+      <ion-label color="danger">Cargando...</ion-label>
+      }@else {
+      <ion-label color="danger">Sin elementos</ion-label>
+      }
+      }
+    </ion-list>
+    <hr>
+    <ion-label><b>Monedas de cierre</b></ion-label>
+    <ion-list lines="none">
+      @for (coin of coinsFromClose; track coin.coin.id) {
+      <ion-item>
+        <ion-card>
+          <ion-card-content>
+            <div class="card-content-details">
+              <div class="tri-detail">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/cash.png"></ion-img>
+                </div>
+                <ion-label color="danger"><b>Moneda:</b></ion-label>
+                <ion-label>{{ coin.coin.value }}</ion-label>
+              </div>
+              <div class="tri-detail">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/cash-money.png"></ion-img>
+                </div>
+                <ion-label color="danger"><b>Cantidad:</b></ion-label>
+                <ion-label>{{ coin.relation.amount }}</ion-label>
+              </div>
+              <div class="tri-detail">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/take-money.png"></ion-img>
+                </div>
+                <ion-label color="danger"><b>Total:</b></ion-label>
+                <ion-label>${{ (coin.relation.amount * coin.coin.value) | number:'1.2-2'}}</ion-label>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+      }@empty {
+      @if(loading){
+      <ion-label color="danger">Cargando...</ion-label>
+      }@else {
+      <ion-label color="danger">Sin elementos</ion-label>
+      }
+      }
+    </ion-list>
+  </div>
+</ion-content>
+@if(this.isPrinter){
+  <ion-footer>
+    <div class="footer-content">
+      <ion-button>
+        <ion-icon name="save"></ion-icon>
+        <ion-label>Reimprimir</ion-label>
+      </ion-button>
+    </div>
+  </ion-footer>
+}

@@ -1,0 +1,81 @@
+<ion-header>
+  <app-header-bar title="Lista de Cajas" [isModal]="true" [arrowBack]="true" [loading]="loading"></app-header-bar>
+  <div class="toolbar">
+    <form [formGroup]="form">
+      <div class="form-content">
+        <ion-input formControlName="init" fill="outline" label="Desde" type="date"></ion-input>
+        <ion-input formControlName="end" fill="outline" label="Hasta" type="date"></ion-input>
+      </div>
+    </form>
+  </div>
+</ion-header>
+<ion-content>
+  <div class="content">
+    <ion-list lines="none">
+      @for(cashbox of cashboxesFiltered; track cashbox.id){
+      <ion-item (click)="onClick(cashbox)">
+        <ion-card>
+          <ion-card-content>
+            <div class="card-content">
+              <div class="tri">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/calendar-plus.png" alt="Not found"></ion-img>
+                </div>
+                <ion-label>
+                  <b>Apertura:</b>
+                </ion-label>
+                <ion-label>
+                  {{ cashbox.init | date:'dd/MM/yyyy hh:mm a' }}
+                </ion-label>
+              </div>
+              <div class="tri">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/calendar-less.png" alt="Not found"></ion-img>
+                </div>
+                <ion-label>
+                  <b>Cierre:</b>
+                </ion-label>
+                <ion-label>
+                  {{ cashbox.end | date:'dd/MM/yyyy hh:mm a' }}
+                </ion-label>
+              </div>
+              <div class="tri">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/cash.png" alt="Not found"></ion-img>
+                </div>
+                <ion-label>
+                  <b>$Apertura:</b>
+                </ion-label>
+                <ion-label>
+                  ${{ cashbox.initCash| number:'1.2-2' }}
+                </ion-label>
+              </div>
+              <div class="tri">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/cash-money.png" alt="Not found"></ion-img>
+                </div>
+                <ion-label>
+                  <b>$Cierre:</b>
+                </ion-label>
+                <ion-label>
+                  ${{ cashbox.endCash | number:'1.2-2' }}
+                </ion-label>
+              </div>
+
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+      }@empty {
+        @if(loading){
+          <ion-label color="danger">Cargando...</ion-label>
+        }@else {
+          <ion-label color="danger">Sin elementos</ion-label>
+        }
+      }
+    </ion-list>
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>
