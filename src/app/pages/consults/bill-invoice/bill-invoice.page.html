@@ -1,0 +1,93 @@
+<ion-header [translucent]="true">
+  <app-header-bar title="Consulta de abonos a facturas" [arrowBack]="true" [isModal]="false"
+    [loading]="loading"></app-header-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Datos de factura</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="card-content">
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/smile-face.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>Cliente:</b></ion-label>
+            <ion-label>{{ client?.name }}</ion-label>
+          </div>
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/bill.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>Factura:</b></ion-label>
+            <ion-label>{{ bill?.id }}</ion-label>
+          </div>
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/cash.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>Total:</b></ion-label>
+            <ion-label>${{ purchase?.total | number:'1.2-2' }}</ion-label>
+          </div>
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/cash-money.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>Abonado:</b></ion-label>
+            <ion-label>${{ bill?.balance | number:'1.2-2' }}</ion-label>
+          </div>
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/date.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>Fecha de emisión:</b></ion-label>
+            <ion-label>{{ purchase?.date | date:'dd/MM/yyyy hh:mm a' }}</ion-label>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Datos de abono</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="card-content">
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/tag.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>Número:</b></ion-label>
+            <ion-label>{{ invoice?.id }}</ion-label>
+          </div>
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/date.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>Fecha:</b></ion-label>
+            <ion-label>{{ invoice?.date | date:'dd/MM/yyyy hh:mm a' }}</ion-label>
+          </div>
+          <div class="tri">
+            <div class="img">
+              <ion-img src="../../../../assets/icon/cash-money.png"></ion-img>
+            </div>
+            <ion-label color="danger"><b>Cant. abonada:</b></ion-label>
+            <ion-label>${{ invoice?.amount | number:'1.2-2' }}</ion-label>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+@if(this.isPrinter){
+  <ion-footer>
+    <div class="footer-content">
+      <ion-button>
+        <ion-icon name="print"></ion-icon>
+        <ion-label>Reimprimir</ion-label>
+      </ion-button>
+    </div>
+  </ion-footer>
+}

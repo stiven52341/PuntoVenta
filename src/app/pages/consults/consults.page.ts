@@ -54,6 +54,15 @@ export class ConsultsPage implements OnInit {
           if(!cashbox) return;
           this._router.navigate(['consults/cash-box/', cashbox.id]);
         }
+      },
+      {
+        title: 'ABONOS A FACTURAS',
+        image: '../../../assets/icon/cash-money.png',
+        do: async () => {
+          const billInvoice = await this._modal.showBillInvoicesList();
+          if(!billInvoice) return;
+          this._router.navigate(['/consults/bill-invoice/', billInvoice.id]);
+        }
       }
     ];
   }

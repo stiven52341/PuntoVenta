@@ -1,0 +1,63 @@
+<ion-header>
+  <app-header-bar title="Lista de abonos a facturas" [arrowBack]="true" [isModal]="true"
+    [loading]="loading"></app-header-bar>
+  <ion-toolbar color="primary">
+    <ion-searchbar (ionInput)="onSearch($event)" placeholder="Puede buscar por id, cliente o factura"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="content">
+    <ion-list lines="none">
+      @for (item of billInvoicesFiltered; track item.invoice.id) {
+      <ion-item (click)="onClick(item.invoice)">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title><b>{{ item.invoice.id }}. </b> {{item.client.name}}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="card-content">
+              <div class="tri">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/bill.png"></ion-img>
+                </div>
+                <ion-label color="danger"><b>Factura:</b></ion-label>
+                <ion-label>{{ item.purchase.id }}</ion-label>
+              </div>
+              <div class="tri">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/smile-face.png"></ion-img>
+                </div>
+                <ion-label color="danger"><b>Cliente:</b></ion-label>
+                <ion-label>{{ item.client.name }}</ion-label>
+              </div>
+              <div class="tri">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/cash.png"></ion-img>
+                </div>
+                <ion-label color="danger"><b>Total:</b></ion-label>
+                <ion-label>${{ item.invoice.amount | number:'1.2-2' }}</ion-label>
+              </div>
+              <div class="tri">
+                <div class="img">
+                  <ion-img src="../../../../assets/icon/date.png"></ion-img>
+                </div>
+                <ion-label color="danger"><b>Fecha:</b></ion-label>
+                <ion-label>{{ item.invoice.date | date:'dd/MM/yyyy hh:mm a' }}</ion-label>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+      }@empty {
+      @if(loading){
+      <ion-label color="danger">Cargando...</ion-label>
+      }@else {
+      <ion-label color="danger">Sin elementos</ion-label>
+      }
+      }
+    </ion-list>
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>

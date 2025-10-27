@@ -1,0 +1,21 @@
+.content{
+    padding: 1em;
+
+    .card-content{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: .5em;
+
+        .tri{
+            width: 100%;
+            display: grid;
+            grid-template-columns: 3em 5em 1fr;
+            justify-content: space-between;
+            align-items: center;
+            gap: .5em;
+        }
+    }
+}

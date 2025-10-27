@@ -93,7 +93,8 @@ export class BillPayComponent implements OnInit {
       amount: Number(this.pay.toFixed(2)),
       idBill: this.bill!.id,
       state: true,
-      uploaded: States.NOT_INSERTED
+      uploaded: States.NOT_INSERTED,
+      date: new Date()
     };
 
     const result = await this._billInvoice.insert(billInvoice) ? States.SYNC : States.NOT_INSERTED;

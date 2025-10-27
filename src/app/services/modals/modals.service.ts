@@ -28,6 +28,8 @@ import { IInventoryCheck } from 'src/app/models/inventory-check.model';
 import { InventoryChecksListComponent } from 'src/app/components/modals/inventory-checks-list/inventory-checks-list.component';
 import { ICashBox } from 'src/app/models/cash-box.model';
 import { CashBoxesListComponent } from 'src/app/components/modals/cash-boxes-list/cash-boxes-list.component';
+import { IBillInvoice } from 'src/app/models/bill-invoice.model';
+import { BillInvoicesListComponent } from 'src/app/components/modals/bill-invoices-list/bill-invoices-list.component';
 
 @Injectable({
   providedIn: 'root',
@@ -236,6 +238,15 @@ export class ModalsService {
       'cash-boxes-list',
     );
     if (result && result.data) return result.data as ICashBox;
+    return undefined;
+  }
+
+  public async showBillInvoicesList(): Promise<IBillInvoice | undefined> {
+    const result = await this.showModal(
+      BillInvoicesListComponent,
+      'cash-boxes-list',
+    );
+    if (result && result.data) return result.data as IBillInvoice;
     return undefined;
   }
 
