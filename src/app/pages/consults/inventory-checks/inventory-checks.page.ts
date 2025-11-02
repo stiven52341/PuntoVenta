@@ -117,4 +117,9 @@ export class InventoryChecksPage implements OnInit {
       $event.target.complete();
     }, 500);
   }
+
+  protected async onPrint(){
+    if(!this.check) return;
+    await this._print.printInventoryCheck(this.check, '¿Está seguro de reimprimir el pase de inventario?');
+  }
 }

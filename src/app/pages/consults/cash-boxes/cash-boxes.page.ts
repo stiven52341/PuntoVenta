@@ -61,18 +61,23 @@ export class CashBoxesPage implements OnInit {
       this.isPrinter = printer ? true : false;
     });
 
-    const fromOpen = this.cashbox.coins.filter(coin => coin.closing);
-    const fromClose = this.cashbox.coins.filter(coin => !coin.closing);
+    const fromOpen = this.cashbox.coins.filter(coin => !coin.closing);
+    const fromClose = this.cashbox.coins.filter(coin => coin.closing);
+    const coins = await this._localCoin.getAll();
 
-    const pros = fromOpen.map(async detail => {
-      const coin = await this._localCoin.get(detail.idCoin);
+    for(const detail of fromOpen){
+      const coin = coins.find(coin => coin.id == detail.idCoin);
       this.coinsFromOpen.push({ relation: detail, coin: coin! });
-    });
+    }
 
-    const pros2 = fromClose.map(async detail => {
-      const coin = await this._localCoin.get(detail.idCoin);
+    for(const detail of fromClose){
+      const coin = coins.find(coin => coin.id == detail.idCoin);
       this.coinsFromClose.push({ relation: detail, coin: coin! });
-    });
-    await firstValueFrom(forkJoin([...pros, ...pros2]));
+    }
+  }
+
+  protected async onPrint(){
+    if(!this.cashbox) return;
+    await this._print.printCashbox(this.cashbox, '¿Está seguro de reimprimir caja?');
   }
 }

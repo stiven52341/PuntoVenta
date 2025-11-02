@@ -17,7 +17,7 @@
           <ion-label>{{ client.id }}.</ion-label>
           <ion-label>{{ client.name }}</ion-label>
           @if(this.showWithBalance){
-            <ion-label color="danger">${{client.balance | number:'1.2-2'}}</ion-label>
+            <ion-label color="danger">${{(client.balance || 0) | number:'1.2-2'}}</ion-label>
           }
           @if(!client.state){
           <ion-label color="danger">Anulado</ion-label>

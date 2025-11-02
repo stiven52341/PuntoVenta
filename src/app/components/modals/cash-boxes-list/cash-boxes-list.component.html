@@ -36,7 +36,12 @@
                   <b>Cierre:</b>
                 </ion-label>
                 <ion-label>
-                  {{ cashbox.end | date:'dd/MM/yyyy hh:mm a' }}
+                  @if(cashbox.end){
+                    {{ cashbox.end | date:'dd/MM/yyyy hh:mm a' }}
+                  }@else {
+                    Sin cerrar
+                  }
+                  
                 </ion-label>
               </div>
               <div class="tri">
@@ -58,7 +63,12 @@
                   <b>$Cierre:</b>
                 </ion-label>
                 <ion-label>
-                  ${{ cashbox.endCash | number:'1.2-2' }}
+                  @if(cashbox.endCash){
+                    ${{ cashbox.endCash | number:'1.2-2' }}
+                  }@else {
+                    Sin cerrar
+                  }
+                  
                 </ion-label>
               </div>
 

@@ -37,6 +37,8 @@ import { LocalUnitsService } from "src/app/services/local/local-units/local-unit
 import { ModalsService } from "src/app/services/modals/modals.service";
 import { ToastService } from "src/app/services/toast/toast.service";
 import { InventoryIncomeCartService } from "src/app/services/local/inventory-income-cart/inventory-income-cart.service";
+import { LocalPrinterService } from "src/app/services/local/local-printer/printer.service";
+import { PrintingService } from "src/app/services/printing/printing.service";
 
 @Component({
   selector: "app-products-purchase",
@@ -79,7 +81,9 @@ export class ProductsPurchasePage implements OnInit {
     private _unitBase: UnitBaseService,
     private _localUnitBase: LocalUnitBaseService,
     private _localInventory: LocalInventoryService,
-    private _inventoryIncomeCart: InventoryIncomeCartService
+    private _inventoryIncomeCart: InventoryIncomeCartService,
+    private _localPrinter: LocalPrinterService,
+    private _print: PrintingService
   ) {
     addIcons({ search, list, bookmark, save });
 
@@ -114,7 +118,7 @@ export class ProductsPurchasePage implements OnInit {
             }
           ]);
 
-          
+
         },
       },
     ];
@@ -288,7 +292,7 @@ export class ProductsPurchasePage implements OnInit {
     this.baseUnit = undefined;
     this.showEquivalency = false;
 
-    if(clearAll){
+    if (clearAll) {
       this.details = [];
       this._inventoryIncomeCart.reset();
       this._toast.showToast('Todos los datos limpiados');
@@ -329,8 +333,8 @@ export class ProductsPurchasePage implements OnInit {
 
     const id = await this._localInventoryIncome.getNextID();
     let totalCost = 0;
-    this.details.forEach((detail, index) => {
-      this.details[index].id.idInventoryIncome = id;
+    this.details.map(detail => {
+      detail.id.idInventoryIncome = id;
       totalCost += detail.cost;
     });
 
@@ -358,9 +362,14 @@ export class ProductsPurchasePage implements OnInit {
         this.syncLocalInventory(this.details),
       ])
     )
-      .then(() => {
+      .then(async () => {
         this._alert.showSuccess("Compra de mercancías éxitosa");
         this.clear(false, true);
+        this.details = [];
+
+        const printer = await this._localPrinter.getCurrentPrinter();
+        if (!printer) return;
+        await this._print.printInventoryIncome(inventoryIncome);
         this.details = [];
       })
       .catch(() => {

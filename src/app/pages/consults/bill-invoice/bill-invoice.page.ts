@@ -89,4 +89,9 @@ export class BillInvoicePage implements OnInit {
     this.bill = data[0];
     this.client = data[1];
   }
+
+  protected async onPrint(){
+    if(!this.invoice) return;
+    await this._print.printBillInvoice(this.invoice, '¿Está seguro de reimprimir el abono a factura?');
+  }
 }

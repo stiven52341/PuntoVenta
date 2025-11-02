@@ -22,7 +22,12 @@
               <ion-img src="../../../../assets/icon/calendar-less.png"></ion-img>
             </div>
             <ion-label color="danger"><b>Cierre:</b></ion-label>
-            <ion-label>{{ cashbox?.end | date:'dd/MM/yyyy hh:mm a' }}</ion-label>
+            @if(cashbox?.end){
+              <ion-label>{{ cashbox?.end | date:'dd/MM/yyyy hh:mm a' }}</ion-label>
+            }@else {
+              <ion-label>Sin cerrar</ion-label>
+            }
+            
           </div>
           <div class="tri">
             <div class="img">
@@ -36,7 +41,12 @@
               <ion-img src="../../../../assets/icon/cash-money.png"></ion-img>
             </div>
             <ion-label color="danger"><b>$Cierre:</b></ion-label>
-            <ion-label>${{ cashbox?.endCash| number:'1.2-2' }}</ion-label>
+            @if(cashbox?.endCash){
+              <ion-label>${{ cashbox?.endCash| number:'1.2-2' }}</ion-label>
+            }@else{
+              <ion-label>Sin cerrar</ion-label>
+            }
+            
           </div>
         </div>
       </ion-card-content>
@@ -128,9 +138,9 @@
 @if(this.isPrinter){
   <ion-footer>
     <div class="footer-content">
-      <ion-button>
-        <ion-icon name="save"></ion-icon>
-        <ion-label>Reimprimir</ion-label>
+      <ion-button (click)="onPrint()">
+        <ion-icon color="light" name="save"></ion-icon>
+        <ion-label color="light">Reimprimir</ion-label>
       </ion-button>
     </div>
   </ion-footer>

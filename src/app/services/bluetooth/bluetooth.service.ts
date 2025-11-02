@@ -98,6 +98,12 @@ export class BluetoothService {
       case 256:
         maxBlockHeight = 4;
         break;
+      case 216:
+        maxBlockHeight = 4;
+        break;
+      case 192:
+        maxBlockHeight = 2;
+        break;
       case 128:
         maxBlockHeight = 8;
         break;
@@ -276,7 +282,7 @@ export class BluetoothService {
 
   public async getLogoSize() {
     //Improve to add more sizes
-    return 256;
+    return 192;
   }
 
   private async connect(): Promise<Printer | undefined> {
@@ -442,6 +448,7 @@ export class BluetoothService {
   }
 
   public async print(intArray: Uint8Array[]) {
+    
     
     const base64 = await this.getLogoBase64();
     if (base64) {

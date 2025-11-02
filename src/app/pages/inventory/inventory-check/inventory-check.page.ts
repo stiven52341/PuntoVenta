@@ -22,6 +22,7 @@ import { LocalUnitsService } from 'src/app/services/local/local-units/local-unit
 import { ModalsService } from 'src/app/services/modals/modals.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { InventoryCheckCartService } from 'src/app/services/local/inventory-check-cart/inventory-check-cart.service';
+import { PrintingService } from 'src/app/services/printing/printing.service';
 
 @Component({
   selector: 'app-inventory-check',
@@ -41,6 +42,7 @@ export class InventoryCheckPage implements OnInit, OnDestroy {
   protected equivalency?: IUnitBase;
   protected details: Array<IInventoryCheckDetail> = [];
   protected fabButtons: Array<IButton>;
+  protected loading: boolean = false;
 
   protected form: FormGroup;
 
@@ -54,7 +56,8 @@ export class InventoryCheckPage implements OnInit, OnDestroy {
     private _inventoryCheck: InventoryCheckService,
     private _localInventoryCheckDetails: LocalInventoryCheckDetailsService,
     private _localInventory: LocalInventoryService,
-    private _inventoryCheckCart: InventoryCheckCartService
+    private _inventoryCheckCart: InventoryCheckCartService,
+    private _print: PrintingService
   ) {
     addIcons({ search, list, bookmark, save });
 
@@ -128,8 +131,14 @@ export class InventoryCheckPage implements OnInit, OnDestroy {
 
     this.subs.push(sub1, sub2);
 
-    const oldData = await this._inventoryCheckCart.getCurrent();
-    this.details = oldData.details;
+    this.loading = true;
+    try {
+      const oldData = await this._inventoryCheckCart.getCurrent();
+      this.details = oldData.details;
+    } finally {
+      this.loading = false;
+    }
+
   }
 
   ngOnDestroy(): void {
@@ -168,7 +177,7 @@ export class InventoryCheckPage implements OnInit, OnDestroy {
       uploaded: States.NOT_INSERTED,
       equivalencyUsed: this.form.get('equivalency')?.value
     };
-    
+
 
     this.details.push(detail);
     this._toast.showToast('Detalle agregado', 2000, 'primary', 'top');
@@ -252,6 +261,7 @@ export class InventoryCheckPage implements OnInit, OnDestroy {
       'CONFIRME', '¿Está seguro de finalizar el pase de inventario?'
     )) return;
 
+    this.loading = true;
     const header: IInventoryCheck = {
       date: new Date(),
       details: this.details,
@@ -259,7 +269,7 @@ export class InventoryCheckPage implements OnInit, OnDestroy {
       state: true,
       uploaded: States.NOT_INSERTED
     };
-    
+
 
     const result = (await this._inventoryCheck.insert(header))
       ? States.SYNC : States.NOT_INSERTED;
@@ -281,12 +291,14 @@ export class InventoryCheckPage implements OnInit, OnDestroy {
       this._localInventoryCheck.insert(header),
       insertDetails(this.details),
       this.updateLocalInventory(this.details)
-    ])).then(() => {
+    ])).then(async () => {
       this._alert.showSuccess('Pase de inventario insertado satisfactoriamente');
       this.clear(true);
+      
+      await this._print.printInventoryCheck(header);
     }).catch(() => {
       this._alert.showError('Error al insertar pase de inventario');
-    });
+    }).finally(() => this.loading = false);
   }
 
   private async updateLocalInventory(details: Array<IInventoryCheckDetail>) {

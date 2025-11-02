@@ -201,11 +201,11 @@ export class ModalsService {
     return undefined;
   }
 
-  public async showClientsList(showWithBalance: boolean = false): Promise<IClient | undefined> {
+  public async showClientsList(showWithBalance: boolean = false, showPositiveBalance: boolean = false): Promise<IClient | undefined> {
     const result = await this.showModal(
       ClientsListComponent,
       'clients-list',
-      { showWithBalance },
+      { showWithBalance, showPositiveBalance },
       undefined
     );
     if (result && result.data) return result.data as IClient;

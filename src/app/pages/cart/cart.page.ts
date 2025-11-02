@@ -117,7 +117,6 @@ export class CartPage implements OnInit {
 
     this._cart
       .getCart()
-      .pipe(distinctUntilChanged())
       .subscribe({
         next: async (cart) => {
           this.cart = cart;
@@ -207,7 +206,7 @@ export class CartPage implements OnInit {
     }
 
     if (this.client) {
-      if (this.client.balance >= this.client.maxCredit) {
+      if (this.sellType == 'credit' && this.client.balance >= this.client.maxCredit) {
         if (!await this._alert.showConfirm(undefined, `
         El cliente <b>${this.client.name}</b> ya ha sobrepasado su límite de crédito.<br>
         <b>Balance:</b> $${this.client.balance.toFixed(2)}<br>

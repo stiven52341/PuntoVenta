@@ -68,7 +68,7 @@
         <div class="bills">
             <ion-list lines="none">
                 <ion-list-header><b>Facturas</b></ion-list-header>
-                @for(bill of bills; track bill.id){
+                @for(bill of billsFiltered; track bill.id){
                 <ion-item (click)="onClickBill(bill)">
                     <ion-card>
                         <ion-card-header>
@@ -82,7 +82,7 @@
                                     </div>
                                     <div class="duo">
                                         <ion-label><b>Total:</b></ion-label>
-                                        <ion-label>${{bill.total | number:'1.2-2'}}</ion-label>
+                                        <ion-label>${{(bill.total || 0) | number:'1.2-2'}}</ion-label>
                                     </div>
 
                                 </div>
@@ -102,10 +102,17 @@
                                     </div>
                                     <div class="duo">
                                         <ion-label><b>Por pagar:</b></ion-label>
+                                        @if(bill.total - bill.balance > 0){
                                         <ion-label>${{(bill.total - bill.balance) | number:'1.2-2'}}</ion-label>
+                                        }@else {
+                                        <ion-label>$0.00</ion-label>
+                                        }
+
                                     </div>
 
                                 </div>
+
+
                             </div>
                         </ion-card-content>
                     </ion-card>
@@ -123,6 +130,9 @@
                 }
                 }
             </ion-list>
+            <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+                <ion-infinite-scroll-content></ion-infinite-scroll-content>
+            </ion-infinite-scroll>
         </div>
 
     </div>

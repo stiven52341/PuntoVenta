@@ -63,3 +63,16 @@
         }
     }
 }
+
+.footer-content{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: .5em;
+
+    ion-button{
+        width: 100%;
+    }
+}

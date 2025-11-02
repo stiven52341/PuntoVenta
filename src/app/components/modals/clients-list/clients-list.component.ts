@@ -16,12 +16,13 @@ import { DecimalPipe } from '@angular/common';
     DecimalPipe
   ]
 })
-export class ClientsListComponent  implements OnInit {
+export class ClientsListComponent implements OnInit {
   private clients: Array<IClient> = [];
   protected clientsFiltered: Array<IClient> = [];
   protected loading: boolean = false;
   protected title: string = "Lista de clientes";
   @Input() showWithBalance: boolean = false;
+  @Input() showPositiveBalance: boolean = false;
 
   constructor(private _client: LocalClientService, private _modalCtrl: ModalController) { }
 
@@ -31,28 +32,24 @@ export class ClientsListComponent  implements OnInit {
     this.loading = false;
   }
 
-  private async init(){
-    if(!this.showWithBalance){
-      this.title = "Clientes con facturas pendientes";
-      this.clients = await this._client.getAll();
-    }else{
-      this.clients = (await this._client.getAll()).filter(client => client.balance > 0);
-    }
-    
+  private async init() {
+    this.title = "Clientes con facturas pendientes";
+    this.clients = await this._client.getAll();
+
     this.generateItems(this.clients);
   }
 
-  private generateItems(list: Array<IClient>,limit: number = 15){
+  private generateItems(list: Array<IClient>, limit: number = 15) {
     const count = this.clientsFiltered.length;
 
-    for(let i = 0; i < limit; i++){
-      if(this.clients[i + count]){
+    for (let i = 0; i < limit; i++) {
+      if (this.clients[i + count]) {
         this.clientsFiltered.push(this.clients[i + count]);
       }
     }
   }
 
-  protected onSearch($event: CustomEvent){
+  protected onSearch($event: CustomEvent) {
     const text: string = (($event.detail.value || '') as string).trim().toLowerCase();
     this.clientsFiltered = [];
     const newClients = this.clients.filter(client => {
@@ -72,7 +69,7 @@ export class ClientsListComponent  implements OnInit {
     }, 500);
   }
 
-  protected onClick(client: IClient){
+  protected onClick(client: IClient) {
     this._modalCtrl.dismiss(client);
   }
 }

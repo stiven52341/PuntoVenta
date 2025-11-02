@@ -19,15 +19,8 @@ export class LocalInventoryIncomeDetailService extends InternalStorageCoreServic
   }
 
   public async insertDetails(details: Array<IInventoryIncomeDetail>) {
-    try {
-      const promises = details.map((detail) => {
-        return this.insert(detail);
-      });
-
-      await firstValueFrom(forkJoin([...promises]));
-    } catch (error) {
-      this._file.saveError(error);
-      throw error;
-    }
+    const all = await this.getAll();
+    all.push(...details);
+    await this.set(all);
   }
 }

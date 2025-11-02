@@ -13,6 +13,7 @@ import { States } from 'src/app/services/constants';
 import { FilesService } from 'src/app/services/files/files.service';
 import { LocalBillsService } from 'src/app/services/local/bills/bills.service';
 import { LocalBillInvoiceService } from 'src/app/services/local/local-bill-invoice/local-bill-invoice.service';
+import { PrintingService } from 'src/app/services/printing/printing.service';
 
 @Component({
   selector: 'app-bill-pay',
@@ -31,7 +32,7 @@ export class BillPayComponent implements OnInit {
     private _localBill: LocalBillsService, private _alert: AlertsService,
     private _billInvoice: BillInvoiceService, private _localBillInvoice: LocalBillInvoiceService,
     private _file: FilesService, private _error: ErrorsService,
-    private _modalCtrl: ModalController
+    private _modalCtrl: ModalController, private _print: PrintingService
   ) {
     addIcons({ save, addCircle });
   }
@@ -101,9 +102,11 @@ export class BillPayComponent implements OnInit {
     billInvoice.uploaded = result;
 
     this._localBillInvoice.insert(billInvoice).then(async () => {
-      await this._localBill.addBillInvoice(billInvoice).then(() => {
+      await this._localBill.addBillInvoice(billInvoice).then(async () => {
         this._alert.showSuccess('Abono a factura registrado con éxito');
         this._modalCtrl.dismiss(billInvoice);
+
+        await this._print.printBillInvoice(billInvoice);
       }).catch(err => {
         throw err;
       }).finally(() => this.loading = false);

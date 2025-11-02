@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <app-header-bar title="PASE DE INVENTARIO" [isModal]="false" [arrowBack]="true" [buttons]="[]"
-    [buttons]="fabButtons"></app-header-bar>
+    [buttons]="fabButtons" [loading]="loading"></app-header-bar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -37,16 +37,16 @@
 </ion-content>
 <ion-footer>
   <div class="footer-content">
-    <ion-button (click)="onList()">
+    <ion-button [disabled]="loading" (click)="onList()">
       <ion-icon color="light" name="list"></ion-icon>
       <ion-label color="light">Lista</ion-label>
       <ion-badge color="danger">{{ details.length }}</ion-badge>
     </ion-button>
-    <ion-button (click)="onAdd()">
+    <ion-button [disabled]="loading" (click)="onAdd()">
       <ion-icon color="light" name="bookmark"></ion-icon>
       <ion-label color="light">Agregar</ion-label>
     </ion-button>
-    <ion-button (click)="onFinish()">
+    <ion-button [disabled]="loading" (click)="onFinish()">
       <ion-icon color="light" name="save"></ion-icon>
       <ion-label color="light">Finalizar</ion-label>
     </ion-button>

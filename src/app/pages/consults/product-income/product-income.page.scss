@@ -9,18 +9,18 @@
     ion-list{
         padding: 0;
     }
-
-    .card-content{
-        display: flex;
-        flex-direction: row;
-        gap: 1em;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
+    ion-card{
+        width: 100%;
     }
 
-    .detail-card{
-        // height: 10em;
+    .card-content{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: .5em;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
     }
 
     .card-content-big{
@@ -44,4 +44,18 @@
 hr{
     background-color: lightgray;
     width: 100%;
+}
+
+.footer-content{
+    width: 100%;
+    padding: .5em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .5em;
+
+    ion-button{
+        width: 100%;
+    }
 }

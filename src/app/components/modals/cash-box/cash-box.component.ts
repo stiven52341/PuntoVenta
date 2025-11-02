@@ -29,6 +29,7 @@ import { save } from 'ionicons/icons';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, Subscription } from 'rxjs';
 import { ICoinCashbox } from 'src/app/models/coin-cashbox.model';
+import { LocalPrinterService } from 'src/app/services/local/local-printer/printer.service';
 
 @Component({
   selector: 'app-cash-box',
@@ -76,7 +77,8 @@ export class CashBoxComponent implements OnInit, OnDestroy {
     private _printing: PrintingService,
     private _error: ErrorsService,
     private _coin: LocalCoinService,
-    private _number: DecimalPipe
+    private _number: DecimalPipe,
+    private _printer: LocalPrinterService
   ) {
     addIcons({ save });
 
@@ -191,9 +193,13 @@ export class CashBoxComponent implements OnInit, OnDestroy {
       cashbox.uploaded = result ? States.SYNC : States.NOT_INSERTED;
       await this._localCashbox
         .insert(cashbox)
-        .then(() => {
+        .then(async () => {
           this._alert.showSuccess(`Caja abierta con $${this.total.toFixed(2)}`);
           this._modalCtrl.dismiss(this.total);
+
+          const printer = await this._printer.getCurrentPrinter();
+          if (!printer) return;
+          this._printing.printCashbox(cashbox, '¿Quiere imprimir la apertura de caja?');
         })
         .catch((err) => {
           this._file.saveError(err);
@@ -202,7 +208,9 @@ export class CashBoxComponent implements OnInit, OnDestroy {
     };
 
     const close = async () => {
+      this.loading = true;
       cashbox = this.cashbox!;
+      cashbox.coins.push(...coinCash);
 
       cashbox.end = new Date();
       cashbox.endCash = this.total;
@@ -217,6 +225,7 @@ export class CashBoxComponent implements OnInit, OnDestroy {
         .then(async () => {
           try {
             await this._printing.printSells(cashbox);
+            await this._printing.printCashbox(cashbox, '¿Quire imprimir la caja?');
             this._alert.showSuccess(`Caja cerrada con $${this.total.toFixed(2)}`);
             this._modalCtrl.dismiss(this.total);
           } catch (error) {
@@ -224,6 +233,8 @@ export class CashBoxComponent implements OnInit, OnDestroy {
             this._file.saveError(error);
             this._error.saveErrors(new Error(JSON.stringify(error)));
             console.log(error);
+          }finally{
+            this.loading = false;
           }
         })
         .catch((err) => {

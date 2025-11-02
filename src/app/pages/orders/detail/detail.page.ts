@@ -155,23 +155,37 @@ export class DetailPage implements OnInit {
   }
 
   protected async onProcess() {
+    this.loading = true;
+    const cart = await firstValueFrom(this._cart.getCart());
+    if(cart.products.length > 0){
+      this._alert.showError(
+        `<b>Tiene productos en el carrito.</b><br>
+        Termine la venta pendiente antes de procesar el pedido`
+      );
+      this.loading = false;
+      return;
+    }
+
     if(this.detailsFiltered.length == 0 || this.order!.details.length == 0){
       this._alert.showError('El pedido debe tener detalles');
+      this.loading = false;
       return;
     }
 
     if(!this.order!.state){
       this._alert.showError('No puede procesar un pedido desactivado');
+      this.loading = false;
       return;
     }
 
     if (
       !await this._alert.showConfirm(undefined, '¿Está seguro de procesar este pedido?')
     ) {
+      this.loading = false;
       return;
     }
 
-    this.loading = true;
+    
 
     for(const detail of this.order!.details){
       const price = await this._price.get(detail.id.idUnitProduct);

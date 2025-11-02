@@ -84,9 +84,9 @@
 @if(this.isPrinter){
   <ion-footer>
     <div class="footer-content">
-      <ion-button>
-        <ion-icon name="print"></ion-icon>
-        <ion-label>Reimprimir</ion-label>
+      <ion-button (click)="onPrint()">
+        <ion-icon color="light" name="print"></ion-icon>
+        <ion-label color="light">Reimprimir</ion-label>
       </ion-button>
     </div>
   </ion-footer>

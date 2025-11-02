@@ -9,13 +9,13 @@ export class Report {
     this.intArray = [];
   }
 
-  public addHeader() {
+  public async addHeader() {
     // this.intArray.push(...this._stp.renderLines('Natura', 'middle', 'large'));
     // this.intArray.push(...this._stp.renderLines('Frutas & Vegetales'));
     // this.intArray.push(
     //   ...this._stp.renderLines('Av. 27 de Febrero, Santiago')
     // );
-    this.fillLine();
+    await this.fillLine();
   }
 
   public addFooter() {}

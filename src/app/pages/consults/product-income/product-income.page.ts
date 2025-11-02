@@ -1,7 +1,7 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { InfiniteScrollCustomEvent, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonLabel, IonList } from '@ionic/angular/standalone';
+import { InfiniteScrollCustomEvent, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFooter, IonHeader, IonIcon, IonInfiniteScroll, IonInfiniteScrollContent, IonItem, IonLabel, IonList } from '@ionic/angular/standalone';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { PhotoKeys } from 'src/app/services/constants';
@@ -14,6 +14,11 @@ import { LocalInventoryIncomeService } from 'src/app/services/local/local-invent
 import { LocalProductsService } from 'src/app/services/local/local-products/local-products.service';
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { PhotosService } from 'src/app/services/photos/photos.service';
+import { LocalPrinterService } from 'src/app/services/local/local-printer/printer.service';
+import { PrintingService } from 'src/app/services/printing/printing.service';
+import { Printer } from 'src/app/models/printer.model';
+import { addIcons } from 'ionicons';
+import { print } from 'ionicons/icons';
 
 interface IDetails {
   detail: IInventoryIncomeDetail, product: IProduct, image: string, unit: IUnit, baseUnit?: IUnit
@@ -27,7 +32,7 @@ interface IDetails {
   imports: [
     IonContent, IonHeader, HeaderBarComponent, IonCard, IonCardContent, IonLabel,
     DatePipe, DecimalPipe, IonCardHeader, IonCardTitle, IonList, IonInfiniteScroll, IonInfiniteScrollContent,
-    IonItem
+    IonItem, IonFooter, IonButton, IonIcon
   ]
 })
 export class ProductIncomePage implements OnInit {
@@ -37,13 +42,18 @@ export class ProductIncomePage implements OnInit {
   protected detailsFiltered: Array<IDetails> = [];
   private readonly loadingImage: string = '../../../assets/icon/loading.gif';
   private readonly noImage: string = '../../../assets/no-image.png';
+  protected printer?: Printer;
 
   constructor(
     private _route: ActivatedRoute, private _localIncome: LocalInventoryIncomeService,
     private _router: Router, private _localIncomeDetails: LocalInventoryIncomeDetailService,
     private _localProduct: LocalProductsService, private _photo: PhotosService,
-    private _localUnit: LocalUnitsService
-  ) { }
+    private _localUnit: LocalUnitsService,
+    private _localPrinter: LocalPrinterService,
+    private _print: PrintingService
+  ) {
+    addIcons({print});
+  }
 
   async ngOnInit() {
     this.loading = true;
@@ -59,6 +69,9 @@ export class ProductIncomePage implements OnInit {
       return;
     }
     this.details = (await this._localIncomeDetails.getByIncome(Number(this.income.id)));
+    this._localPrinter.getCurrentPrinter().then(printer => {
+      this.printer = printer;
+    });
     await this.generateItems();
   }
 
@@ -99,5 +112,10 @@ export class ProductIncomePage implements OnInit {
   async onIonInfinite(event: InfiniteScrollCustomEvent) {
     await this.generateItems();
     event.target.complete();
+  }
+
+  protected async onPrint(){
+    if(!this.printer || !this.income) return;
+    await this._print.printInventoryIncome(this.income, '¿Está seguro de reimprimir la compra de mercancías?');
   }
 }

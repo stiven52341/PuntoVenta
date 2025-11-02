@@ -1,21 +1,27 @@
-import { EventEmitter, inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { InternalStorageCoreService } from '../internal-storage-core/internal-storage-core.service';
 import { ICart } from 'src/app/models/cart.model';
 import { States, StorageKeys } from 'src/app/services/constants';
 import { IProduct } from 'src/app/models/product.model';
 import { IUnitProduct } from 'src/app/models/unit-product.model';
-import { Observable, shareReplay } from 'rxjs';
+import { BehaviorSubject, Observable, shareReplay } from 'rxjs';
 import { LocalUnitsService } from '../local-units/local-units.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocalCartService extends InternalStorageCoreService<ICart> {
-  private cartEvent = new EventEmitter<ICart>();
+  private cartEvent = new BehaviorSubject<ICart>({
+    id: 1,
+    products: [],
+    state: true,
+    uploaded: States.NOT_SYNCABLE
+  });
   private _unit = inject(LocalUnitsService);
 
   constructor() {
     super(StorageKeys.CART);
+    this.setCart();
   }
 
   public async setCart() {
@@ -28,9 +34,10 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
         uploaded: States.NOT_SYNCABLE
       };
       await this.insert(cart);
-      this.cartEvent.emit(cart);
+      this.cartEvent.next(cart);
       return cart;
     } else {
+      this.cartEvent.next(cart);
       return cart;
     }
   }
@@ -47,7 +54,7 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
 
     const unit = await this._unit.get(price.idUnit);
     cart.products.push({ product: product, amount: amount, price: price, unit: unit! });
-    this.cartEvent.emit(cart);
+    this.cartEvent.next(cart);
     await this.update(cart);
   }
 
@@ -64,7 +71,7 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
       price: price,
       unit: unit!
     };
-    this.cartEvent.emit(cart);
+    this.cartEvent.next(cart);
     await this.update(cart);
   }
 
@@ -76,7 +83,7 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
 
     cart.products.splice(index,1);
     await this.update(cart);
-    this.cartEvent.emit(cart);
+    this.cartEvent.next(cart);
 
   }
 
@@ -84,7 +91,7 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
     const cart = await this.setCart();
     cart.products = [];
     await this.update(cart);
-    this.cartEvent.emit(cart);
+    this.cartEvent.next(cart);
   }
 
   public async getTotal(cart?: ICart): Promise<number>{
@@ -95,6 +102,6 @@ export class LocalCartService extends InternalStorageCoreService<ICart> {
   }
 
   public getCart(): Observable<ICart>{
-    return this.cartEvent.asObservable().pipe(shareReplay(1));
+    return this.cartEvent.asObservable();
   }
 }

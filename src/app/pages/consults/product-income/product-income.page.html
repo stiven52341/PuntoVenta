@@ -67,3 +67,13 @@
     </div>
   </div>
 </ion-content>
+@if(printer){
+  <ion-footer>
+    <div class="footer-content">
+      <ion-button (click)="onPrint()">
+        <ion-icon name="print" color="light"></ion-icon>
+        <ion-label color="light">Reimprimir</ion-label>
+      </ion-button>
+    </div>
+  </ion-footer>
+}
