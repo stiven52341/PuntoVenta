@@ -6,4 +6,5 @@ export interface IProduct extends IEntity<Number> {
   category?: string;
   description?: string;
   isFavorite?: boolean;
+  idEmployee: number
 }

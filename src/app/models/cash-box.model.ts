@@ -6,5 +6,7 @@ export interface ICashBox extends IEntity<Number>{
   endCash?: number,
   init: Date,
   end?: Date,
-  coins: Array<ICoinCashbox>
+  coins: Array<ICoinCashbox>,
+  idOpenEmployee: number,
+  idCloseEmployee: number
 }

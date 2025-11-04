@@ -1,6 +1,6 @@
 export enum ApiKeys {
   // PATH = "http://157.230.224.218:16000/", //Production
-  PATH = "http://192.168.0.107:8080/",
+  PATH = "http://10.100.101.188:8080/",
   PRODUCTS = PATH + "products",
   CATEGORIES = PATH + "categories",
   CURRENCIES = PATH + "currencies",
@@ -23,7 +23,8 @@ export enum ApiKeys {
   CLIENTS = PATH + 'clients',
   BILLS = PATH + 'bills',
   BILL_INVOICE = PATH + 'bill-invoices',
-  COINS = PATH + 'coins'
+  COINS = PATH + 'coins',
+  EMPLOYEES = PATH + 'employees'
 }
 
 export enum WebsocketKeys{
@@ -57,7 +58,9 @@ export enum StorageKeys {
   CLIENTS = 'clients',
   BILLS = 'bills',
   BILL_INVOICE = 'bill-invoices',
-  COINS = 'coins'
+  COINS = 'coins',
+  EMPLOYEES = 'employees',
+  CURRENT_EMPLOYEE = 'current-employee'
 }
 
 export enum PhotoKeys {

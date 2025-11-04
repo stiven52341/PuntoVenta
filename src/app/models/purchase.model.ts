@@ -7,5 +7,6 @@ export interface IPurchase extends IEntity<Number>{
   details?: Array<IPurchaseDetail>,
   idClient?: number,
   isCredit: boolean,
-  isPaid: boolean
+  isPaid: boolean,
+  idEmployee: number
 }

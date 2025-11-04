@@ -4,4 +4,5 @@ export interface IProductCategory extends IEntity<{
     idProduct: number,
     idCategory: number
   }>{
+    idEmployee: number
 }

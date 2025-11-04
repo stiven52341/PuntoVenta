@@ -10,5 +10,6 @@ export interface IUnitProduct extends IEntity<Number>{
   cost: number;
   unit?: string;
   currency?: string;
-  label?: string
+  label?: string,
+  idEmployee: number
 }

@@ -4,5 +4,6 @@ import { IInventoryIncomeDetail } from "./inventory-income-detail.model";
 export interface IInventoryIncome extends IEntity<Number>{
   date: Date,
   details: Array<IInventoryIncomeDetail>,
-  totalCost: number
+  totalCost: number,
+  idEmployee: number
 }

@@ -64,6 +64,10 @@ import { BillInvoiceService } from 'src/app/services/api/bill-invoice/bill-invoi
 import { LocalBillInvoiceService } from 'src/app/services/local/local-bill-invoice/local-bill-invoice.service';
 import { CoinService } from 'src/app/services/api/coin/coin.service';
 import { LocalCoinService } from 'src/app/services/local/local-coin/local-coin.service';
+import { EmployeeService } from 'src/app/services/api/employee/employee.service';
+import { LocalEmployeeService } from 'src/app/services/local/local-employee/local-employee.service';
+import { Router } from '@angular/router';
+import { CurrentEmployeeService } from 'src/app/services/local/current-employee/current-employee.service';
 
 @Component({
   selector: 'app-first-opened',
@@ -111,6 +115,7 @@ export class FirstOpenedComponent implements OnInit {
   private _bills = inject(BillsService);
   private _billInvoice = inject(BillInvoiceService);
   private _coinService = inject(CoinService);
+  private _employeeService = inject(EmployeeService);
 
   //Local
   private _categorySto = inject(LocalCategoriesService);
@@ -134,6 +139,10 @@ export class FirstOpenedComponent implements OnInit {
   private _billsSto = inject(LocalBillsService);
   private _billInvoiceSto = inject(LocalBillInvoiceService);
   private _coinSto = inject(LocalCoinService);
+  private _employeeSto = inject(LocalEmployeeService);
+
+  private _router = inject(Router);
+  private _currentUser = inject(CurrentEmployeeService);
 
   constructor() {}
 
@@ -168,7 +177,8 @@ export class FirstOpenedComponent implements OnInit {
         this._client.getAll(),
         this._bills.getAll(),
         this._billInvoice.getAll(),
-        this._coinService.getAll()
+        this._coinService.getAll(),
+        this._employeeService.getAll()
       ])
     ).catch(async (err) => {
       this._alert.showError('Error descargando los datos');
@@ -202,6 +212,7 @@ export class FirstOpenedComponent implements OnInit {
     const bills = result[16] || [];
     const billInvoices = result[17] || [];
     const coins = result[18] || [];
+    const employees = result[19] || [];
     // const orders = result[15] || [];
     
     imagesPros.map(
@@ -272,7 +283,8 @@ export class FirstOpenedComponent implements OnInit {
         this._clientSto.set(clients),
         this._billsSto.set(bills),
         this._billInvoiceSto.set(billInvoices),
-        this._coinSto.set(coins)
+        this._coinSto.set(coins),
+        this._employeeSto.set(employees)
         // this._ordersSto.set(orders)
       ])
     ).catch((err) => {
@@ -298,5 +310,10 @@ export class FirstOpenedComponent implements OnInit {
     this._alert.showSuccess(
       'Datos descargados. Puede comenzar a utilizar la aplicación.'
     );
+
+    const curUser = await this._currentUser.getCurrentEmployee();
+    if(!curUser){
+      await this._router.navigate(['/login']);
+    }
   }
 }
