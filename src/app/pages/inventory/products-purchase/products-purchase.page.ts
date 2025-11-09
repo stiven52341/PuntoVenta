@@ -39,6 +39,7 @@ import { ToastService } from "src/app/services/toast/toast.service";
 import { InventoryIncomeCartService } from "src/app/services/local/inventory-income-cart/inventory-income-cart.service";
 import { LocalPrinterService } from "src/app/services/local/local-printer/printer.service";
 import { PrintingService } from "src/app/services/printing/printing.service";
+import { CurrentEmployeeService } from "src/app/services/local/current-employee/current-employee.service";
 
 @Component({
   selector: "app-products-purchase",
@@ -83,7 +84,8 @@ export class ProductsPurchasePage implements OnInit {
     private _localInventory: LocalInventoryService,
     private _inventoryIncomeCart: InventoryIncomeCartService,
     private _localPrinter: LocalPrinterService,
-    private _print: PrintingService
+    private _print: PrintingService,
+    private _user: CurrentEmployeeService
   ) {
     addIcons({ search, list, bookmark, save });
 
@@ -227,7 +229,7 @@ export class ProductsPurchasePage implements OnInit {
     return true;
   }
 
-  protected onAdd() {
+  protected async onAdd() {
     if (!this.checkBeforeAdding()) return;
     const newDetail: IInventoryIncomeDetail = {
       id: {
@@ -267,13 +269,16 @@ export class ProductsPurchasePage implements OnInit {
       "top"
     );
     this.clear();
+
+    const user = await this._user.getCurrentEmployee();
     this._inventoryIncomeCart.insert({
       id: 1,
       date: new Date(),
       details: this.details,
       state: true,
       totalCost: 0,
-      uploaded: States.NOT_SYNCABLE
+      uploaded: States.NOT_SYNCABLE,
+      idEmployee: user!.id
     });
   }
 
@@ -338,6 +343,7 @@ export class ProductsPurchasePage implements OnInit {
       totalCost += detail.cost;
     });
 
+    const user = await this._user.getCurrentEmployee();
     const inventoryIncome: IInventoryIncome = {
       id: id,
       date: new Date(),
@@ -345,6 +351,7 @@ export class ProductsPurchasePage implements OnInit {
       state: true,
       totalCost: totalCost,
       uploaded: States.NOT_INSERTED,
+      idEmployee: user!.id
     };
 
     const result = (await this._inventoryIncome.insert(inventoryIncome))
@@ -386,6 +393,7 @@ export class ProductsPurchasePage implements OnInit {
         idUnitBase: detail.idBaseUnit as number,
       });
 
+      const user = await this._user.getCurrentEmployee();
       const unitBase: IUnitBase = {
         id: {
           idUnit: detail.id.idUnit as number,
@@ -394,6 +402,7 @@ export class ProductsPurchasePage implements OnInit {
         equivalency: detail!.equivalencyUsed as number,
         state: true,
         uploaded: States.NOT_INSERTED,
+        idEmployee: user!.id
       };
 
       if (!old) {

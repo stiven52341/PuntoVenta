@@ -30,6 +30,8 @@ import { ICashBox } from 'src/app/models/cash-box.model';
 import { CashBoxesListComponent } from 'src/app/components/modals/cash-boxes-list/cash-boxes-list.component';
 import { IBillInvoice } from 'src/app/models/bill-invoice.model';
 import { BillInvoicesListComponent } from 'src/app/components/modals/bill-invoices-list/bill-invoices-list.component';
+import { IEmployee } from 'src/app/models/employee.model';
+import { EmployeesListComponent } from 'src/app/components/modals/employees-list/employees-list.component';
 
 @Injectable({
   providedIn: 'root',
@@ -247,6 +249,15 @@ export class ModalsService {
       'cash-boxes-list',
     );
     if (result && result.data) return result.data as IBillInvoice;
+    return undefined;
+  }
+
+  public async showEmployeesList(): Promise<IEmployee | undefined>{
+    const result = await this.showModal(
+      EmployeesListComponent,
+      'employees-list',
+    );
+    if (result && result.data) return result.data as IEmployee;
     return undefined;
   }
 

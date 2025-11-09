@@ -30,6 +30,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { debounceTime, Subscription } from 'rxjs';
 import { ICoinCashbox } from 'src/app/models/coin-cashbox.model';
 import { LocalPrinterService } from 'src/app/services/local/local-printer/printer.service';
+import { CurrentEmployeeService } from 'src/app/services/local/current-employee/current-employee.service';
 
 @Component({
   selector: 'app-cash-box',
@@ -78,7 +79,8 @@ export class CashBoxComponent implements OnInit, OnDestroy {
     private _error: ErrorsService,
     private _coin: LocalCoinService,
     private _number: DecimalPipe,
-    private _printer: LocalPrinterService
+    private _printer: LocalPrinterService,
+    private _user: CurrentEmployeeService
   ) {
     addIcons({ save });
 
@@ -178,13 +180,15 @@ export class CashBoxComponent implements OnInit, OnDestroy {
       });
     });
 
+    const user = await this._user.getCurrentEmployee();
     let cashbox: ICashBox = {
       id: newID,
       init: new Date(),
       initCash: this.total,
       state: true,
       uploaded: States.NOT_INSERTED,
-      coins: coinCash
+      coins: coinCash,
+      idOpenEmployee: user!.id
     };
 
     const open = async () => {
@@ -215,6 +219,7 @@ export class CashBoxComponent implements OnInit, OnDestroy {
       cashbox.end = new Date();
       cashbox.endCash = this.total;
       cashbox.state = false;
+      cashbox.idCloseEmployee = user!.id;
 
       const result = await this._cashbox.update(cashbox);
 

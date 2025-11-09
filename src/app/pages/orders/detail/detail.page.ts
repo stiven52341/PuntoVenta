@@ -195,7 +195,7 @@ export class DetailPage implements OnInit {
     this.order!.processed = true;
     this._order.update(this.order!).then(() => {
       this._alert.showSuccess('Artículos del pedido agregados al carrito');
-      this._router.navigate(['/cart']);
+      this._router.navigate(['/home/cart']);
       this._global.updateOrders();
     }).catch(err => {
       this._alert.showError('Error al procesar el pedido');

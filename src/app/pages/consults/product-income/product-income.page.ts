@@ -65,7 +65,7 @@ export class ProductIncomePage implements OnInit {
     const id = this._route.snapshot.params['id'] as number;
     this.income = await this._localIncome.get(id);
     if (!this.income) {
-      this._router.navigate(['/consults']);
+      this._router.navigate(['/home/consults']);
       return;
     }
     this.details = (await this._localIncomeDetails.getByIncome(Number(this.income.id)));

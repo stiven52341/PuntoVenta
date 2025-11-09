@@ -24,7 +24,7 @@ export class CxcPage implements OnInit {
         do: async () => {
           const client = await this._modal.showClientsList(true);
           if(!client) return;
-          await this._router.navigate(['/cxc/bill', client.id]);
+          await this._router.navigate(['/home/cxc/bill', client.id]);
         }
       }
     ];

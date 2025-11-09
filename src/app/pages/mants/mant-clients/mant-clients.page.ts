@@ -1,7 +1,7 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators, ValidationErrors } from '@angular/forms';
-import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonLabel } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonFooter, IonHeader, IonIcon, IonInput, IonLabel, IonTextarea } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { sadOutline, save, search, trash } from 'ionicons/icons';
 import { of } from 'rxjs';
@@ -17,6 +17,7 @@ import { LocalClientService } from 'src/app/services/local/local-client/local-cl
 import { ModalsService } from 'src/app/services/modals/modals.service';
 import { MaskitoOptions, MaskitoElementPredicate, maskitoTransform } from '@maskito/core';
 import { MaskitoDirective } from '@maskito/angular';
+import { CurrentEmployeeService } from 'src/app/services/local/current-employee/current-employee.service';
 
 @Component({
   selector: 'app-mant-clients',
@@ -25,7 +26,7 @@ import { MaskitoDirective } from '@maskito/angular';
   standalone: true,
   imports: [
     IonContent, IonHeader, HeaderBarComponent, IonInput, IonButton, IonIcon, IonFooter,
-    IonLabel, ReactiveFormsModule, MaskitoDirective
+    IonLabel, ReactiveFormsModule, MaskitoDirective, IonTextarea
   ],
   providers: [TitleCasePipe]
 })
@@ -40,7 +41,7 @@ export class MantClientsPage implements OnInit {
   constructor(
     private _modal: ModalsService, private _alert: AlertsService, private _localClient: LocalClientService,
     private _client: ClientService, private _error: ErrorsService, private _file: FilesService,
-    private _titleCase: TitleCasePipe
+    private _titleCase: TitleCasePipe, private _currentUser: CurrentEmployeeService
   ) {
     addIcons({ search, save, trash });
 
@@ -137,6 +138,7 @@ export class MantClientsPage implements OnInit {
   private async onSave() {
     if (!await this._alert.showConfirm(undefined, '¿Está seguro de guardar el nuevo cliente?')) return;
 
+    const user = await this._currentUser.getCurrentEmployee();
     const newClient: IClient = {
       id: await this._localClient.getNextID(),
       name: this._titleCase.transform(this.form.get('name')!.value as string),
@@ -145,7 +147,8 @@ export class MantClientsPage implements OnInit {
       maxCredit: this.form.get('maxCredit')!.value as number,
       state: true,
       uploaded: States.NOT_INSERTED,
-      balance: 0
+      balance: 0,
+      idEmployee: user!.id
     };
 
     newClient.uploaded = await this._client.insert(newClient) ? States.SYNC : States.NOT_INSERTED;
@@ -162,6 +165,7 @@ export class MantClientsPage implements OnInit {
   private async onModify() {
     if (!await this._alert.showConfirm(undefined, '¿Está seguro de modificar el cliente?')) return;
 
+    const user = await this._currentUser.getCurrentEmployee();
     const newClient: IClient = {
       id: this.client!.id,
       name: this._titleCase.transform(this.form.get('name')!.value as string),
@@ -170,7 +174,8 @@ export class MantClientsPage implements OnInit {
       maxCredit: this.form.get('maxCredit')!.value as number,
       state: true,
       uploaded: States.NOT_UPDATED,
-      balance: this.client!.balance
+      balance: this.client!.balance,
+      idEmployee: user!.id
     };
     newClient.uploaded = await this._client.update(newClient) ? States.SYNC : States.NOT_UPDATED;
     this._localClient.update(newClient).then(() => {

@@ -41,6 +41,7 @@ export class HeaderBarComponent implements OnInit {
   @Input() arrowBack: boolean = false;
   @Input() isModal: boolean = true;
   @Input() buttons: Array<IButton> = [];
+  @Input() showMenu: boolean = true;
 
   protected cart?: ICart;
 

@@ -4,7 +4,7 @@
   <form [formGroup]="searchForm">
     <ion-toolbar color="primary">
       <ion-searchbar formControlName="name" placeholder="Buscar por nombre del cliente" slot="start"></ion-searchbar>
-      <ion-select formControlName="params" slot="end" color="light" placeholder="Filtrar por">
+      <ion-select color="light" formControlName="params" slot="end" color="light" placeholder="Filtrar por">
         <ion-select-option value="all">Todos</ion-select-option>
         <ion-select-option value="enable">Activos</ion-select-option>
         <ion-select-option value="disable">Inactivos</ion-select-option>

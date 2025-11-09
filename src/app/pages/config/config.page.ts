@@ -40,7 +40,7 @@ export class ConfigPage implements OnInit {
         title: "Impresora",
         image: "../../assets/icon/printer.png",
         do: () => {
-          this._router.navigate(["/config/printer"]);
+          this._router.navigate(["/home/config/printer"]);
         },
       },
       {

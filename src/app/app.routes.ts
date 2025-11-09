@@ -1,5 +1,5 @@
 import { Routes } from "@angular/router";
-import { isLogged } from "./guards/can-activate.guard";
+import { BillingGuard, CashboxGuard, CXCGuard, InventoryGuard, isLogged, MantsGuard } from "./guards/can-activate.guard";
 
 export const routes: Routes = [
   {
@@ -18,27 +18,36 @@ export const routes: Routes = [
     children: [
       {
         path: "products",
+        canActivate: [BillingGuard],
         loadComponent: () =>
           import("./pages/products/products.page").then((m) => m.ProductsPage)
       },
-
+      {
+        path: '',
+        redirectTo: '/home/products',
+        pathMatch: 'full'
+      },
       {
         path: "inventory",
+        canActivate: [InventoryGuard],
         loadComponent: () =>
           import("./pages/inventory/inventory.page").then((m) => m.InventoryPage),
       },
       {
         path: "mants",
+        canActivate: [MantsGuard],
         loadComponent: () =>
           import("./pages/mants/mants.page").then((m) => m.MantsPage),
       },
       {
         path: "cart",
+        canActivate: [BillingGuard],
         loadComponent: () =>
           import("./pages/cart/cart.page").then((m) => m.CartPage),
       },
       {
         path: "mant/products",
+        canActivate: [MantsGuard],
         loadComponent: () =>
           import("./pages/mants/mant-products/mant-products.page").then(
             (m) => m.MantProductsPage
@@ -46,6 +55,7 @@ export const routes: Routes = [
       },
       {
         path: "mant/prices",
+        canActivate: [MantsGuard],
         loadComponent: () =>
           import("./pages/mants/mant-prices/mant-prices.page").then(
             (m) => m.MantPricesPage
@@ -53,6 +63,7 @@ export const routes: Routes = [
       },
       {
         path: "mant/units",
+        canActivate: [MantsGuard],
         loadComponent: () =>
           import("./pages/mants/mant-units/mant-units.page").then(
             (m) => m.MantUnitsPage
@@ -60,6 +71,7 @@ export const routes: Routes = [
       },
       {
         path: "mant/categories",
+        canActivate: [MantsGuard],
         loadComponent: () =>
           import("./pages/mants/mant-categories/mant-categories.page").then(
             (m) => m.MantCategoriesPage
@@ -72,11 +84,13 @@ export const routes: Routes = [
       },
       {
         path: "consults/sells/:id",
+        canActivate: [BillingGuard],
         loadComponent: () =>
           import("./pages/consults/sells/sells.page").then((m) => m.SellsPage),
       },
       {
         path: "cash-box",
+        canActivate: [CashboxGuard],
         loadComponent: () =>
           import("./pages/cash-box/cash-box.page").then((m) => m.CashBoxPage),
       },
@@ -87,6 +101,7 @@ export const routes: Routes = [
       },
       {
         path: "inventory/products-purchase",
+        canActivate: [InventoryGuard],
         loadComponent: () =>
           import("./pages/inventory/products-purchase/products-purchase.page").then(
             (m) => m.ProductsPurchasePage
@@ -94,6 +109,7 @@ export const routes: Routes = [
       },
       {
         path: "inventory/check",
+        canActivate: [InventoryGuard],
         loadComponent: () =>
           import("./pages/inventory/inventory-check/inventory-check.page").then(
             (m) => m.InventoryCheckPage
@@ -108,6 +124,7 @@ export const routes: Routes = [
       },
       {
         path: "consults/product-income/:id",
+        canActivate: [InventoryGuard],
         loadComponent: () =>
           import("./pages/consults/product-income/product-income.page").then(
             (m) => m.ProductIncomePage
@@ -115,36 +132,50 @@ export const routes: Routes = [
       },
       {
         path: 'orders',
+        canActivate: [BillingGuard],
         loadComponent: () => import('./pages/orders/orders.page').then(m => m.OrdersPage)
       },
       {
         path: 'orders/detail/:id',
+        canActivate: [BillingGuard],
         loadComponent: () => import('./pages/orders/detail/detail.page').then(m => m.DetailPage)
       },
       {
         path: 'mants/clients',
-        loadComponent: () => import('./pages/mants/mant-clients/mant-clients.page').then(m => m.MantClientsPage)
+        loadComponent: () => import('./pages/mants/mant-clients/mant-clients.page').then(m => m.MantClientsPage),
+        canActivate: [MantsGuard]
       },
       {
         path: 'cxc',
-        loadComponent: () => import('./pages/cxc/cxc.page').then(m => m.CxcPage)
+        canActivate: [CXCGuard],
+        loadComponent: () => import('./pages/cxc/cxc.page').then(m => m.CxcPage),
+
       },
       {
         path: 'cxc/bill/:id',
+        canActivate: [CXCGuard],
         loadComponent: () => import('./pages/cxc/late-bills/late-bills.page').then(m => m.LateBillsPage)
       },
       {
         path: 'consults/inventory-checks/:id',
-        loadComponent: () => import('./pages/consults/inventory-checks/inventory-checks.page').then(m => m.InventoryChecksPage)
+        loadComponent: () => import('./pages/consults/inventory-checks/inventory-checks.page').then(m => m.InventoryChecksPage),
+        canActivate: [InventoryGuard]
       },
       {
         path: 'consults/cash-box/:id',
-        loadComponent: () => import('./pages/consults/cash-boxes/cash-boxes.page').then(m => m.CashBoxesPage)
+        loadComponent: () => import('./pages/consults/cash-boxes/cash-boxes.page').then(m => m.CashBoxesPage),
+        canActivate: [CashboxGuard]
+      },
+      {
+        path: 'mants/employees',
+        loadComponent: () => import('./pages/mants/mant-employees/mant-employees.page').then(m => m.MantEmployeesPage),
+        canActivate: [MantsGuard]
       }
     ]
   },
   {
     path: '**',
     redirectTo: '/login'
-  }
+  },
+
 ];

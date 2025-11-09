@@ -31,6 +31,7 @@ import { GlobalService } from 'src/app/services/global/global.service';
 import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
 import { PhotosService } from 'src/app/services/photos/photos.service';
+import { CurrentEmployeeService } from 'src/app/services/local/current-employee/current-employee.service';
 
 @Component({
   selector: 'app-mant-categories',
@@ -67,7 +68,8 @@ export class MantCategoriesPage implements OnInit {
     private _file: FilesService,
     private _global: GlobalService,
     private _title: TitleCasePipe,
-    private _catogoryPhotos: ImageCategoryService
+    private _catogoryPhotos: ImageCategoryService,
+    private _currentUser: CurrentEmployeeService
   ) {
     this.noImage = '../../../../assets/no-image.png';
     this.image = this.noImage;
@@ -89,6 +91,9 @@ export class MantCategoriesPage implements OnInit {
         },
       },
     ];
+  }
+  getName(): 'billing' | 'cashbox' | 'inventory' | 'mants' {
+    throw new Error('Method not implemented.');
   }
 
   ngOnInit() {}
@@ -156,6 +161,7 @@ export class MantCategoriesPage implements OnInit {
 
     this.loading = true;
 
+    const user = await this._currentUser.getCurrentEmployee();
     const newCategory: ICategory = {
       id: await this._localCategory.getNextID(),
       name: this._title
@@ -166,6 +172,7 @@ export class MantCategoriesPage implements OnInit {
         .trim(),
       state: true,
       uploaded: States.NOT_INSERTED,
+      idEmployee: user!.id
     };
 
     if (!this.category) {
@@ -225,7 +232,7 @@ export class MantCategoriesPage implements OnInit {
           id: this.category.id,
           data: this.image.replace('data:image/png;base64,',''),
           state: true,
-          uploaded: States.NOT_INSERTED
+          uploaded: States.NOT_INSERTED,
         };
 
         await firstValueFrom(forkJoin([

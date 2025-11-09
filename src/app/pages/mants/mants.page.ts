@@ -38,28 +38,28 @@ export class MantsPage implements OnInit {
       {
         title: "PRODUCTOS",
         do: async () => {
-          await this._router.navigate(["/mant/products"]);
+          await this._router.navigate(["/home/mant/products"]);
         },
         image: "../../../assets/icon/apple.png",
       },
       {
         title: "PRECIOS",
         do: async () => {
-          await this._router.navigate(["/mant/prices"]);
+          await this._router.navigate(["/home/mant/prices"]);
         },
         image: "../../../assets/icon/price.png",
       },
       {
         title: "UNIDADES",
         do: async () => {
-          await this._router.navigate(["/mant/units"]);
+          await this._router.navigate(["/home/mant/units"]);
         },
         image: "../../../assets/icon/box.png",
       },
       {
         title: "CATEGORÍAS",
         do: async () => {
-          await this._router.navigate(["/mant/categories"]);
+          await this._router.navigate(["/home/mant/categories"]);
         },
         image: "../../../assets/icon/category.png",
       },
@@ -67,7 +67,14 @@ export class MantsPage implements OnInit {
         title: 'CLIENTES',
         image: '../../../assets/icon/smile-face.png',
         do: async () => {
-          await this._router.navigate(['/mants/clients']);
+          await this._router.navigate(['/home/mants/clients']);
+        }
+      },
+      {
+        title: 'EMPLEADOS',
+        image: '../../../assets/icon/employee.png',
+        do: async () => {
+          await this._router.navigate(['/home/mants/employees']);
         }
       },
       {
@@ -127,6 +134,9 @@ export class MantsPage implements OnInit {
         },
       },
     ];
+  }
+  getName(): "billing" | "cashbox" | "inventory" | "mants" {
+    return 'mants';
   }
 
   ngOnInit() {}

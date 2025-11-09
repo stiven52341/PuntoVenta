@@ -4,12 +4,14 @@ import { IUnitProduct } from 'src/app/models/unit-product.model';
 import { States, StorageKeys } from 'src/app/services/constants';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { LocalProductsService } from '../local-products/local-products.service';
+import { CurrentEmployeeService } from '../current-employee/current-employee.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocalUnitProductsService extends InternalStorageCoreService<IUnitProduct> {
   private _localProduct = inject(LocalProductsService);
+  private _localUser = inject(CurrentEmployeeService);
 
   constructor() {
     super(StorageKeys.UNIT_PRODUCTS);
@@ -104,6 +106,7 @@ export class LocalUnitProductsService extends InternalStorageCoreService<IUnitPr
       dataGroup.add(element);
     });
 
+    const user = await this._localUser.getCurrentEmployee();
     const newPrices: Array<IUnitProduct> = [];
     dataGroup.forEach((element,index) => {
       const newPrice: IUnitProduct = {
@@ -116,7 +119,8 @@ export class LocalUnitProductsService extends InternalStorageCoreService<IUnitPr
         isDefault: false,
         price: element.price,
         state: true,
-        uploaded: States.NOT_INSERTED
+        uploaded: States.NOT_INSERTED,
+        idEmployee: user!.id
       };
       newPrices.push(newPrice);
     });

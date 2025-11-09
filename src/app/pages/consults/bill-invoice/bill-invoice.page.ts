@@ -73,7 +73,7 @@ export class BillInvoicePage implements OnInit {
     this.invoice = await this._invoice.get(id);
     if (!this.invoice) {
       this._alert.showError(`No se encontró el abono #${id}`);
-      this._router.navigate(['/consults']);
+      this._router.navigate(['/home/consults']);
       return;
     }
 

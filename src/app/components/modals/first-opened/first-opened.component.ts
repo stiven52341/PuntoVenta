@@ -45,8 +45,6 @@ import { IPurchase } from 'src/app/models/purchase.model';
 import { IPurchaseDetail } from 'src/app/models/purchase-detail.model';
 import { CashBoxService } from 'src/app/services/api/cash-box/cash-box.service';
 import { LocalCashBoxService } from 'src/app/services/local/local-cash-box/local-cash-box.service';
-import { ProductPurchaseService } from 'src/app/services/api/product-purchase/product-purchase.service';
-import { LocalProductPurchaseService } from 'src/app/services/local/local-product-purchase/local-product-purchase.service';
 import { IInventoryCheck } from 'src/app/models/inventory-check.model';
 import { IInventoryCheckDetail } from 'src/app/models/inventory-check-detail.model';
 import { IInventoryIncomeDetail } from 'src/app/models/inventory-income-detail.model';
@@ -68,6 +66,12 @@ import { EmployeeService } from 'src/app/services/api/employee/employee.service'
 import { LocalEmployeeService } from 'src/app/services/local/local-employee/local-employee.service';
 import { Router } from '@angular/router';
 import { CurrentEmployeeService } from 'src/app/services/local/current-employee/current-employee.service';
+import { ModuleService } from 'src/app/services/api/module/module.service';
+import { LocalModulesService } from 'src/app/services/local/modules/local-modules.service';
+import { UserTypeModuleService } from 'src/app/services/api/user-type-module/user-type-module.service';
+import { LocalUserTypeModuleService } from 'src/app/services/local/local-user-type-module/local-user-type-module.service';
+import { LocalUserTypeService } from 'src/app/services/local/local-user-type/local-user-type.service';
+import { UserTypeService } from 'src/app/services/api/user-type/user-type.service';
 
 @Component({
   selector: 'app-first-opened',
@@ -108,7 +112,6 @@ export class FirstOpenedComponent implements OnInit {
   private _productCategoryApi = inject(ProductCategoryService);
   private _purchaseApi = inject(PurchaseService);
   private _cashBoxApi = inject(CashBoxService);
-  private _productPurhchase = inject(ProductPurchaseService);
   private _unitBase = inject(UnitBaseService);
   private _inventory = inject(InventoryService);
   private _client = inject(ClientService);
@@ -116,6 +119,9 @@ export class FirstOpenedComponent implements OnInit {
   private _billInvoice = inject(BillInvoiceService);
   private _coinService = inject(CoinService);
   private _employeeService = inject(EmployeeService);
+  private readonly _modules = inject(ModuleService);
+  private readonly _userTypeModules = inject(UserTypeModuleService);
+  private readonly _userTypes = inject(UserTypeService);
 
   //Local
   private _categorySto = inject(LocalCategoriesService);
@@ -132,7 +138,6 @@ export class FirstOpenedComponent implements OnInit {
   private _purchaseSto = inject(LocalPurchaseService);
   private _purchaseDetailSto = inject(LocalPurchaseDetailService);
   private _cashBoxSto = inject(LocalCashBoxService);
-  private _productPurchaseSto = inject(LocalProductPurchaseService);
   private _unitBaseSto = inject(LocalUnitBaseService);
   private _inventorySto = inject(LocalInventoryService);
   private _clientSto = inject(LocalClientService);
@@ -140,6 +145,9 @@ export class FirstOpenedComponent implements OnInit {
   private _billInvoiceSto = inject(LocalBillInvoiceService);
   private _coinSto = inject(LocalCoinService);
   private _employeeSto = inject(LocalEmployeeService);
+  private readonly _moduleSto = inject(LocalModulesService);
+  private readonly _userTypeModuleSto = inject(LocalUserTypeModuleService);
+  private readonly _userTypeSto = inject(LocalUserTypeService);
 
   private _router = inject(Router);
   private _currentUser = inject(CurrentEmployeeService);
@@ -170,7 +178,6 @@ export class FirstOpenedComponent implements OnInit {
         this._productCategoryApi.getAll(),
         this._purchaseApi.getAll(),
         this._cashBoxApi.getAll(),
-        this._productPurhchase.getAll(),
         this._unitBase.getAll(),
         this._inventory.getAll(),
         // this._orders.getAll()
@@ -178,7 +185,10 @@ export class FirstOpenedComponent implements OnInit {
         this._bills.getAll(),
         this._billInvoice.getAll(),
         this._coinService.getAll(),
-        this._employeeService.getAll()
+        this._employeeService.getAll(),
+        this._modules.getAll(),
+        this._userTypeModules.getAll(),
+        this._userTypes.getAll()
       ])
     ).catch(async (err) => {
       this._alert.showError('Error descargando los datos');
@@ -205,14 +215,16 @@ export class FirstOpenedComponent implements OnInit {
     const productCategories = result[9] || [];
     const purchases = result[10] || [];
     const cashBoxes = result[11] || [];
-    const productPurchases = result[12] || [];
-    const unitBases = result[13] || [];
-    const inventory = result[14] || [];
-    const clients = result[15] || [];
-    const bills = result[16] || [];
-    const billInvoices = result[17] || [];
-    const coins = result[18] || [];
-    const employees = result[19] || [];
+    const unitBases = result[12] || [];
+    const inventory = result[13] || [];
+    const clients = result[14] || [];
+    const bills = result[15] || [];
+    const billInvoices = result[16] || [];
+    const coins = result[17] || [];
+    const employees = result[18] || [];
+    const modules = result[19] || [];
+    const userTypeModules = result[20] || [];
+    const userTypes = result[21] || [];
     // const orders = result[15] || [];
     
     imagesPros.map(
@@ -277,14 +289,16 @@ export class FirstOpenedComponent implements OnInit {
         this._proCategoriesSto.set(productCategories),
         setPurchases(purchases),
         this._cashBoxSto.set(cashBoxes),
-        this._productPurchaseSto.set(productPurchases),
         this._unitBaseSto.set(unitBases),
         this._inventorySto.set(inventory),
         this._clientSto.set(clients),
         this._billsSto.set(bills),
         this._billInvoiceSto.set(billInvoices),
         this._coinSto.set(coins),
-        this._employeeSto.set(employees)
+        this._employeeSto.set(employees),
+        this._moduleSto.set(modules),
+        this._userTypeModuleSto.set(userTypeModules),
+        this._userTypeSto.set(userTypes)
         // this._ordersSto.set(orders)
       ])
     ).catch((err) => {

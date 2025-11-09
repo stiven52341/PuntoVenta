@@ -8,5 +8,5 @@ export interface ICashBox extends IEntity<Number>{
   end?: Date,
   coins: Array<ICoinCashbox>,
   idOpenEmployee: number,
-  idCloseEmployee: number
+  idCloseEmployee?: number
 }

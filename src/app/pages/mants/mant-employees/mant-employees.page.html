@@ -1,0 +1,51 @@
+<ion-header [translucent]="true">
+  <app-header-bar title="Empleados" [arrowBack]="true" [isModal]="false" [loading]="loading"
+    [buttons]="this.headerOps"></app-header-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="content">
+    <div class="complex-input">
+      <ion-input [disabled]="true" labelPlacement="stacked" placeholder="Seleccione un empleado" fill="outline"
+        label="EMPLEADO" [value]="employee?.name || ''"></ion-input>
+      <ion-button (click)="onSelectEmployee()">
+        <ion-icon name="search"></ion-icon>
+      </ion-button>
+    </div>
+    <form [formGroup]="form">
+      <div class="form-content">
+        <ion-input formControlName="name" labelPlacement="stacked" placeholder="Ingrese el nombre del empleado"
+          fill="outline" label="Nombre"></ion-input>
+        <ion-input formControlName="phone" type="tel" labelPlacement="stacked" placeholder="(999)999-9999"
+          fill="outline" label="Teléfono" [maskito]="phoneMask" [maskitoElement]="maskPredicate"></ion-input>
+        <ion-textarea formControlName="address" labelPlacement="stacked" placeholder="Ingrese la dirección del empleado"
+          fill="outline" label="Dirección" type="text">
+        </ion-textarea>
+        <ion-select formControlName="type" labelPlacement="stacked" label="Tipo" fill="outline">
+          @for(type of types; track type.id){
+          <ion-select-option [value]="type.id">{{ type.description }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-input formControlName="username" labelPlacement="stacked" placeholder="Ingrese el nombre de usuario"
+          fill="outline" label="Nombre de usuario"></ion-input>
+        <ion-input formControlName="password" labelPlacement="stacked" placeholder="Ingrese la contraseña"
+          fill="outline" label="Contraseña del usuario" type="password">
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+        <ion-select formControlName="state" labelPlacement="stacked" fill="outline" label="Estado"
+          placeholder="Estado del empleado">
+          <ion-select-option [value]="true">Activo</ion-select-option>
+          <ion-select-option [value]="false">Inactivo</ion-select-option>
+        </ion-select>
+      </div>
+    </form>
+  </div>
+</ion-content>
+<ion-footer>
+  <div class="footer-content">
+    <ion-button [disabled]="loading" (click)="onSave()">
+      <ion-icon color="light" name="save"></ion-icon>
+      <ion-label color="light">Guardar</ion-label>
+    </ion-button>
+  </div>
+</ion-footer>

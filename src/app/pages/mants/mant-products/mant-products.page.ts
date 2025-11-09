@@ -38,6 +38,7 @@ import { IProductCategory } from 'src/app/models/product-category.model';
 import { LocalProductCategoryService } from 'src/app/services/local/local-product-category/local-product-category.service';
 import { LocalCategoriesService } from 'src/app/services/local/local-categories/local-categories.service';
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
+import { CurrentEmployeeService } from 'src/app/services/local/current-employee/current-employee.service';
 
 @Component({
   selector: 'app-mant-products',
@@ -87,7 +88,8 @@ export class MantProductsPage implements OnInit {
     private _localProductCategory: LocalProductCategoryService,
     private _productCategory: ProductCategoryService,
     private _localCategories: LocalCategoriesService,
-    private _localUnit: LocalUnitsService
+    private _localUnit: LocalUnitsService,
+    private _currentUser: CurrentEmployeeService
   ) {
     addIcons({ search });
 
@@ -107,6 +109,9 @@ export class MantProductsPage implements OnInit {
         },
       },
     ];
+  }
+  getName(): 'billing' | 'cashbox' | 'inventory' | 'mants' {
+    return 'mants';
   }
 
   async ngOnInit() {
@@ -209,6 +214,7 @@ export class MantProductsPage implements OnInit {
 
     this.loading = true;
 
+    const user = await this._currentUser.getCurrentEmployee();
     const product: IProduct = {
       id: 0,
       name: this._title.transform(
@@ -217,7 +223,8 @@ export class MantProductsPage implements OnInit {
       description: (this.form.get('desc')?.value || ('' as string)).trim(),
       state: true,
       uploaded: States.NOT_INSERTED,
-      idBaseUnit: this.baseUnit!.id as number
+      idBaseUnit: this.baseUnit!.id as number,
+      idEmployee: user!.id
     };
 
     if (this.product) {
@@ -235,6 +242,7 @@ export class MantProductsPage implements OnInit {
       let photoInserted: boolean | undefined;
 
       if (response && this.image != this.noImage) {
+
         photoInserted = await this._imageProduct.update({
           id: product.id,
           data: this.image!,
@@ -446,6 +454,7 @@ export class MantProductsPage implements OnInit {
       idCategory: this.category.id as number
     });
 
+    const user = await this._currentUser.getCurrentEmployee();
     const productCategory: IProductCategory = {
       id: {
         idCategory: this.category.id as number,
@@ -453,6 +462,7 @@ export class MantProductsPage implements OnInit {
       },
       state: true,
       uploaded: States.NOT_INSERTED,
+      idEmployee: user!.id
     };
 
     if (!old) {

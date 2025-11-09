@@ -1,0 +1,24 @@
+<ion-header>
+  <app-header-bar title="Lista de empleados" [arrowBack]="true" [isModal]="true" [loading]="loading"></app-header-bar>
+  <ion-toolbar color="primary">
+    <ion-searchbar (ionInput)="search($event)" placeholder="ID o Nombre"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="content">
+    <ion-list>
+      @for(employee of employeesFiltered; track employee.employee.id){
+      <ion-item (click)="onClick(employee.employee)">
+        <div class="item-content">
+          <ion-label color="danger">{{ employee.employee.id }}.</ion-label>
+          <ion-label>{{ employee.employee.name }}</ion-label>
+          <ion-label class="end">{{ employee.userType.description }}</ion-label>
+        </div>
+      </ion-item>
+      }
+    </ion-list>
+    <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>

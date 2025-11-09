@@ -141,6 +141,6 @@ export class OrdersPage implements OnInit {
   }
 
   protected onClick(order: IOrder) {
-    this._router.navigate(['/orders/detail', order.id]);
+    this._router.navigate(['/home/orders/detail', order.id]);
   }
 }

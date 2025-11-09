@@ -21,16 +21,14 @@ import { search } from 'ionicons/icons';
 import { HeaderBarComponent } from 'src/app/components/elements/header-bar/header-bar.component';
 import { IButton } from 'src/app/models/button.model';
 import { States } from 'src/app/services/constants';
-import { IUnitBase } from 'src/app/models/unit-base-product.model';
 import { IUnit } from 'src/app/models/unit.model';
 import { AlertsService } from 'src/app/services/alerts/alerts.service';
-import { UnitBaseService } from 'src/app/services/api/unit-base/unit-base.service';
 import { UnitService } from 'src/app/services/api/unit/unit.service';
 import { FilesService } from 'src/app/services/files/files.service';
 import { GlobalService } from 'src/app/services/global/global.service';
-import { LocalUnitBaseService } from 'src/app/services/local/local-unit-base/local-unit-base.service';
 import { LocalUnitsService } from 'src/app/services/local/local-units/local-units.service';
 import { ModalsService } from 'src/app/services/modals/modals.service';
+import { CurrentEmployeeService } from 'src/app/services/local/current-employee/current-employee.service';
 
 @Component({
   selector: 'app-mant-units',
@@ -65,6 +63,7 @@ export class MantUnitsPage implements OnInit {
     private _file: FilesService,
     private _title: TitleCasePipe,
     private _global: GlobalService,
+    private _currentUser: CurrentEmployeeService
   ) {
     addIcons({ search });
 
@@ -85,6 +84,9 @@ export class MantUnitsPage implements OnInit {
         },
       },
     ];
+  }
+  getName(): 'billing' | 'cashbox' | 'inventory' | 'mants' {
+    return 'mants';
   }
 
   ngOnInit() {}
@@ -128,6 +130,7 @@ export class MantUnitsPage implements OnInit {
     if (!(await this._alert.showConfirm('CONFIRME', text))) return;
 
     this.loading = true;
+    const user = await this._currentUser.getCurrentEmployee();
     const unit: IUnit = {
       id: await this._localUnit.getNextID(),
       name: this._title.transform(this.form.get('name')!.value as string),
@@ -137,6 +140,7 @@ export class MantUnitsPage implements OnInit {
       state: true,
       uploaded: States.NOT_INSERTED,
       allowDecimals: this.form.get('allowDecimals')?.value || false,
+      idEmployee: user!.id
     };
 
     if (!this.unit) {

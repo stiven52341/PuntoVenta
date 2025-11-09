@@ -9,5 +9,4 @@ export interface IOrder extends IEntity<number>{
     total: number,
     date: string,
     details: Array<IOrderDetail>,
-    idEmployee: number
 }

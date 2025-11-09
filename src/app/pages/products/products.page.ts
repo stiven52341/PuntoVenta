@@ -11,6 +11,7 @@ import {
   IonRefresher,
   IonRefresherContent,
   RefresherCustomEvent,
+  ViewWillEnter,
 } from "@ionic/angular/standalone";
 import { ProductCardComponent } from "src/app/components/elements/product-card/product-card.component";
 import { ICategory } from "src/app/models/category.model";
@@ -55,7 +56,7 @@ interface IProductDetail {
     IonRefresherContent,
   ],
 })
-export class ProductsPage implements OnInit {
+export class ProductsPage implements OnInit, ViewWillEnter {
   protected categories: Array<{ category: ICategory; image?: string }> = [];
   protected products: Array<{
     product: IProduct;
@@ -89,6 +90,16 @@ export class ProductsPage implements OnInit {
     private _productCategory: LocalProductCategoryService,
     private _global: GlobalService,
   ) {}
+
+  getName(): "billing" | "cashbox" | "inventory" | "mants" {
+    return 'billing';
+  }
+  
+
+  ionViewWillEnter(): void {
+    if(this.products.length > 0 || this.productsFiltered.length > 0) return;
+    this._global.updateData();
+  }
 
   async ngOnInit() {
     this._global.listenToChanges().subscribe(async () => {

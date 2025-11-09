@@ -1,7 +1,7 @@
 <ion-list lines="none">
   <ion-item *ngFor="let option of buttons">
     <ion-button [disabled]="option.disable == true || disabled" (click)="option.do()">
-      <div class="button-content">
+      <div class="button-content" [ngClass]="{'extented': option.info}" >
         <ion-icon
           *ngIf="option.icon"
           slot="start"
@@ -14,6 +14,9 @@
           alt=""
         />
         <ion-label [ngClass]="{'white-color': whiteColor}" size="large">{{ option.title }}</ion-label>
+        @if(option.info){
+          <ion-badge color="danger">{{option.info}}</ion-badge>
+        }
       </div>
     </ion-button>
   </ion-item>

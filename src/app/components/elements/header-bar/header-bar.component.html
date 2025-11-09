@@ -5,15 +5,18 @@
       <ion-icon class="menu-icon" size="large" name="arrow-back"></ion-icon>
     </ion-button>
     }@else {
+    @if(showMenu){
     <ion-button (click)="openMenu()" slot="icon-only">
       <ion-icon class="menu-icon" size="large" name="menu"></ion-icon>
     </ion-button>
+    }
+
     }
   </ion-buttons>
   <ion-title>{{ title | uppercase }}</ion-title>
   @if(showCart){
   <ion-buttons slot="end">
-    <ion-button (click)="goTo('/cart')" slot="icon-only">
+    <ion-button (click)="goTo('/home/cart')" slot="icon-only">
       <div class="icon-content">
         <ion-icon class="menu-icon" name="cart" size="large"></ion-icon>
         @if(cart && cart.products.length > 0){
@@ -24,18 +27,18 @@
   </ion-buttons>
   }
   @if(!showCart && buttons.length > 0){
-    <ion-buttons slot="end">
-      @for(button of buttons; track $index){
-        <ion-button (click)="button.do()">
-          <div class="button-content">
-            @if(button.icon){
-              <ion-icon slot="icon-only" name="{{ button.icon }}"></ion-icon>
-            }
-            <ion-label>{{ button.title }}</ion-label>
-          </div>
-        </ion-button>
-      }
-    </ion-buttons>
+  <ion-buttons slot="end">
+    @for(button of buttons; track $index){
+    <ion-button (click)="button.do()">
+      <div class="button-content">
+        @if(button.icon){
+        <ion-icon slot="icon-only" name="{{ button.icon }}"></ion-icon>
+        }
+        <ion-label>{{ button.title }}</ion-label>
+      </div>
+    </ion-button>
+    }
+  </ion-buttons>
   }
 </ion-toolbar>
 <ion-progress-bar *ngIf="loading" type="indeterminate"></ion-progress-bar>

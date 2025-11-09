@@ -1,16 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RoutesRecognized } from "@angular/router";
 import {
   IonApp,
   IonRouterOutlet,
-  IonMenu,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  MenuController,
-  IonFooter,
-  IonLabel,
 } from "@ionic/angular/standalone";
 import { StatusBar } from "@capacitor/status-bar";
 import { GeneralInfoService } from "./services/local/general-info/general-info.service";
@@ -20,14 +11,11 @@ import { ScreenOrientation } from "@capacitor/screen-orientation";
 
 //DO NOT REMOVE
 import { ProductComponent } from "./components/modals/product/product.component";
-import { IButton } from "./models/button.model";
-import { ButtonListComponent } from "./components/elements/button-list/button-list.component";
 import { FilesService } from "./services/files/files.service";
 import { States } from "./services/constants";
 import { GlobalService } from "./services/global/global.service";
 import { ToastService } from "./services/toast/toast.service";
 import { Keyboard, KeyboardResize } from "@capacitor/keyboard";
-import { App } from "@capacitor/app";
 import { OrdersWsService } from "./services/web-socket/orders/orders-ws.service";
 import { NotificationsService } from "./services/notifications/notifications.service";
 import { AlertsService } from "./services/alerts/alerts.service";
@@ -37,31 +25,19 @@ import { AlertsService } from "./services/alerts/alerts.service";
   templateUrl: "app.component.html",
   styleUrls: ["app.component.scss"],
   imports: [
-    IonLabel,
-    IonFooter,
     IonApp,
     IonRouterOutlet,
-    IonMenu,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     //DO NOT REMOVE
     ProductComponent,
-    IonContent,
-    ButtonListComponent,
-    IonFooter,
+
   ],
 })
 export class AppComponent implements OnInit {
   // public static loadingData = new EventEmitter<boolean>();
 
   @ViewChild('outlet', { static: true }) outlet?: IonRouterOutlet;
-  protected menuOptions: Array<IButton>;
-  protected version?: string;
 
   constructor(
-    private _router: Router,
-    private _menuCtrl: MenuController,
     private _generalInfo: GeneralInfoService,
     private _modal: ModalsService,
     private _file: FilesService,
@@ -71,9 +47,7 @@ export class AppComponent implements OnInit {
     private _notifications: NotificationsService,
     private _alert: AlertsService
   ) {
-    App.getInfo().then((info) => {
-      this.version = info.version;
-    });
+    
 
     ScreenOrientation.lock({ orientation: "portrait" })
       .then(() => {
@@ -85,71 +59,7 @@ export class AppComponent implements OnInit {
 
     this._notifications.init();
 
-    this.menuOptions = [
-      {
-        title: "Caja",
-        image: "../assets/icon/cash.png",
-        do: async () => {
-          await this.goTo("/cash-box");
-        },
-      },
-      {
-        title: "Productos",
-        image: "../assets/icon/apple.png",
-        do: async () => {
-          await this.goTo("/products");
-        },
-      },
-      {
-        title: "Pedidos",
-        image: '../assets/icon/order.png',
-        do: async () => {
-          await this.goTo("/orders");
-        }
-      },
-      {
-        title: "Carrito",
-        image: "../assets/icon/cart.png",
-        do: async () => {
-          await this.goTo("/cart");
-        },
-      },
-      {
-        title: 'Cuentas x cobrar',
-        image: '../assets/icon/money.png',
-        do: async () => {
-          await this.goTo('/cxc');
-        }
-      },
-      {
-        title: "Inventario",
-        image: "../assets/icon/inventory.png",
-        do: async () => {
-          await this.goTo("/inventory");
-        },
-      },
-      {
-        title: "Mantenimientos",
-        image: "../assets/icon/pencil.png",
-        do: async () => {
-          await this.goTo("/mants");
-        },
-      },
-      {
-        title: "Consultas",
-        image: "../assets/icon/search.png",
-        do: async () => {
-          await this.goTo("/consults");
-        },
-      },
-      {
-        title: "Configuración",
-        image: "../assets/icon/setting.png",
-        do: async () => {
-          await this.goTo("/config");
-        },
-      },
-    ];
+    
 
     Keyboard.addListener("keyboardWillShow", (info) => {
       // Opcional: cambiar modo de resize en caliente
@@ -232,8 +142,5 @@ export class AppComponent implements OnInit {
     // });
   }
 
-  private async goTo(path: string) {
-    await this._router.navigate([path]);
-    this._menuCtrl.close();
-  }
+  
 }

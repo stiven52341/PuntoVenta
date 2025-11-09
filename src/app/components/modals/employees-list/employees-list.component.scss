@@ -1,0 +1,17 @@
+.content{
+    padding: 1em;
+
+    .item-content{
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1em 1fr 1fr;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5em;
+        padding: 1.5em 0;
+
+        .end{
+            justify-self: end;
+        }
+    }
+}

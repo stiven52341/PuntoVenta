@@ -53,7 +53,7 @@ export class CashBoxesPage implements OnInit {
     this.cashbox = await this._cashbox.get(id);
     if (!this.cashbox) {
       this._alert.showError(`No se encontró la caja #${id}`);
-      this._router.navigate(['/consults']);
+      this._router.navigate(['/home/consults']);
       return;
     }
 

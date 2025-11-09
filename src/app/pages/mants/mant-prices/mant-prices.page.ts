@@ -31,6 +31,7 @@ import { LocalUnitsService } from 'src/app/services/local/local-units/local-unit
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { UnitBaseService } from 'src/app/services/api/unit-base/unit-base.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
+import { CurrentEmployeeService } from 'src/app/services/local/current-employee/current-employee.service';
 
 @Component({
   selector: 'app-mant-prices',
@@ -80,7 +81,8 @@ export class MantPricesPage implements OnInit {
     private _localUnitBase: LocalUnitBaseService,
     private _localUnit: LocalUnitsService,
     private _unitBase: UnitBaseService,
-    private _toast: ToastService
+    private _toast: ToastService,
+    private _user: CurrentEmployeeService
   ) {
     addIcons({ search });
 
@@ -94,6 +96,9 @@ export class MantPricesPage implements OnInit {
         },
       },
     ];
+  }
+  getName(): 'billing' | 'cashbox' | 'inventory' | 'mants' {
+    return 'mants';
   }
 
   ngOnInit() {
@@ -202,6 +207,7 @@ export class MantPricesPage implements OnInit {
   protected async onSave() {
     if (!this.checkForm()) return;
 
+    const user = await this._user.getCurrentEmployee();
     const newPrice: IUnitProduct = {
       id: await this._localPrices.getNextID(),
       idCurrency: 1,
@@ -214,6 +220,7 @@ export class MantPricesPage implements OnInit {
       state: true,
       uploaded: States.NOT_INSERTED,
       label: this._title.transform(this.label ? this.label : ''),
+      idEmployee: user!.id
     };
 
     if(
@@ -375,6 +382,7 @@ export class MantPricesPage implements OnInit {
   private async syncEquivalency() {
     if (!this.product || !this.product?.idBaseUnit || !this.unit || +this.product.idBaseUnit == +this.unit.id) return;
 
+    const user = await this._user.getCurrentEmployee();
     const equivalency: IUnitBase = {
       id: {
         idUnit: this.unit.id as number,
@@ -382,7 +390,8 @@ export class MantPricesPage implements OnInit {
       },
       equivalency: this.equivalencyInput!.value as number,
       state: true,
-      uploaded: States.NOT_INSERTED
+      uploaded: States.NOT_INSERTED,
+      idEmployee: user!.id
     };
 
     const save = async (equivalency: IUnitBase, action: 'insert' | 'update') => {

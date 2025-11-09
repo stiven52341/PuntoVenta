@@ -12,6 +12,7 @@ import { ErrorsService } from 'src/app/services/api/errors/errors.service';
 import { States } from 'src/app/services/constants';
 import { FilesService } from 'src/app/services/files/files.service';
 import { LocalBillsService } from 'src/app/services/local/bills/bills.service';
+import { CurrentEmployeeService } from 'src/app/services/local/current-employee/current-employee.service';
 import { LocalBillInvoiceService } from 'src/app/services/local/local-bill-invoice/local-bill-invoice.service';
 import { PrintingService } from 'src/app/services/printing/printing.service';
 
@@ -32,7 +33,8 @@ export class BillPayComponent implements OnInit {
     private _localBill: LocalBillsService, private _alert: AlertsService,
     private _billInvoice: BillInvoiceService, private _localBillInvoice: LocalBillInvoiceService,
     private _file: FilesService, private _error: ErrorsService,
-    private _modalCtrl: ModalController, private _print: PrintingService
+    private _modalCtrl: ModalController, private _print: PrintingService,
+    private _user: CurrentEmployeeService
   ) {
     addIcons({ save, addCircle });
   }
@@ -89,13 +91,15 @@ export class BillPayComponent implements OnInit {
 
     this.loading = true;
 
+    const user = await this._user.getCurrentEmployee();
     const billInvoice: IBillInvoice = {
       id: await this._localBillInvoice.getNextID(),
       amount: Number(this.pay.toFixed(2)),
       idBill: this.bill!.id,
       state: true,
       uploaded: States.NOT_INSERTED,
-      date: new Date()
+      date: new Date(),
+      idEmployee: user!.id
     };
 
     const result = await this._billInvoice.insert(billInvoice) ? States.SYNC : States.NOT_INSERTED;

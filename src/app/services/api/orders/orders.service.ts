@@ -72,4 +72,23 @@ export class OrdersService extends ApiCoreService<IOrder> {
     data.map((value) => (value.uploaded = States.DOWNLOADED));
     return data;
   }
+
+  public async getNotProcessed(): Promise<Array<IOrder>>{
+    const result = await firstValueFrom(
+      this._http.get(`
+        ${this.path}/get-not-processed
+      `)
+    ).catch(err => {
+      console.log(`Error while getting orders not processed: ${JSON.stringify(err)}`);
+      this._file.saveError(err);
+      this._errors.saveErrors(err);
+      throw new Error(err);
+    });
+
+    if (!result) return [];
+
+    const data = result as Array<IOrder>;
+    data.map((value) => (value.uploaded = States.DOWNLOADED));
+    return data;
+  }
 }

@@ -21,17 +21,20 @@ export class InventoryPage implements OnInit {
         title: 'Compra de mercancía'.toUpperCase(),
         image: '../../../assets/icon/inventory-income.png',
         do: () => {
-          this._router.navigate(['/inventory/products-purchase']);
+          this._router.navigate(['/home/inventory/products-purchase']);
         }
       },
       {
         title: 'Pase de inventario'.toUpperCase(),
         image: '../../../assets/icon/list.png',
         do: () => {
-          this._router.navigate(['/inventory/check']);
+          this._router.navigate(['/home/inventory/check']);
         }
       }
     ];
+  }
+  getName(): 'billing' | 'cashbox' | 'inventory' | 'mants' {
+    return 'inventory';
   }
 
   ngOnInit() {

@@ -23,6 +23,7 @@ import { ModalsService } from 'src/app/services/modals/modals.service';
 import { ToastService } from 'src/app/services/toast/toast.service';
 import { InventoryCheckCartService } from 'src/app/services/local/inventory-check-cart/inventory-check-cart.service';
 import { PrintingService } from 'src/app/services/printing/printing.service';
+import { CurrentEmployeeService } from 'src/app/services/local/current-employee/current-employee.service';
 
 @Component({
   selector: 'app-inventory-check',
@@ -57,7 +58,8 @@ export class InventoryCheckPage implements OnInit, OnDestroy {
     private _localInventoryCheckDetails: LocalInventoryCheckDetailsService,
     private _localInventory: LocalInventoryService,
     private _inventoryCheckCart: InventoryCheckCartService,
-    private _print: PrintingService
+    private _print: PrintingService,
+    private _user: CurrentEmployeeService
   ) {
     addIcons({ search, list, bookmark, save });
 
@@ -183,12 +185,14 @@ export class InventoryCheckPage implements OnInit, OnDestroy {
     this._toast.showToast('Detalle agregado', 2000, 'primary', 'top');
     this.clear();
 
+    const user = await this._user.getCurrentEmployee();
     const check: IInventoryCheck = {
       id: 1,
       date: new Date(),
       details: this.details,
       state: true,
-      uploaded: States.NOT_SYNCABLE
+      uploaded: States.NOT_SYNCABLE,
+      idEmployee: user!.id
     };
     await this._inventoryCheckCart.insert(check);
   }
@@ -262,12 +266,15 @@ export class InventoryCheckPage implements OnInit, OnDestroy {
     )) return;
 
     this.loading = true;
+
+    const user = await this._user.getCurrentEmployee();
     const header: IInventoryCheck = {
       date: new Date(),
       details: this.details,
       id: await this._localInventoryCheck.getNextID(),
       state: true,
-      uploaded: States.NOT_INSERTED
+      uploaded: States.NOT_INSERTED,
+      idEmployee: user!.id
     };
 
 

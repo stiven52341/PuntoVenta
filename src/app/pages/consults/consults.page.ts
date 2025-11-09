@@ -24,7 +24,7 @@ export class ConsultsPage implements OnInit {
         do: async () => {
           const result = await this._modal.showSellsList();
           if(!result) return;
-          await this._router.navigate(['/consults/sells', result.id]);
+          await this._router.navigate(['/home/consults/sells', result.id]);
         },
         image: '../../../assets/icon/sell.png'
       },
@@ -34,7 +34,7 @@ export class ConsultsPage implements OnInit {
         do: async () => {
           const income = await this._modal.showInventoryIncomesList();
           if(!income) return;
-          this._router.navigate(['consults/product-income', income.id]);
+          this._router.navigate(['/home/consults/product-income', income.id]);
         }
       },
       {
@@ -43,7 +43,7 @@ export class ConsultsPage implements OnInit {
         do: async() => {
           const check = await this._modal.showInventoryChecksList();
           if(!check) return;
-          this._router.navigate(['consults/inventory-checks/', check.id]);
+          this._router.navigate(['/home/consults/inventory-checks/', check.id]);
         }
       },
       {
@@ -52,7 +52,7 @@ export class ConsultsPage implements OnInit {
         do: async() => {
           const cashbox = await this._modal.showCashBoxesList();
           if(!cashbox) return;
-          this._router.navigate(['consults/cash-box/', cashbox.id]);
+          this._router.navigate(['/home/consults/cash-box/', cashbox.id]);
         }
       },
       {
@@ -61,7 +61,7 @@ export class ConsultsPage implements OnInit {
         do: async () => {
           const billInvoice = await this._modal.showBillInvoicesList();
           if(!billInvoice) return;
-          this._router.navigate(['/consults/bill-invoice/', billInvoice.id]);
+          this._router.navigate(['/home/consults/bill-invoice/', billInvoice.id]);
         }
       }
     ];

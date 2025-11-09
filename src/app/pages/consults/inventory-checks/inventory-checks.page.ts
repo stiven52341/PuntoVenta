@@ -68,7 +68,7 @@ export class InventoryChecksPage implements OnInit {
 
     if (!this.check) {
       this._alert.showError(`No se encontró el pase de inventario #${id}`);
-      this._router.navigate(['/consults']);
+      this._router.navigate(['/home/consults']);
       return;
     }
 

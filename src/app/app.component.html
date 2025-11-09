@@ -1,20 +1,3 @@
 <ion-app>
-  <ion-menu side="start" menuId="main-menu" contentId="main-content">
-    <ion-header>
-      <ion-toolbar color="primary">
-        <ion-title style="color: white">MENÚ</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content>
-      <div class="content">
-        <app-button-list [buttons]="menuOptions"></app-button-list>
-      </div>
-    </ion-content>
-    <ion-footer>
-      <ion-toolbar color="primary">
-        <ion-label color="light" slot="start">Version: {{ version }}</ion-label>
-      </ion-toolbar>
-    </ion-footer>
-  </ion-menu>
-  <ion-router-outlet #outlet id="main-content"></ion-router-outlet>
+  <ion-router-outlet #outlet></ion-router-outlet>
 </ion-app>

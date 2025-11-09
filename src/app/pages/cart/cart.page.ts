@@ -42,8 +42,8 @@ import { IClient } from "src/app/models/client.model";
 import { ModalsService } from "src/app/services/modals/modals.service";
 import { LocalClientService } from "src/app/services/local/local-client/local-client.service";
 import { IBill } from "src/app/models/bill.model";
-import { BillsService } from "src/app/services/api/bills/bills.service";
 import { LocalBillsService } from "src/app/services/local/bills/bills.service";
+import { CurrentEmployeeService } from "src/app/services/local/current-employee/current-employee.service";
 
 export interface IProductCart {
   product: IProduct;
@@ -100,9 +100,13 @@ export class CartPage implements OnInit {
     private _cash: LocalCashBoxService,
     private _modal: ModalsService,
     private _localClient: LocalClientService,
-    private _localBill: LocalBillsService
+    private _localBill: LocalBillsService,
+    private _user: CurrentEmployeeService
   ) {
     addIcons({ trash, camera, search });
+  }
+  getName(): "billing" | "cashbox" | "inventory" | "mants" {
+    return 'billing';
   }
 
   async ngOnInit() {
@@ -238,7 +242,7 @@ export class CartPage implements OnInit {
       });
 
 
-
+      const user = await this._user.getCurrentEmployee();
       const purchase: IPurchase = {
         date: new Date(),
         total: total,
@@ -248,7 +252,8 @@ export class CartPage implements OnInit {
         uploaded: States.NOT_INSERTED,
         idClient: this.client?.id,
         isCredit: this.sellType == 'credit',
-        isPaid: this.sellType == 'spot'
+        isPaid: this.sellType == 'spot',
+        idEmployee: user!.id
       };
 
       let newBill: IBill | undefined;

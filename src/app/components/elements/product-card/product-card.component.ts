@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IonIcon, IonImg } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -13,7 +14,7 @@ import { LocalUnitProductsService } from 'src/app/services/local/local-unit-prod
   templateUrl: './product-card.component.html',
   styleUrls: ['./product-card.component.scss'],
   standalone: true,
-  imports: [IonIcon, IonImg],
+  imports: [IonIcon, IonImg, DecimalPipe],
 })
 export class ProductCardComponent implements OnInit {
   @Input({ required: true }) product!: IProduct;
